@@ -215,18 +215,16 @@
         const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
 
         PROBLEM_REGISTRY.forEach(prob => {
-            if (prob.course === course && prob.category === cat) {
+            if (prob.category === cat) {
                 if (query && !prob.title.toLowerCase().includes(query) && !prob.id.toString().includes(query)) {
                     return;
                 }
 
                 const isSolved = solvedArray.includes(prob.slug);
                 const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-xl p-4 flex items-center justify-between shadow-sm";
+                card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-blue-500/30 transition";
                 
-                const btn = prob.implemented 
-                    ? `<a href="./solutions/${prob.slug}.html" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Solution</a>`
-                    : `<button disabled class="bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs px-4 py-2 rounded-lg cursor-not-allowed">Coming Soon</button>`;
+                const btn = `<a href="./solution.html?slug=${prob.slug}" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Problem</a>`;
 
                 let diffColor = 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40';
                 if(prob.difficulty === 'Medium') diffColor = 'text-amber-500 bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/40';
@@ -234,10 +232,9 @@
 
                 card.innerHTML = `
                   <div class="flex items-center gap-4">
-                    <input type="checkbox" data-slug="${prob.slug}" ${isSolved ? 'checked' : ''} class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer problem-checkbox" />
                     <div>
                       <span class="text-xs text-slate-400 font-mono">#${prob.id}</span>
-                      <h3 class="text-base font-bold text-slate-900 dark:text-white ${isSolved ? 'line-through text-slate-400 dark:text-slate-500' : ''}">${prob.title}</h3>
+                      <h3 class="text-base font-bold text-slate-900 dark:text-white">${prob.title}</h3>
                       <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border ${diffColor} mt-1 inline-block">${prob.difficulty}</span>
                     </div>
                   </div>
@@ -246,23 +243,7 @@
                 container.appendChild(card);
             }
         });
-
-        // Setup event listeners for checkboxes
-        document.querySelectorAll('.problem-checkbox').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                const slug = e.target.getAttribute('data-slug');
-                let currentSolved = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
-                if (e.target.checked) {
-                    if (!currentSolved.includes(slug)) currentSolved.push(slug);
-                } else {
-                    currentSolved = currentSolved.filter(k => k !== slug);
-                }
-                localStorage.setItem('algolab_solved_keys', JSON.stringify(currentSolved));
-                renderCategory(); // Live list re-render
-            });
-        });
     }
-
     document.getElementById('search-box').addEventListener('input', renderCategory);
     checkAuth();
   </script>

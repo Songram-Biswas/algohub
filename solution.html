@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>algoHub | Problem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background-color: #0a0a0a; }
+  </style>
+</head>
+<body class="text-slate-300 min-h-screen p-6 sm:p-12 font-sans selection:bg-blue-500/30 flex flex-col">
+
+  <header class="w-full max-w-4xl mx-auto flex justify-between items-center mb-12">
+    <a href="./dashboard.html" class="text-xl font-black tracking-tight text-white flex items-center gap-2 hover:opacity-80 transition">
+      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+      </div>
+      algoHub
+    </a>
+    <button id="btn-logout" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg font-bold transition">Sign Out</button>
+  </header>
+
+  <main class="w-full max-w-4xl mx-auto flex-grow flex flex-col">
+    
+    <div class="flex justify-between items-start mb-6">
+      <div>
+        <div id="breadcrumb" class="text-sm text-slate-400 mb-2 flex items-center gap-2"></div>
+        <h1 id="prob-title" class="text-4xl font-bold text-white mb-4 tracking-tight"></h1>
+        <span id="prob-diff" class="px-2.5 py-1 rounded text-xs font-semibold tracking-wide"></span>
+      </div>
+      <button class="flex items-center gap-2 bg-transparent border border-slate-700 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg text-sm transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+        Copy page
+      </button>
+    </div>
+
+    <a id="leetcode-link" href="#" target="_blank" class="text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mb-12 w-max">
+      Solve on LeetCode
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+    </a>
+
+    <div class="flex justify-end mt-auto mb-6">
+      <button id="btn-toggle-solved" class="flex items-center gap-2 bg-transparent border border-slate-600 hover:border-slate-400 text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
+        <svg id="icon-unsolved" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
+        <svg id="icon-solved" class="w-4 h-4 text-emerald-400 hidden" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+        <span id="text-solved-status">Mark as Complete</span>
+      </button>
+    </div>
+
+    <div class="text-right text-xs text-slate-500 mb-6">
+      Last updated on <span id="date-label"></span>
+    </div>
+
+    <div class="border-t border-slate-800 py-6 flex justify-between items-center">
+      <a id="link-prev" href="#" class="text-slate-400 hover:text-white transition flex items-center gap-2 text-sm font-semibold invisible">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        <span id="text-prev"></span>
+      </a>
+      <a id="link-next" href="#" class="text-slate-400 hover:text-white transition flex items-center gap-2 text-sm font-semibold invisible">
+        <span id="text-next"></span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </a>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { SUPABASE_CONFIG } from './config.js';
+    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+    const PROBLEM_REGISTRY = [
+        { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", category: "Array" },
+        { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", category: "Array" },
+        { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", category: "Array" },
+        { slug: "best-time-to-buy-and-sell-stock", id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", category: "Array" },
+        { slug: "longest-consecutive-sequence", id: 128, title: "Longest Consecutive Sequence", difficulty: "Medium", category: "Array" },
+        { slug: "maximum-product-subarray", id: 152, title: "Maximum Product Subarray", difficulty: "Medium", category: "Array" },
+        { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", category: "Array" },
+        { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", category: "Array" },
+        { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", category: "Array" },
+        { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", category: "String" },
+        { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", category: "String" },
+        { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", category: "String" },
+        { slug: "minimum-window-substring", id: 76, title: "Minimum Window Substring", difficulty: "Hard", category: "String" },
+        { slug: "valid-palindrome", id: 125, title: "Valid Palindrome", difficulty: "Easy", category: "String" },
+        { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", category: "String" },
+        { slug: "encode-and-decode-strings", id: 271, title: "Encode and Decode Strings", difficulty: "Medium", category: "String" },
+        { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", category: "String" },
+        { slug: "palindromic-substrings", id: 647, title: "Palindromic Substrings", difficulty: "Medium", category: "String" },
+        { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", category: "Linked List" },
+        { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", category: "Linked List" },
+        { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", category: "Linked List" },
+        { slug: "merge-k-sorted-lists", id: 23, title: "Merge k Sorted Lists", difficulty: "Hard", category: "Linked List" },
+        { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", category: "Linked List" },
+        { slug: "reorder-list", id: 143, title: "Reorder List", difficulty: "Medium", category: "Linked List" },
+        { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", category: "Linked List" },
+        { slug: "reverse-bits", id: 190, title: "Reverse Bits", difficulty: "Easy", category: "Binary" },
+        { slug: "number-of-1-bits", id: 191, title: "Number of 1 Bits", difficulty: "Easy", category: "Binary" },
+        { slug: "missing-number", id: 268, title: "Missing Number", difficulty: "Easy", category: "Binary" },
+        { slug: "counting-bits", id: 338, title: "Counting Bits", difficulty: "Easy", category: "Binary" },
+        { slug: "sum-of-two-integers", id: 371, title: "Sum of Two Integers", difficulty: "Medium", category: "Binary" },
+        { slug: "rotate-image", id: 48, title: "Rotate Image", difficulty: "Medium", category: "Matrix" },
+        { slug: "spiral-matrix", id: 54, title: "Spiral Matrix", difficulty: "Medium", category: "Matrix" },
+        { slug: "set-matrix-zeroes", id: 73, title: "Set Matrix Zeroes", difficulty: "Medium", category: "Matrix" },
+        { slug: "merge-intervals", id: 56, title: "Merge Intervals", difficulty: "Medium", category: "Interval" },
+        { slug: "insert-interval", id: 57, title: "Insert Interval", difficulty: "Medium", category: "Interval" },
+        { slug: "meeting-rooms", id: 252, title: "Meeting Rooms", difficulty: "Easy", category: "Interval" },
+        { slug: "meeting-rooms-ii", id: 253, title: "Meeting Rooms II", difficulty: "Medium", category: "Interval" },
+        { slug: "non-overlapping-intervals", id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", category: "Interval" },
+        { slug: "validate-binary-search-tree", id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", category: "Tree" },
+        { slug: "same-tree", id: 100, title: "Same Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "binary-tree-level-order-traversal", id: 102, title: "Binary Tree Level Order Traversal", difficulty: "Medium", category: "Tree" },
+        { slug: "maximum-depth-of-binary-tree", id: 104, title: "Maximum Depth of Binary Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "construct-binary-tree-from-preorder-and-inorder-traversal", id: 105, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "Medium", category: "Tree" },
+        { slug: "binary-tree-maximum-path-sum", id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", category: "Tree" },
+        { slug: "invert-binary-tree", id: 226, title: "Invert Binary Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "kth-smallest-element-in-a-bst", id: 230, title: "Kth Smallest Element in a BST", difficulty: "Medium", category: "Tree" },
+        { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", category: "Tree" },
+        { slug: "serialize-and-deserialize-binary-tree", id: 297, title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", category: "Tree" },
+        { slug: "subtree-of-another-tree", id: 572, title: "Subtree of Another Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "find-median-from-data-stream", id: 295, title: "Find Median from Data Stream", difficulty: "Hard", category: "Heap" },
+        { slug: "top-k-frequent-elements", id: 347, title: "Top K Frequent Elements", difficulty: "Medium", category: "Heap" },
+        { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", category: "Graph" },
+        { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", category: "Graph" },
+        { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", category: "Graph" },
+        { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", category: "Graph" },
+        { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", category: "Graph" },
+        { slug: "word-search-ii", id: 212, title: "Word Search II", difficulty: "Hard", category: "Graph" },
+        { slug: "graph-valid-tree", id: 261, title: "Graph Valid Tree", difficulty: "Medium", category: "Graph" },
+        { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", category: "Graph" },
+        { slug: "number-of-connected-components-in-an-undirected-graph", id: 323, title: "Number of Connected Components in an Undirected Graph", difficulty: "Medium", category: "Graph" },
+        { slug: "pacific-atlantic-water-flow", id: 417, title: "Pacific Atlantic Water Flow", difficulty: "Medium", category: "Graph" },
+        { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "unique-paths", id: 62, title: "Unique Paths", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "climbing-stairs", id: 70, title: "Climbing Stairs", difficulty: "Easy", category: "Dynamic Programming" },
+        { slug: "word-search", id: 79, title: "Word Search", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "decode-ways", id: 91, title: "Decode Ways", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "word-break", id: 139, title: "Word Break", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "house-robber", id: 198, title: "House Robber", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "house-robber-ii", id: 213, title: "House Robber II", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "longest-increasing-subsequence", id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "coin-change", id: 322, title: "Coin Change", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "longest-common-subsequence", id: 1143, title: "Longest Common Subsequence", difficulty: "Medium", category: "Dynamic Programming" }
+    ];
+
+    let currentUserId = null;
+    let currentStatus = null;
+    let targetSlug = null;
+
+    async function initialize() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = './index.html';
+            return;
+        }
+        currentUserId = session.user.id;
+        
+        const params = new URLSearchParams(window.location.search);
+        targetSlug = params.get('slug');
+        if (!targetSlug) window.location.href = './dashboard.html';
+
+        renderProblemData();
+        fetchCloudState();
+    }
+
+    function renderProblemData() {
+        const probIndex = PROBLEM_REGISTRY.findIndex(p => p.slug === targetSlug);
+        if (probIndex === -1) return;
+        
+        const prob = PROBLEM_REGISTRY[probIndex];
+        
+        document.title = `algoHub | ${prob.title}`;
+        document.getElementById('breadcrumb').innerHTML = `<a href="./category.html?course=blind-75&type=${encodeURIComponent(prob.category)}" class="hover:text-white transition">${prob.category}</a> <span class="text-slate-600">&gt;</span> <span># ${prob.title}</span>`;
+        document.getElementById('prob-title').textContent = prob.title;
+        document.getElementById('leetcode-link').href = `https://leetcode.com/problems/${prob.slug}/`;
+        
+        const d = new Date();
+        const dateOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+        document.getElementById('date-label').textContent = d.toLocaleDateString('en-US', dateOptions);
+
+        const diffEl = document.getElementById('prob-diff');
+        diffEl.textContent = prob.difficulty;
+        if(prob.difficulty === 'Easy') diffEl.className = "px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-900/40 text-emerald-400";
+        if(prob.difficulty === 'Medium') diffEl.className = "px-2.5 py-0.5 rounded text-xs font-bold bg-amber-900/40 text-amber-400";
+        if(prob.difficulty === 'Hard') diffEl.className = "px-2.5 py-0.5 rounded text-xs font-bold bg-red-900/40 text-red-400";
+
+        if (probIndex > 0) {
+            const prev = PROBLEM_REGISTRY[probIndex - 1];
+            const prevLink = document.getElementById('link-prev');
+            prevLink.classList.remove('invisible');
+            prevLink.href = `./solution.html?slug=${prev.slug}`;
+            document.getElementById('text-prev').textContent = `# ${prev.title}`;
+        }
+        if (probIndex < PROBLEM_REGISTRY.length - 1) {
+            const next = PROBLEM_REGISTRY[probIndex + 1];
+            const nextLink = document.getElementById('link-next');
+            nextLink.classList.remove('invisible');
+            nextLink.href = `./solution.html?slug=${next.slug}`;
+            document.getElementById('text-next').textContent = `# ${next.title}`;
+        }
+    }
+
+    async function fetchCloudState() {
+        const { data, error } = await supabaseClient
+            .from('user_progress')
+            .select('status')
+            .eq('user_id', currentUserId)
+            .eq('problem_slug', targetSlug)
+            .single();
+
+        currentStatus = data ? data.status : null;
+        updateStatusUI();
+    }
+
+    async function toggleCloudState() {
+        currentStatus = currentStatus === 'solved' ? null : 'solved'; 
+        updateStatusUI(); 
+        
+        if (currentStatus) {
+            await supabaseClient.from('user_progress').upsert({
+                user_id: currentUserId,
+                problem_slug: targetSlug,
+                status: currentStatus,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id, problem_slug' });
+        } else {
+            await supabaseClient.from('user_progress')
+                .delete()
+                .eq('user_id', currentUserId)
+                .eq('problem_slug', targetSlug);
+        }
+    }
+
+    function updateStatusUI() {
+        const btnSolved = document.getElementById('btn-toggle-solved');
+        const textSolved = document.getElementById('text-solved-status');
+        const iconUnsolved = document.getElementById('icon-unsolved');
+        const iconSolved = document.getElementById('icon-solved');
+
+        if (currentStatus === 'solved') {
+            btnSolved.className = "flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
+            iconUnsolved.classList.add('hidden');
+            iconSolved.classList.remove('hidden');
+            textSolved.textContent = 'Completed';
+        } else {
+            btnSolved.className = "flex items-center gap-2 bg-transparent border border-slate-600 hover:border-slate-400 text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
+            iconUnsolved.classList.remove('hidden');
+            iconSolved.classList.add('hidden');
+            textSolved.textContent = 'Mark as Complete';
+        }
+    }
+
+    document.getElementById('btn-toggle-solved').onclick = toggleCloudState;
+    document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = './index.html'; };
+
+    initialize();
+  </script>
+</body>
+</html>
