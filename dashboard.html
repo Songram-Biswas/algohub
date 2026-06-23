@@ -1,40 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALGO_LAB | Dashboard</title>
+  <title>InterviewRank | Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --fluid-heading: clamp(1.5rem, 2vw + 1rem, 2.5rem);
+    }
+    .fluid-title { font-size: var(--fluid-heading); }
+    .glass {
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
-  <header class="max-w-6xl mx-auto flex justify-between items-center border-b border-slate-900 pb-6 mb-10">
-    <h1 class="text-xl font-bold tracking-tight">ALGO_LAB</h1>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <header class="sticky top-0 z-50 bg-white/70 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-900 glass px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      <span class="text-xl font-black tracking-tight font-sans bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">InterviewRank</span>
+    </div>
+
     <div class="flex items-center gap-4">
-      <button id="btn-logout" class="text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">Sign Out</button>
+      <button id="theme-toggle" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
+        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+      </button>
+
+      <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-800 pl-4">
+        <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover shadow-inner" src="" alt="Profile">
+        <button id="btn-logout" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-xl font-semibold transition cursor-pointer">Sign Out</button>
+      </div>
     </div>
   </header>
-  <main class="max-w-6xl mx-auto">
-    <h2 class="text-2xl font-bold text-white mb-2">Available Curriculums</h2>
-    <p class="text-slate-400 text-sm mb-6">Select a specific roadmap study program to track execution frames.</p>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700 transition">
-        <div>
-          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-900">Core Curated</span>
-          <h3 class="text-xl font-bold text-white mt-3">Blind 75</h3>
-          <p class="text-slate-400 text-xs mt-1">The definitive collection of curated foundational pattern blocks.</p>
-        </div>
-        <a href="./tracks.html?course=blind-75" class="mt-6 w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 rounded-xl transition text-sm block">View Tracks</a>
-      </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700 transition">
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mb-10">
+      <h2 class="fluid-title font-extrabold tracking-tight text-slate-900 dark:text-white">Available Curriculums</h2>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Select a core track roadmap program container matrix to monitor step tracing configurations.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-3xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-800 transition relative overflow-hidden group">
         <div>
-          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-900">Advanced Track</span>
-          <h3 class="text-xl font-bold text-white mt-3">NeetCode 150</h3>
-          <p class="text-slate-400 text-xs mt-1">An expanded practice roadmap covering advanced variants and patterns.</p>
+          <div class="w-full h-36 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-5 relative overflow-hidden flex items-center justify-center shadow-inner">
+            <svg class="w-16 h-16 text-white/20 absolute -right-4 -bottom-4 transform rotate-12 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path>
+            </svg>
+            <span class="text-white font-mono text-xs tracking-widest bg-white/10 px-3 py-1.5 rounded-full border border-white/20 glass">BLIND_75_ENGINE</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/40">Core Curated</span>
+            <span id="progress-text" class="text-xs font-mono text-slate-400 dark:text-slate-500 font-bold">0% Completed</span>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-3">Problem Solving - Blind 75</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed">A focused collection of high-yield interview challenges with integrated runtime step tracking visualization matrices.</p>
         </div>
-        <a href="./tracks.html?course=neetcode-150" class="mt-6 w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 rounded-xl transition text-sm block">View Tracks</a>
+
+        <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-6 overflow-hidden">
+          <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <a href="./tracks.html?course=blind-75" class="mt-6 w-full text-center bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-semibold py-3 rounded-2xl transition text-sm block shadow-sm cursor-pointer">View Course</a>
       </div>
     </div>
   </main>
@@ -43,15 +84,64 @@
     import { SUPABASE_CONFIG } from './config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
+    // Dark/Light Theme Switcher Logic Block
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.remove('dark');
+        lightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.add('dark');
+        darkIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        darkIcon.classList.toggle('hidden');
+        lightIcon.classList.toggle('hidden');
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+
     async function checkAuth() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) window.location.href = './index.html';
+        if (!session) {
+            window.location.href = './index.html';
+            return;
+        }
+        
+        const avatar = document.getElementById('user-avatar');
+        if (avatar && session.user.user_metadata.avatar_url) {
+            avatar.src = session.user.user_metadata.avatar_url;
+        }
+        calculateCourseProgression();
+    }
+
+    function calculateCourseProgression() {
+        const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+        const blind75TotalCount = 75; 
+        
+        // Match standard slugs from registration data pools
+        const solvedBlind75Count = solvedArray.filter(slug => [
+            "two-sum", "longest-repeating-character-replacement", "container-with-most-water"
+        ].includes(slug)).length;
+
+        const percent = Math.min(Math.round((solvedBlind75Count / blind75TotalCount) * 100), 100);
+        document.getElementById('progress-text').textContent = `${percent}% Completed`;
+        document.getElementById('progress-bar').style.width = `${percent}%`;
     }
 
     document.getElementById('btn-logout').onclick = async () => {
-        await supabaseClient.signOut();
+        await supabaseClient.auth.signOut();
         window.location.href = './index.html';
     };
+    
     checkAuth();
   </script>
 </body>

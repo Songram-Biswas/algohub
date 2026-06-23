@@ -1,48 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALGO_LAB | Pattern Tracks</title>
+  <title>algoHub | Pattern Tracks</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .glass {
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
-  <main class="max-w-5xl mx-auto">
-    <a href="./dashboard.html" class="text-sm text-blue-400 hover:underline">← Back to Courses</a>
-    <h1 id="course-title" class="text-3xl font-bold mt-2 text-white">Pattern Tracks</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8" id="tracks-grid"></div>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <header class="sticky top-0 z-50 bg-white/70 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-900 glass px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      <span class="text-xl font-black tracking-tight font-sans bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">algoHub</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <button id="theme-toggle" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
+        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+      </button>
+
+      <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-800 pl-4">
+        <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover" src="" alt="Profile">
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <div class="mb-8">
+      <a href="./dashboard.html" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        Back to Courses
+      </a>
+      <h1 id="course-title" class="text-3xl font-extrabold tracking-tight mt-3 text-slate-900 dark:text-white">Pattern Tracks</h1>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="tracks-grid"></div>
   </main>
 
   <script type="module">
     import { SUPABASE_CONFIG } from './config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
+    // Theme logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.remove('dark');
+        lightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.add('dark');
+        darkIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        darkIcon.classList.toggle('hidden');
+        lightIcon.classList.toggle('hidden');
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+
     const COURSES = {
-        "blind-75": [
-            "Array",
-            "String",
-            "Linked List",
-            "Binary",
-            "Matrix",
-            "Interval",
-            "Tree",
-            "Heap",
-            "Graph",
-            "Dynamic Programming"
-        ],
-        "neetcode-150": [
-            "Array & Hashing",
-            "Two Pointers",
-            "Sliding Window",
-            "Stack",
-            "Binary Search",
-            "Linked List",
-            "Trees",
-            "Tries",
-            "Backtracking",
-            "Graphs"
-        ]
+        "blind-75": ["Array", "String", "Linked List", "Binary", "Matrix", "Interval", "Tree", "Heap", "Graph", "Dynamic Programming"]
     };
 
     async function checkAuth() {
@@ -50,6 +91,10 @@
         if (!session) {
             window.location.href = './index.html';
             return;
+        }
+        const avatar = document.getElementById('user-avatar');
+        if (avatar && session.user.user_metadata.avatar_url) {
+            avatar.src = session.user.user_metadata.avatar_url;
         }
         renderTracks();
     }
@@ -61,12 +106,19 @@
         
         document.getElementById('course-title').textContent = `${courseKey.toUpperCase().replace('-', ' ')} Tracks`;
         const grid = document.getElementById('tracks-grid');
-        grid.innerHTML = tracks.map(track => `
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
-              <h3 class="text-lg font-bold text-white">${track}</h3>
-              <a href="./category.html?course=${courseKey}&type=${encodeURIComponent(track)}" class="mt-4 bg-slate-800 hover:bg-slate-700 text-xs text-center py-2 rounded-lg font-medium block text-white">View Problems</a>
-            </div>
-        `).join('');
+        grid.innerHTML = tracks.map(track => {
+            const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+            
+            return `
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-2xl p-5 flex flex-col justify-between hover:shadow-sm transition">
+                  <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">${track}</h3>
+                    <p class="text-slate-400 text-xs mt-1">Practice patterns for ${track} structures.</p>
+                  </div>
+                  <a href="./category.html?course=${courseKey}&type=${encodeURIComponent(track)}" class="mt-5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-xs text-center py-2.5 rounded-xl font-semibold block text-white transition cursor-pointer">Open Category</a>
+                </div>
+            `;
+        }).join('');
     }
 
     checkAuth();

@@ -1,22 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALGO_LAB | Problems Pack</title>
+  <title>algoHub | Problems Pack</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .glass {
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
-  <main class="max-w-4xl mx-auto">
-    <a id="back-link" href="./dashboard.html" class="text-sm text-blue-400 hover:underline">← Back</a>
-    <h1 id="category-title" class="text-3xl font-bold mt-2 text-white">Problems</h1>
-    <div class="mt-8 space-y-4" id="problem-list"></div>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <header class="sticky top-0 z-50 bg-white/70 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-900 glass px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      <span class="text-xl font-black tracking-tight font-sans bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">algoHub</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <button id="theme-toggle" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
+        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+      </button>
+
+      <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-800 pl-4">
+        <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover" src="" alt="Profile">
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-12">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <a id="back-link" href="./dashboard.html" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          Back
+        </a>
+        <h1 id="category-title" class="text-3xl font-extrabold tracking-tight mt-2 text-slate-900 dark:text-white">Problems</h1>
+      </div>
+      
+      <div class="w-full sm:w-72">
+        <input id="search-box" type="text" placeholder="Search questions..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-slate-100" />
+      </div>
+    </div>
+
+    <div class="space-y-3" id="problem-list"></div>
   </main>
 
   <script type="module">
     import { SUPABASE_CONFIG } from './config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+    // Theme implementation
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.remove('dark');
+        lightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.add('dark');
+        darkIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        darkIcon.classList.toggle('hidden');
+        lightIcon.classList.toggle('hidden');
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
 
     const PROBLEM_REGISTRY = [
         // --- ARRAY ---
@@ -43,6 +114,7 @@
 
         // --- LINKED LIST ---
         { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
+        { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
         { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
         { slug: "merge-k-sorted-lists", id: 23, title: "Merge k Sorted Lists", difficulty: "Hard", course: "blind-75", category: "Linked List", implemented: false },
         { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
@@ -75,8 +147,6 @@
         { slug: "maximum-depth-of-binary-tree", id: 104, title: "Maximum Depth of Binary Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
         { slug: "construct-binary-tree-from-preorder-and-inorder-traversal", id: 105, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
         { slug: "binary-tree-maximum-path-sum", id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
         { slug: "invert-binary-tree", id: 226, title: "Invert Binary Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
         { slug: "kth-smallest-element-in-a-bst", id: 230, title: "Kth Smallest Element in a BST", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
         { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
@@ -91,6 +161,8 @@
         { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
         { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
         { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+        { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+        { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
         { slug: "word-search-ii", id: 212, title: "Word Search II", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
         { slug: "graph-valid-tree", id: 261, title: "Graph Valid Tree", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
         { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
@@ -101,6 +173,7 @@
         { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: true },
         { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+        { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "unique-paths", id: 62, title: "Unique Paths", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "climbing-stairs", id: 70, title: "Climbing Stairs", difficulty: "Easy", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "word-search", id: 79, title: "Word Search", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
@@ -109,7 +182,7 @@
         { slug: "house-robber", id: 198, title: "House Robber", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "house-robber-ii", id: 213, title: "House Robber II", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "longest-increasing-subsequence", id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "coin-change", id: 322, title: "Coin Change", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+        { slug: "coin-change", id: 322, text-color: "text-amber-400", title: "Coin Change", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
         { slug: "longest-common-subsequence", id: 1143, title: "Longest Common Subsequence", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false }
     ];
 
@@ -119,6 +192,10 @@
             window.location.href = './index.html';
             return;
         }
+        const avatar = document.getElementById('user-avatar');
+        if (avatar && session.user.user_metadata.avatar_url) {
+            avatar.src = session.user.user_metadata.avatar_url;
+        }
         renderCategory();
     }
 
@@ -126,6 +203,7 @@
         const params = new URLSearchParams(window.location.search);
         const course = params.get('course') || 'blind-75';
         const cat = params.get('type') || 'Array';
+        const query = document.getElementById('search-box').value.toLowerCase();
 
         document.getElementById('back-link').href = `./tracks.html?course=${course}`;
         document.getElementById('category-title').textContent = `${cat} Problems`;
@@ -133,32 +211,58 @@
         const container = document.getElementById('problem-list');
         container.innerHTML = '';
 
+        const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+
         PROBLEM_REGISTRY.forEach(prob => {
             if (prob.course === course && prob.category === cat) {
+                if (query && !prob.title.toLowerCase().includes(query) && !prob.id.toString().includes(query)) {
+                    return;
+                }
+
+                const isSolved = solvedArray.includes(prob.slug);
                 const card = document.createElement('div');
-                card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between";
+                card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-xl p-4 flex items-center justify-between shadow-sm";
                 
                 const btn = prob.implemented 
-                    ? `<a href="./solutions/${prob.slug}.html" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Interactive Solution</a>`
-                    : `<button disabled class="bg-slate-800 text-slate-500 text-xs px-4 py-2 rounded-lg cursor-not-allowed">Coming Soon</button>`;
+                    ? `<a href="./solutions/${prob.slug}.html" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Solution</a>`
+                    : `<button disabled class="bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs px-4 py-2 rounded-lg cursor-not-allowed">Coming Soon</button>`;
 
-                let diffColor = 'text-emerald-400 bg-emerald-950/40 border-emerald-900';
-                if(prob.difficulty === 'Medium') diffColor = 'text-amber-400 bg-amber-950/40 border-amber-900';
-                if(prob.difficulty === 'Hard') diffColor = 'text-red-400 bg-red-950/40 border-red-900';
+                let diffColor = 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40';
+                if(prob.difficulty === 'Medium') diffColor = 'text-amber-500 bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/40';
+                if(prob.difficulty === 'Hard') diffColor = 'text-red-500 bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-900/40';
 
                 card.innerHTML = `
-                  <div>
-                    <span class="text-xs text-slate-500 font-mono">#${prob.id}</span>
-                    <h3 class="text-base font-bold text-white">${prob.title}</h3>
-                    <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border ${diffColor} mt-1 inline-block">${prob.difficulty}</span>
+                  <div class="flex items-center gap-4">
+                    <input type="checkbox" data-slug="${prob.slug}" ${isSolved ? 'checked' : ''} class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer problem-checkbox" />
+                    <div>
+                      <span class="text-xs text-slate-400 font-mono">#${prob.id}</span>
+                      <h3 class="text-base font-bold text-slate-900 dark:text-white ${isSolved ? 'line-through text-slate-400 dark:text-slate-500' : ''}">${prob.title}</h3>
+                      <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border ${diffColor} mt-1 inline-block">${prob.difficulty}</span>
+                    </div>
                   </div>
                   ${btn}
                 `;
                 container.appendChild(card);
             }
         });
+
+        // Setup event listeners for checkboxes
+        document.querySelectorAll('.problem-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const slug = e.target.getAttribute('data-slug');
+                let currentSolved = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+                if (e.target.checked) {
+                    if (!currentSolved.includes(slug)) currentSolved.push(slug);
+                } else {
+                    currentSolved = currentSolved.filter(k => k !== slug);
+                }
+                localStorage.setItem('algolab_solved_keys', JSON.stringify(currentSolved));
+                renderCategory(); // Live list re-render
+            });
+        });
     }
 
+    document.getElementById('search-box').addEventListener('input', renderCategory);
     checkAuth();
   </script>
 </body>
