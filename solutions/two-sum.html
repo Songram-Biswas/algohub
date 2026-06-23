@@ -1,33 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALGO_LAB | Two Sum</title>
+  <title>algoHub | Two Sum</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen p-8 transition-colors duration-200">
   <main class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center border-b border-slate-900 pb-4 mb-6">
+    
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
       <div>
-        <a href="../category.html?course=blind-75&type=Array" class="text-sm text-blue-400 hover:underline">← Back to Category</a>
-        <h1 class="text-3xl font-bold mt-2 text-white font-sans">1. Two Sum</h1>
+        <a href="../category.html?course=blind-75&type=Array" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">← Back to Category</a>
+        <div class="flex items-center gap-3 mt-2">
+          <h1 class="text-3xl font-bold text-slate-900 dark:text-white font-sans">1. Two Sum</h1>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/50">Easy</span>
+        </div>
       </div>
-      <span class="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-900">Easy</span>
+      
+      <button id="btn-toggle-solved" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-sm cursor-pointer">
+        <svg id="icon-unsolved" class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <svg id="icon-solved" class="hidden w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+        <span id="text-solved-status">Mark as Solved</span>
+      </button>
     </div>
 
-    <div id="inputs-panel" class="flex flex-wrap gap-4 my-6 p-4 bg-slate-900 rounded-xl border border-slate-800"></div>
+    <div id="inputs-panel" class="flex flex-wrap gap-4 my-6 p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"></div>
 
-    <div class="flex items-center gap-4 mb-6 bg-slate-900/40 p-3 rounded-lg border border-slate-900/60">
-      <button id="btn-prev" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded font-medium disabled:opacity-40">Previous</button>
-      <span id="step-lbl" class="font-mono text-sm text-slate-400 min-w-[100px] text-center">Step 0 / 0</span>
-      <button id="btn-next" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded font-medium disabled:opacity-40">Next Step</button>
+    <div class="flex items-center gap-4 mb-6 bg-slate-100 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200 dark:border-slate-800/60">
+      <button id="btn-prev" class="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg font-medium disabled:opacity-40 transition cursor-pointer text-sm">Previous</button>
+      <span id="step-lbl" class="font-mono text-sm text-slate-500 dark:text-slate-400 min-w-[100px] text-center font-bold">Step 0 / 0</span>
+      <button id="btn-next" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium disabled:opacity-40 transition cursor-pointer text-sm shadow-sm">Next Step</button>
     </div>
 
     <div class="space-y-6">
-      <div id="array-track" class="flex gap-2 font-mono text-xl font-bold py-4 overflow-x-auto min-h-[80px]"></div>
-      <div id="narrative-box" class="bg-blue-950/30 border border-blue-900/40 p-4 rounded-lg text-sm text-slate-200 min-h-[60px]"></div>
+      <div id="array-track" class="flex gap-2 font-mono text-xl font-bold py-6 overflow-x-auto min-h-[100px]"></div>
+      <div id="narrative-box" class="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 p-5 rounded-xl text-sm text-slate-800 dark:text-slate-200 min-h-[70px] leading-relaxed"></div>
     </div>
   </main>
 
@@ -35,15 +47,60 @@
     import { SUPABASE_CONFIG } from '../config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
-    async function checkRouteAccess() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) window.location.href = '../index.html';
-        else initializePlayer();
-    }
-
+    const CURRENT_SLUG = "two-sum";
     let timelineSteps = [];
     let activeIdx = 0;
     const defaultInput = {"nums": [2, 7, 11, 15], "target": 9};
+
+    async function checkRouteAccess() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) window.location.href = '../index.html';
+        else {
+            initializePlayer();
+            initializeSolvedState();
+        }
+    }
+
+    function initializeSolvedState() {
+        const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+        const isSolved = solvedArray.includes(CURRENT_SLUG);
+        updateSolvedUI(isSolved);
+    }
+
+    function updateSolvedUI(isSolved) {
+        const btn = document.getElementById('btn-toggle-solved');
+        const text = document.getElementById('text-solved-status');
+        const iconUnsolved = document.getElementById('icon-unsolved');
+        const iconSolved = document.getElementById('icon-solved');
+
+        if (isSolved) {
+            btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/30', 'border-emerald-200', 'dark:border-emerald-900/50', 'text-emerald-700', 'dark:text-emerald-400');
+            btn.classList.remove('bg-white', 'dark:bg-slate-900', 'border-slate-300', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
+            text.textContent = 'Solved';
+            iconUnsolved.classList.add('hidden');
+            iconSolved.classList.remove('hidden');
+        } else {
+            btn.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/30', 'border-emerald-200', 'dark:border-emerald-900/50', 'text-emerald-700', 'dark:text-emerald-400');
+            btn.classList.add('bg-white', 'dark:bg-slate-900', 'border-slate-300', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
+            text.textContent = 'Mark as Solved';
+            iconUnsolved.classList.remove('hidden');
+            iconSolved.classList.add('hidden');
+        }
+    }
+
+    document.getElementById('btn-toggle-solved').onclick = () => {
+        let solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+        const isSolved = solvedArray.includes(CURRENT_SLUG);
+        
+        if (isSolved) {
+            solvedArray = solvedArray.filter(k => k !== CURRENT_SLUG);
+        } else {
+            solvedArray.push(CURRENT_SLUG);
+        }
+        
+        localStorage.setItem('algolab_solved_keys', JSON.stringify(solvedArray));
+        updateSolvedUI(!isSolved);
+    };
 
     function initializePlayer() {
         setupInputs();
@@ -54,14 +111,14 @@
         const panel = document.getElementById('inputs-panel');
         panel.innerHTML = `
             <div class="flex flex-col">
-              <label class="text-xs uppercase text-slate-400 font-bold mb-1 tracking-wider">nums</label>
-              <input id="input-nums" type="text" value="${JSON.stringify(defaultInput.nums)}" class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 font-mono text-white focus:outline-none focus:border-blue-500 uppercase tracking-widest" />
+              <label class="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold mb-1.5 tracking-wider">nums</label>
+              <input id="input-nums" type="text" value="${JSON.stringify(defaultInput.nums)}" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 font-mono text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 tracking-widest text-sm" />
             </div>
             <div class="flex flex-col">
-              <label class="text-xs uppercase text-slate-400 font-bold mb-1 tracking-wider">target</label>
-              <input id="input-target" type="text" value="${defaultInput.target}" class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 font-mono text-white focus:outline-none focus:border-blue-500 uppercase tracking-widest" />
+              <label class="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold mb-1.5 tracking-wider">target</label>
+              <input id="input-target" type="text" value="${defaultInput.target}" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 font-mono text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 tracking-widest text-sm" />
             </div>
-            <button id="btn-recalc" class="bg-emerald-600 hover:bg-emerald-500 px-5 py-1.5 self-end rounded text-sm font-medium transition cursor-pointer">Run</button>
+            <button id="btn-recalc" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 self-end rounded-lg text-sm font-bold transition cursor-pointer shadow-sm">Execute</button>
         `;
         document.getElementById('btn-recalc').onclick = compileSimulation;
     }
@@ -105,14 +162,14 @@
         const track = document.getElementById('array-track');
         track.innerHTML = rawInputTrack.map((char, idx) => {
             const inWindow = idx === currentFrame.left || idx === currentFrame.right;
-            let bgClass = inWindow ? 'bg-blue-900/40 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'bg-slate-900 border-slate-800 text-slate-500';
+            let bgClass = inWindow ? 'bg-blue-100 border-blue-400 text-blue-900 dark:bg-blue-900/60 dark:border-blue-500 dark:text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-slate-100 border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400';
             
             let badges = [];
             if (idx === currentFrame.left) badges.push('L');
             if (idx === currentFrame.right) badges.push('R');
-            const labelStr = badges.length > 0 ? `<span class="absolute -bottom-6 text-[11px] text-amber-400 font-black tracking-tighter">${badges.join(' & ')}</span>` : '';
+            const labelStr = badges.length > 0 ? `<span class="absolute -bottom-6 text-[11px] text-amber-500 dark:text-amber-400 font-black tracking-tighter">${badges.join(' & ')}</span>` : '';
 
-            return `<div class="w-12 h-14 rounded-lg border flex flex-col items-center justify-center relative flex-shrink-0 transition-all duration-150 ${bgClass}">${char}${labelStr}</div>`;
+            return `<div class="w-14 h-16 rounded-xl border-2 flex flex-col items-center justify-center relative flex-shrink-0 transition-all duration-200 ${bgClass}">${char}${labelStr}</div>`;
         }).join('');
 
         document.getElementById('btn-prev').disabled = activeIdx === 0;

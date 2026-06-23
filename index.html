@@ -1,24 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALGO_LAB | Portal Gateway</title>
+  <title>algoHub | The Execution Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    @keyframes blob {
+      0% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+      animation: blob 12s infinite alternate ease-in-out;
+    }
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-6">
-  <div class="max-w-md w-full text-center space-y-8">
-    <div>
-      <h1 class="text-4xl font-extrabold text-white tracking-tight">ALGO_LAB</h1>
-      <p class="mt-2 text-sm text-slate-400">Interactive Execution Engine Sandbox Portfolio</p>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col relative">
+
+  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full mix-blend-screen filter blur-[120px] animate-blob"></div>
+    <div class="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-32 left-1/3 w-[600px] h-[600px] bg-purple-600/20 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000"></div>
+    <canvas id="particle-canvas" class="absolute inset-0 opacity-40"></canvas>
+  </div>
+
+  <header class="relative z-50 w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)] relative overflow-hidden">
+        <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+        <svg class="w-6 h-6 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      <span class="text-2xl font-black tracking-tighter text-white">AlgoHub</span>
     </div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-      <button id="btn-login" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-3 cursor-pointer shadow-md">
-        Sign in with Gmail
+    <button id="btn-login-nav" class="glass-panel hover:bg-white/10 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-pointer flex items-center gap-2 shadow-lg group">
+      Sign In
+      <svg class="w-4 h-4 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+    </button>
+  </header>
+
+  <main class="relative z-10 w-full max-w-7xl mx-auto px-6 pt-12 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center flex-grow">
+    <div class="flex flex-col items-start text-left">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-xs font-bold tracking-widest text-blue-400 mb-8 shadow-[0_0_15px_rgba(37,99,235,0.15)]">
+        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+        Algorithmic Sandbox
+      </div>
+      
+      <h1 class="text-5xl sm:text-7xl font-black tracking-tighter text-white leading-[1.1] mb-6">
+        Master the <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Logic.</span><br>
+        Visualize the Code.
+      </h1>
+      
+      <p class="text-slate-400 text-lg sm:text-xl max-w-lg leading-relaxed mb-10">
+        A purely interactive execution environment for data structures. Step through matrix evaluations, graph traversals, and dynamic pointer shifts in real-time.
+      </p>
+
+      <button id="btn-login-hero" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 py-4 rounded-2xl transition shadow-[0_0_30px_rgba(37,99,235,0.3)] text-base flex items-center gap-3 cursor-pointer transform hover:-translate-y-1">
+        Launch Engine
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
       </button>
     </div>
-  </div>
+
+    <div class="relative w-full h-[500px] hidden lg:block">
+      <div class="absolute right-0 top-10 w-full max-w-md glass-panel p-6 rounded-3xl shadow-2xl border border-slate-700/50 transform rotate-2 hover:rotate-0 transition duration-500">
+        <div class="flex items-center justify-between border-b border-slate-700/50 pb-4 mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono text-slate-400">Complexity</span>
+            <span class="text-sm font-bold text-amber-400">O(n log n)</span>
+          </div>
+          <span class="text-[10px] font-black uppercase tracking-widest bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700">Runtime Engine</span>
+        </div>
+        <div class="flex gap-2 font-mono text-lg font-bold mb-6">
+          <div class="w-12 h-14 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 flex items-center justify-center">8</div>
+          <div class="w-12 h-14 rounded-lg bg-emerald-900/60 border border-emerald-500 text-white flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] relative">
+            3
+            <span class="absolute -bottom-5 text-[10px] text-blue-400 font-black">L</span>
+          </div>
+          <div class="w-12 h-14 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 flex items-center justify-center">5</div>
+          <div class="w-12 h-14 rounded-lg bg-blue-900/60 border border-blue-500 text-white flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)] relative">
+            12
+            <span class="absolute -bottom-5 text-[10px] text-amber-400 font-black">R</span>
+          </div>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl text-sm text-slate-300 font-mono flex items-center gap-3">
+          <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+          Allocating memory pointers... complete.
+        </div>
+      </div>
+      
+      <div class="absolute left-10 bottom-10 glass-panel px-6 py-4 rounded-2xl flex items-center gap-4 transform -rotate-3 hover:rotate-0 transition duration-500 shadow-xl border border-slate-700/50">
+        <div class="w-12 h-12 bg-blue-500/20 border border-blue-500/50 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-white">Dynamic Execution</div>
+          <div class="text-xs text-slate-400 font-mono mt-1">Global Pattern Support</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="relative z-10 w-full border-t border-slate-800/60 bg-slate-950/40 glass-panel border-x-0 border-b-0">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500">
+      <span>© 2026 algoHub Engine.</span>
+      <div class="flex gap-6">
+        <span class="hover:text-white transition cursor-pointer">SYS_STATUS</span>
+        <span class="hover:text-white transition cursor-pointer">DOCS</span>
+      </div>
+    </div>
+  </footer>
 
   <script type="module">
     import { SUPABASE_CONFIG } from './config.js';
@@ -31,12 +140,72 @@
         }
     }
 
-    document.getElementById('btn-login').onclick = () => {
+    function triggerGoogleLogin() {
         supabaseClient.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.origin + '/algohub/dashboard.html' }
+            options: { redirectTo: 'https://songram-biswas.github.io/algohub/dashboard.html' }
         });
-    };
+    }
+
+    document.getElementById('btn-login-nav').onclick = triggerGoogleLogin;
+    document.getElementById('btn-login-hero').onclick = triggerGoogleLogin;
+    
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, particles;
+
+    function initParticles() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        particles = [];
+        for (let i = 0; i < 70; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8,
+                radius: Math.random() * 2 + 1
+            });
+        }
+    }
+
+    function animateParticles() {
+        requestAnimationFrame(animateParticles);
+        ctx.clearRect(0, 0, width, height);
+        
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > width) p.vx *= -1;
+            if (p.y < 0 || p.y > height) p.vy *= -1;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.4)';
+            ctx.fill();
+        });
+
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 120) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 - dist/600})`;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    window.addEventListener('resize', initParticles);
+    initParticles();
+    animateParticles();
     init();
   </script>
 </body>
