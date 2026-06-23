@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALGO_LAB | Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
+  <header class="max-w-6xl mx-auto flex justify-between items-center border-b border-slate-900 pb-6 mb-10">
+    <h1 class="text-xl font-bold tracking-tight">ALGO_LAB</h1>
+    <div class="flex items-center gap-4">
+      <button id="btn-logout" class="text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">Sign Out</button>
+    </div>
+  </header>
+  <main class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold text-white mb-2">Available Curriculums</h2>
+    <p class="text-slate-400 text-sm mb-6">Select a specific roadmap study program to track execution frames.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700 transition">
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-900">Core Curated</span>
+          <h3 class="text-xl font-bold text-white mt-3">Blind 75</h3>
+          <p class="text-slate-400 text-xs mt-1">The definitive collection of curated foundational pattern blocks.</p>
+        </div>
+        <a href="./tracks.html?course=blind-75" class="mt-6 w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 rounded-xl transition text-sm block">View Tracks</a>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700 transition">
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-900">Advanced Track</span>
+          <h3 class="text-xl font-bold text-white mt-3">NeetCode 150</h3>
+          <p class="text-slate-400 text-xs mt-1">An expanded practice roadmap covering advanced variants and patterns.</p>
+        </div>
+        <a href="./tracks.html?course=neetcode-150" class="mt-6 w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 rounded-xl transition text-sm block">View Tracks</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { SUPABASE_CONFIG } from './config.js';
+    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+    async function checkAuth() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) window.location.href = './index.html';
+    }
+
+    document.getElementById('btn-logout').onclick = async () => {
+        await supabaseClient.signOut();
+        window.location.href = './index.html';
+    };
+    checkAuth();
+  </script>
+</body>
+</html>

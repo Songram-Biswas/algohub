@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALGO_LAB | Portal Gateway</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-6">
+  <div class="max-w-md w-full text-center space-y-8">
+    <div>
+      <h1 class="text-4xl font-extrabold text-white tracking-tight">ALGO_LAB</h1>
+      <p class="mt-2 text-sm text-slate-400">Interactive Execution Engine Sandbox Portfolio</p>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+      <button id="btn-login" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-3 cursor-pointer shadow-md">
+        Sign in with Gmail
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { SUPABASE_CONFIG } from './config.js';
+    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+    
+    async function init() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            window.location.href = './dashboard.html';
+        }
+    }
+
+    document.getElementById('btn-login').onclick = () => {
+        supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + '/algohub/dashboard.html' }
+        });
+    };
+    init();
+  </script>
+</body>
+</html>

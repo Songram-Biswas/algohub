@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALGO_LAB | Container With Most Water</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
+  <main class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center border-b border-slate-900 pb-4 mb-6">
+      <div>
+        <a href="../category.html?course=blind-75&type=Dynamic%20Programming" class="text-sm text-blue-400 hover:underline">← Back to Category</a>
+        <h1 class="text-3xl font-bold mt-2 text-white font-sans">11. Container With Most Water</h1>
+      </div>
+      <span class="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider bg-amber-950 text-amber-400 border border-amber-900">Medium</span>
+    </div>
+
+    <div id="inputs-panel" class="flex flex-wrap gap-4 my-6 p-4 bg-slate-900 rounded-xl border border-slate-800"></div>
+
+    <div class="flex items-center gap-4 mb-6 bg-slate-900/40 p-3 rounded-lg border border-slate-900/60">
+      <button id="btn-prev" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded font-medium disabled:opacity-40">Previous</button>
+      <span id="step-lbl" class="font-mono text-sm text-slate-400 min-w-[100px] text-center">Step 0 / 0</span>
+      <button id="btn-next" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded font-medium disabled:opacity-40">Next Step</button>
+    </div>
+
+    <div class="space-y-6">
+      <div id="array-track" class="flex gap-2 font-mono text-xl font-bold py-4 overflow-x-auto min-h-[80px]"></div>
+      <div id="narrative-box" class="bg-blue-950/30 border border-blue-900/40 p-4 rounded-lg text-sm text-slate-200 min-h-[60px]"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { SUPABASE_CONFIG } from '../config.js';
+    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+    async function checkRouteAccess() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) window.location.href = '../index.html';
+        else initializePlayer();
+    }
+
+    let timelineSteps = [];
+    let activeIdx = 0;
+    const defaultInput = {"height": [1, 8, 6, 2, 5, 4, 8, 3, 7]};
+
+    function initializePlayer() {
+        setupInputs();
+        compileSimulation();
+    }
+
+    function setupInputs() {
+        const panel = document.getElementById('inputs-panel');
+        panel.innerHTML = `
+            <div class="flex flex-col">
+              <label class="text-xs uppercase text-slate-400 font-bold mb-1 tracking-wider">height</label>
+              <input id="input-height" type="text" value="${JSON.stringify(defaultInput.height)}" class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 font-mono text-white focus:outline-none focus:border-blue-500 uppercase tracking-widest" />
+            </div>
+            <button id="btn-recalc" class="bg-emerald-600 hover:bg-emerald-500 px-5 py-1.5 self-end rounded text-sm font-medium transition cursor-pointer">Run</button>
+        `;
+        document.getElementById('btn-recalc').onclick = compileSimulation;
+    }
+
+    function compileSimulation() {
+        const height = JSON.parse(document.getElementById('input-height').value);
+        
+        timelineSteps = (() => {
+            let steps = [];
+            let left = 0, right = height.length - 1;
+            let maxLen = 0;
+            while (left < right) {
+                let w = right - left;
+                let h = Math.min(height[left], height[right]);
+                let area = w * h;
+                maxLen = Math.max(maxLen, area);
+                steps.push({
+                    phase: "EVALUATING", left, right, maxFreq: h, maxLen,
+                    explanation: `Left pointer at index ${left} (${height[left]}), Right pointer at index ${right} (${height[right]}). Current Width = ${w}, Limiting Height = ${h}. Max Area found so far = ${maxLen}.`
+                });
+                if (height[left] < height[right]) left++;
+                else right--;
+            }
+            return steps;
+        })();
+        
+        activeIdx = 0;
+        renderTimelineState();
+    }
+
+    function renderTimelineState() {
+        const currentFrame = timelineSteps[activeIdx];
+        const rawInputTrack = JSON.parse(document.getElementById('input-height').value);
+
+        document.getElementById('step-lbl').textContent = `Step ${activeIdx + 1} / ${timelineSteps.length}`;
+        document.getElementById('narrative-box').textContent = currentFrame.explanation;
+
+        const track = document.getElementById('array-track');
+        track.innerHTML = rawInputTrack.map((char, idx) => {
+            const isBoundary = idx === currentFrame.left || idx === currentFrame.right;
+            const inBetween = idx > currentFrame.left && idx < currentFrame.right;
+            
+            let bgClass = 'bg-slate-900 border-slate-800 text-slate-500';
+            if (isBoundary) bgClass = 'bg-blue-900/60 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]';
+            else if (inBetween) bgClass = 'bg-blue-950/20 border-slate-800 text-slate-400';
+            
+            let badges = [];
+            if (idx === currentFrame.left) badges.push('L');
+            if (idx === currentFrame.right) badges.push('R');
+            const labelStr = badges.length > 0 ? `<span class="absolute -bottom-6 text-[11px] text-amber-400 font-black tracking-tighter">${badges.join(' & ')}</span>` : '';
+
+            return `<div class="w-12 h-14 rounded-lg border flex flex-col items-center justify-center relative flex-shrink-0 transition-all duration-150 ${bgClass}">${char}${labelStr}</div>`;
+        }).join('');
+
+        document.getElementById('btn-prev').disabled = activeIdx === 0;
+        document.getElementById('btn-next').disabled = activeIdx === timelineSteps.length - 1;
+    }
+
+    document.getElementById('btn-next').onclick = () => { if(activeIdx < timelineSteps.length - 1) { activeIdx++; renderTimelineState(); } };
+    document.getElementById('btn-prev').onclick = () => { if(activeIdx > 0) { activeIdx--; renderTimelineState(); } };
+
+    checkRouteAccess();
+  </script>
+</body>
+</html>

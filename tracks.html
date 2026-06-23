@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALGO_LAB | Pattern Tracks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
+  <main class="max-w-5xl mx-auto">
+    <a href="./dashboard.html" class="text-sm text-blue-400 hover:underline">← Back to Courses</a>
+    <h1 id="course-title" class="text-3xl font-bold mt-2 text-white">Pattern Tracks</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8" id="tracks-grid"></div>
+  </main>
+
+  <script type="module">
+    import { SUPABASE_CONFIG } from './config.js';
+    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+    const COURSES = {
+        "blind-75": [
+            "Array",
+            "String",
+            "Linked List",
+            "Binary",
+            "Matrix",
+            "Interval",
+            "Tree",
+            "Heap",
+            "Graph",
+            "Dynamic Programming"
+        ],
+        "neetcode-150": [
+            "Array & Hashing",
+            "Two Pointers",
+            "Sliding Window",
+            "Stack",
+            "Binary Search",
+            "Linked List",
+            "Trees",
+            "Tries",
+            "Backtracking",
+            "Graphs"
+        ]
+    };
+
+    async function checkAuth() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = './index.html';
+            return;
+        }
+        renderTracks();
+    }
+
+    function renderTracks() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseKey = urlParams.get('course') || 'blind-75';
+        const tracks = COURSES[courseKey] || [];
+        
+        document.getElementById('course-title').textContent = `${courseKey.toUpperCase().replace('-', ' ')} Tracks`;
+        const grid = document.getElementById('tracks-grid');
+        grid.innerHTML = tracks.map(track => `
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+              <h3 class="text-lg font-bold text-white">${track}</h3>
+              <a href="./category.html?course=${courseKey}&type=${encodeURIComponent(track)}" class="mt-4 bg-slate-800 hover:bg-slate-700 text-xs text-center py-2 rounded-lg font-medium block text-white">View Problems</a>
+            </div>
+        `).join('');
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>
