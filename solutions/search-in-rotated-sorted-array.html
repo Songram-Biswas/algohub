@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>algoHub | Two Sum</title>
+    <title>algoHub | Search in Rotated Sorted Array</title>
     <link rel="icon" type="image/png" href="../favicon.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,13 +70,13 @@
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
       <div>
         <div class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
-            <a href="../category?course=blind-75&type=Array" class="hover:text-blue-500 transition">Array</a> <span>&gt;</span> <span># Two Sum</span>
+            <a href="../category?course=blind-75&type=Array" class="hover:text-blue-500 transition">Array</a> <span>&gt;</span> <span># Search in Rotated Sorted Array</span>
         </div>
         <div class="flex items-center gap-3 mt-2">
-          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">1. Two Sum</h1>
-          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 mt-1">Easy</span>
+          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">33. Search in Rotated Sorted Array</h1>
+          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 mt-1">Medium</span>
         </div>
-        <a href="https://leetcode.com/problems/two-sum/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
+        <a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
             Solve on LeetCode <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
       </div>
@@ -108,43 +108,47 @@
         <div class="p-6">
             <section id="problem" class="content-section active">
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Description</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.</p>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.</p>
+                <p class="mb-4 text-slate-700 dark:text-slate-300">There is an integer array <code>nums</code> sorted in ascending order (with distinct values). Prior to being passed to your function, <code>nums</code> is possibly rotated at an unknown pivot index. Given the array <code>nums</code> after the possible rotation and an integer <code>target</code>, return the index of <code>target</code> if it is in <code>nums</code>, or <code>-1</code> if it is not in <code>nums</code>.</p>
+                <p class="mb-4 text-slate-700 dark:text-slate-300">You must write an algorithm with <code>O(log n)</code> runtime complexity.</p>
 
                 <h3 class="text-xl font-bold mt-8 mb-4">Example 1</h3>
                 <div class="example-box">
-                    <p><strong>Input:</strong> <code>nums = [2,7,11,15], target = 9</code></p>
-                    <p><strong>Output:</strong> <code>[0,1]</code></p>
-                    <p class="text-sm mt-2">Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</p>
+                    <p><strong>Input:</strong> <code>nums = [4,5,6,7,0,1,2], target = 0</code></p>
+                    <p><strong>Output:</strong> <code>4</code></p>
                 </div>
 
                 <h3 class="text-xl font-bold mt-8 mb-4">Example 2</h3>
                 <div class="example-box">
-                    <p><strong>Input:</strong> <code>nums = [3,2,4], target = 6</code></p>
-                    <p><strong>Output:</strong> <code>[1,2]</code></p>
+                    <p><strong>Input:</strong> <code>nums = [4,5,6,7,0,1,2], target = 3</code></p>
+                    <p><strong>Output:</strong> <code>-1</code></p>
                 </div>
 
                 <div class="info-box">
                     <p class="font-bold">Constraints:</p>
                     <ul class="list-disc ml-5 mt-2 text-sm space-y-1">
-                        <li><code>2 <= nums.length <= 10⁴</code></li>
-                        <li><code>-10⁹ <= nums[i] <= 10⁹</code></li>
-                        <li><code>-10⁹ <= target <= 10⁹</code></li>
-                        <li>Only one valid answer exists.</li>
+                        <li><code>1 <= nums.length <= 5000</code></li>
+                        <li><code>-10⁴ <= nums[i] <= 10⁴</code></li>
+                        <li>All values of <code>nums</code> are unique.</li>
                     </ul>
                 </div>
             </section>
 
             <section id="solution" class="content-section">
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Idea & Intuition</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">We can use a hash map to store the elements we have seen so far. As we iterate through the array, we calculate the complement required to reach the target. If the complement is already in our hash map, we have found our two numbers.</p>
+                <p class="mb-4 text-slate-700 dark:text-slate-300">We use a modified Binary Search. If we divide a rotated sorted array into two halves, at least one half will always be perfectly sorted. We can determine which half is sorted, check if our target falls within the bounds of that sorted half, and if so, discard the other half.</p>
 
                 <div class="mermaid bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-center my-6">
                     flowchart TD
-                      A["Loop through nums"] --> B{"complement in map?"}
-                      B -- Yes --> C["Return [map[complement], i]"]
-                      B -- No --> D["map[num] = i"]
-                      D --> A
+                      A["left=0, right=n-1"] --> B{"left <= right?"}
+                      B -- Yes --> C["mid = (left+right)//2"]
+                      C --> D{"nums[mid] == target?"}
+                      D -- Yes --> E["Return mid"]
+                      D -- No --> F{"nums[left] <= nums[mid]?"}
+                      F -- Yes --> G["Check left sorted half"]
+                      F -- No --> H["Check right sorted half"]
+                      G --> I["Update left or right"]
+                      H --> I
+                      I --> B
                 </div>
 
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Python Code</h2>
@@ -152,19 +156,32 @@
 from typing import List
 
 class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        num_map = {}
-        for i, num in enumerate(nums):
-            complement = target - num
-            if complement in num_map:
-                return [num_map[complement], i]
-            num_map[num] = i
-        return []
+    def search(self, nums: List[int], target: int) -> int:
+        left, right = 0, len(nums) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            
+            if nums[mid] == target:
+                return mid
+                
+            if nums[left] <= nums[mid]:
+                if nums[left] <= target < nums[mid]:
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            else:
+                if nums[mid] < target <= nums[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+                    
+        return -1
 </pre>
 
                 <div class="info-box mt-6">
-                    <p><strong>Time Complexity: O(n)</strong> - We traverse the list exactly once. Hash map lookups take O(1) time.</p>
-                    <p><strong>Space Complexity: O(n)</strong> - In the worst case, we store n-1 elements in the hash map.</p>
+                    <p><strong>Time Complexity: O(log n)</strong> - We cut the search space in half at every step, making it highly efficient.</p>
+                    <p><strong>Space Complexity: O(1)</strong> - We only store pointer variables.</p>
                 </div>
             </section>
 
@@ -174,11 +191,11 @@ class Solution:
                 <div class="flex gap-4 mb-6">
                     <div class="flex-1">
                         <label class="text-xs font-bold text-slate-500 uppercase">nums</label>
-                        <input type="text" id="input-nums" class="w-full mt-1 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500" value="2, 7, 11, 15">
+                        <input type="text" id="input-nums" class="w-full mt-1 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500" value="4, 5, 6, 7, 0, 1, 2">
                     </div>
                     <div class="w-32">
                         <label class="text-xs font-bold text-slate-500 uppercase">target</label>
-                        <input type="number" id="input-target" class="w-full mt-1 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500" value="9">
+                        <input type="number" id="input-target" class="w-full mt-1 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500" value="0">
                     </div>
                 </div>
 
@@ -218,7 +235,7 @@ class Solution:
         location.reload(); 
     });
 
-    const CURRENT_SLUG = "two-sum"; 
+    const CURRENT_SLUG = "search-in-rotated-sorted-array"; 
     let currentUserId = null;
     let currentStatus = null; 
 
@@ -311,23 +328,42 @@ class Solution:
         const log = document.getElementById('execution-log');
         
         log.innerHTML = `[init] nums=[${nums}], target=${target}<br><br>`;
-        const numMap = {};
+        let left = 0;
+        let right = nums.length - 1;
+        let step = 0;
         
-        for(let i = 0; i < nums.length; i++) {
-            const num = nums[i];
-            const complement = target - num;
-            log.innerHTML += `<span style="color:#fbbf24">Step ${i}</span>: check nums[${i}] = ${num}<br>`;
-            log.innerHTML += `       complement = ${target} - ${num} = ${complement}<br>`;
+        while (left <= right) {
+            step++;
+            let mid = Math.floor((left + right) / 2);
+            log.innerHTML += `<span style="color:#fbbf24">Step ${step}</span>: left=${left}, right=${right}, mid=${mid} (value: ${nums[mid]})<br>`;
             
-            if(complement in numMap) {
-                log.innerHTML += `       <span style="color:#60a5fa">Found complement!</span> It is at index ${numMap[complement]}.<br>`;
-                log.innerHTML += `<br>[return] <span style="color:#60a5fa">[${numMap[complement]}, ${i}]</span>`;
+            if (nums[mid] === target) {
+                log.innerHTML += `       <span style="color:#60a5fa">Target ${target} found at index ${mid}!</span><br><br>[return] ${mid}`;
                 return;
             }
-            numMap[num] = i;
-            log.innerHTML += `       not in map. Adding {${num}: ${i}} to map.<br><br>`;
+            
+            if (nums[left] <= nums[mid]) {
+                log.innerHTML += `       Left half [${left}...${mid}] is strictly sorted.<br>`;
+                if (nums[left] <= target && target < nums[mid]) {
+                    log.innerHTML += `       Target ${target} is within the left sorted half. Discarding right half.<br>`;
+                    right = mid - 1;
+                } else {
+                    log.innerHTML += `       Target ${target} is NOT within the left sorted half. Discarding left half.<br>`;
+                    left = mid + 1;
+                }
+            } else {
+                log.innerHTML += `       Right half [${mid}...${right}] is strictly sorted.<br>`;
+                if (nums[mid] < target && target <= nums[right]) {
+                    log.innerHTML += `       Target ${target} is within the right sorted half. Discarding left half.<br>`;
+                    left = mid + 1;
+                } else {
+                    log.innerHTML += `       Target ${target} is NOT within the right sorted half. Discarding right half.<br>`;
+                    right = mid - 1;
+                }
+            }
+            log.innerHTML += `<br>`;
         }
-        log.innerHTML += `<br>[return] []`;
+        log.innerHTML += `<span style="color:#ef4444">Loop ended.</span> Target ${target} not found.<br><br>[return] -1`;
     };
   </script>
 </body>
