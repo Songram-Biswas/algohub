@@ -75,7 +75,7 @@
           <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
 
-        <a href="./tracks.html?course=blind-75" class="mt-6 w-full text-center bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-semibold py-3 rounded-2xl transition text-sm block shadow-sm cursor-pointer">View Course</a>
+        <a href="./tracks?course=blind-75" class="mt-6 w-full text-center bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-semibold py-3 rounded-2xl transition text-sm block shadow-sm cursor-pointer">View Course</a>
       </div>
     </div>
 
@@ -146,7 +146,7 @@
 
     async function checkAuth() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = './index.html'; return; }
+        if (!session) { window.location.href = './'; return; }
         
         const avatar = document.getElementById('user-avatar');
         if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
@@ -232,7 +232,7 @@
 
     document.getElementById('btn-logout').onclick = async () => {
         await supabaseClient.auth.signOut();
-        window.location.href = './index.html';
+        window.location.href = './';
     };
     
     checkAuth();

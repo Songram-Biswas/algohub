@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>algoHub | Group Anagrams</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* algoHub Aurora Background */
+        body { background-attachment: fixed; font-family: 'Inter', sans-serif; }
+        html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
+        html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
+        .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
+
+        /* Scoped Styles for the Interactive Problem Content */
+        .problem-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05); overflow: hidden; }
+        html.dark .problem-container { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+        
+        .tab-nav { display: flex; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+        html.dark .tab-nav { background: #1e293b; border-color: #334155; }
+        
+        .tab-nav button { flex: 1; padding: 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        html.dark .tab-nav button { color: #94a3b8; }
+        .tab-nav button:hover { background: #f1f5f9; color: #334155; }
+        html.dark .tab-nav button:hover { background: #334155; color: #f8fafc; }
+        .tab-nav button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+
+        .content-section { padding: 2rem; display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Problem Elements */
+        .info-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
+        html.dark .info-box { background: #0f172a; border-left-color: #38bdf8; color: #cbd5e1;}
+        
+        .example-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
+        html.dark .example-box { background: #0f172a; border-left-color: #818cf8; color: #cbd5e1;}
+
+        pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; border: 1px solid #334155;}
+        code { font-family: 'Fira Code', monospace; color: #ec4899; }
+        
+        .execution-log { background: #0f172a; color: #68d391; padding: 1.5rem; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.8; max-height: 500px; overflow-y: auto; margin: 1rem 0; border: 1px solid #334155;}
+        .log-keyword { color: #fbbf24; }
+        .log-value { color: #60a5fa; }
+        .log-string { color: #86efac; }
+        .log-info { color: #94a3b8; }
+
+        .state-display { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; }
+        html.dark .state-display { background: #0f172a; border-color: #334155; color: #cbd5e1;}
+        .state-entry { padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0; }
+        html.dark .state-entry { border-bottom-color: #334155; }
+        .state-entry:last-child { border-bottom: none; }
+
+        .visualization { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .group-card { background: #f0f4ff; border: 2px solid #6366f1; border-radius: 8px; padding: 1rem; text-align: center; }
+        html.dark .group-card { background: #0f172a; border-color: #818cf8; }
+        .group-key { font-family: 'Fira Code', monospace; font-weight: 600; color: #6366f1; margin-bottom: 0.5rem; }
+        html.dark .group-key { color: #a5b4fc; }
+        .group-items { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .item { background: white; border: 1px solid #cbd5e0; padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.9rem; }
+        html.dark .item { background: #1e293b; border-color: #475569; color: #e2e8f0;}
+    </style>
+</head>
+<body class="text-slate-900 dark:text-slate-100 min-h-screen pb-12">
+
+  <header class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center mb-8">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+      </div>
+      <a href="../dashboard" class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white hover:opacity-80">algoHub</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6">
+    
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
+      <div>
+        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
+            <a href="../category?course=blind-75&type=String" class="hover:text-blue-500 transition">String</a> <span>&gt;</span> <span># Group Anagrams</span>
+        </div>
+        <div class="flex items-center gap-3 mt-2">
+          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">49. Group Anagrams</h1>
+          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800/50 mt-1">Medium</span>
+        </div>
+        <a href="https://leetcode.com/problems/group-anagrams/" target="_blank" class="text-blue-500 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
+            Solve on LeetCode <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <button id="btn-copy-page" class="flex items-center gap-2 bg-transparent border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-2 rounded-lg text-sm font-medium transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <span>Copy Link</span>
+        </button>
+        <button id="btn-toggle-review" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
+          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span id="text-review-status">Needs Review</span>
+        </button>
+        <button id="btn-toggle-solved" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
+          <svg id="icon-unsolved" class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
+          <svg id="icon-solved" class="w-4 h-4 text-emerald-500 dark:text-emerald-400 hidden" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+          <span id="text-solved-status">Mark Complete</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="problem-container glass">
+        <nav class="tab-nav">
+            <button class="nav-btn active" data-section="problem">Problem</button>
+            <button class="nav-btn" data-section="intuition">Intuition</button>
+            <button class="nav-btn" data-section="solution">Solution</button>
+            <button class="nav-btn" data-section="executor">Executor Engine</button>
+            <button class="nav-btn" data-section="complexity">Complexity</button>
+        </nav>
+
+        <div class="p-6">
+            <section id="problem" class="content-section active">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Problem Statement</h2>
+                <p class="mb-4 text-slate-700 dark:text-slate-300">Given an array of strings <code>strs</code>, group the anagrams together. You can return the answer in any order.</p>
+                <div class="example-box">
+                    <p><strong>Input:</strong> <code>strs = ["eat","tea","tan","ate","nat","bat"]</code></p>
+                    <p><strong>Output:</strong> <code>[["bat"],["nat","tan"],["ate","eat","tea"]]</code></p>
+                </div>
+            </section>
+
+            <section id="intuition" class="content-section">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Solution Intuition</h2>
+                <div class="info-box">
+                    <p class="font-bold mb-2">🔑 Key Insight</p>
+                    <p>Two anagrams have the <strong>same canonical form</strong> when sorted alphabetically! Sort the string and use it as a Hash Map key.</p>
+                </div>
+            </section>
+
+            <section id="solution" class="content-section">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Code Solution</h2>
+<pre>
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        anagram_groups = {}
+        
+        for word in strs:
+            sorted_word = ''.join(sorted(word))
+            if sorted_word not in anagram_groups:
+                anagram_groups[sorted_word] = []
+            anagram_groups[sorted_word].append(word)
+            
+        return list(anagram_groups.values())
+</pre>
+            </section>
+
+            <section id="executor" class="content-section">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Interactive Sandbox</h2>
+                
+                <div class="flex flex-col gap-2 mb-6">
+                    <label class="text-sm font-bold text-slate-500 uppercase tracking-wider">Input Array (comma-separated):</label>
+                    <input type="text" id="input-array" class="p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-blue-500 w-full" value="eat,tea,tan,ate,nat,bat">
+                </div>
+
+                <div class="flex gap-3 mb-8">
+                    <button onclick="executeAlgorithm()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold transition shadow-sm">▶ Execute</button>
+                    <button onclick="resetExecutor()" class="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2 rounded-lg font-bold transition hover:opacity-80">⟲ Reset</button>
+                </div>
+
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Execution Log</h3>
+                <div class="execution-log" id="execution-log">
+                    <div class="log-line">Ready to execute. Enter input and click "Execute".</div>
+                </div>
+
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-8 mb-2">State at Each Step</h3>
+                <div class="state-display" id="state-display">
+                    <div class="state-entry">No execution yet</div>
+                </div>
+
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-8 mb-2">Result Visualization</h3>
+                <div class="visualization" id="result-viz">
+                    <p class="text-slate-500">Run the algorithm to see groups</p>
+                </div>
+            </section>
+
+            <section id="complexity" class="content-section">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Complexity Analysis</h2>
+                <div class="info-box">
+                    <p><strong>Time: O(n·k log k)</strong> where n is strings and k is max length.</p>
+                    <p><strong>Space: O(n·k)</strong> to store the hash map.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+  </main>
+
+  <script type="module">
+    // ---------------------------------------------------------
+    // 1. SUPABASE CLOUD SYNC & AUTHENTICATION (ALGOHUB CORE)
+    // ---------------------------------------------------------
+    import { SUPABASE_CONFIG } from '../config.js';
+    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+    const CURRENT_SLUG = "group-anagrams"; // 👈 THE GOLDEN RULE #4
+    let currentUserId = null;
+    let currentStatus = null; 
+
+    async function checkRouteAccess() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { window.location.href = '../'; } 
+        else {
+            currentUserId = session.user.id;
+            fetchCloudState();
+        }
+    }
+
+    async function fetchCloudState() {
+        const { data } = await supabaseClient.from('user_progress').select('status').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
+        currentStatus = data ? data.status : null;
+        updateStatusUI();
+    }
+
+    async function setCloudState(newStatus) {
+        currentStatus = currentStatus === newStatus ? null : newStatus; 
+        updateStatusUI(); 
+        if (currentStatus) {
+            await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
+        } else {
+            await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
+        }
+    }
+
+    function updateStatusUI() {
+        const btnSolved = document.getElementById('btn-toggle-solved');
+        const textSolved = document.getElementById('text-solved-status');
+        const iconUnsolved = document.getElementById('icon-unsolved');
+        const iconSolved = document.getElementById('icon-solved');
+        const btnReview = document.getElementById('btn-toggle-review');
+        const textReview = document.getElementById('text-review-status');
+
+        btnSolved.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
+        btnReview.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
+        iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
+        textSolved.textContent = 'Mark Complete'; textReview.textContent = 'Needs Review';
+
+        if (currentStatus === 'solved') {
+            btnSolved.className = "flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
+            iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
+            textSolved.textContent = 'Completed';
+        } else if (currentStatus === 'review') {
+            btnReview.className = "flex items-center gap-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-amber-600 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
+            textReview.textContent = 'Reviewing';
+        }
+    }
+
+    document.getElementById('btn-toggle-solved').onclick = () => setCloudState('solved');
+    document.getElementById('btn-toggle-review').onclick = () => setCloudState('review');
+    document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = '../'; };
+
+    document.getElementById('btn-copy-page').onclick = async (e) => {
+        await navigator.clipboard.writeText(window.location.href);
+        const btn = e.currentTarget.querySelector('span');
+        const orig = btn.textContent; btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+    };
+
+    checkRouteAccess();
+
+    // ---------------------------------------------------------
+    // 2. CUSTOM INTERACTIVE LOGIC (From Uploaded HTML)
+    // ---------------------------------------------------------
+    
+    // Tab Navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(e.target.dataset.section).classList.add('active');
+            e.target.classList.add('active');
+        });
+    });
+
+    // Make functions globally available for inline onclick attributes
+    window.parseInput = function(inputStr) { return inputStr.split(',').map(s => s.trim()).filter(s => s.length > 0 || inputStr.includes('""')); }
+    window.addLog = function(line) {
+        const log = document.getElementById('execution-log');
+        log.innerHTML += `<div class="log-line mb-1">${line}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
+    window.clearLogs = function() { document.getElementById('execution-log').innerHTML = ''; }
+    
+    window.updateState = function(state) {
+        const display = document.getElementById('state-display');
+        display.innerHTML = '';
+        for (const [key, value] of Object.entries(state)) {
+            display.innerHTML += `<div class="state-entry"><span class="font-bold text-blue-500">${key}:</span> <span class="text-emerald-500">${JSON.stringify(value)}</span></div>`;
+        }
+    }
+
+    window.visualizeResult = function(groups) {
+        const viz = document.getElementById('result-viz');
+        viz.innerHTML = '';
+        groups.forEach(group => {
+            const card = document.createElement('div'); card.className = 'group-card';
+            const sorted = [...group].sort().join('');
+            card.innerHTML = `<div class="group-key">Key: "${sorted}"</div><div class="group-items">${group.map(i => `<div class="item">"${i}"</div>`).join('')}</div>`;
+            viz.appendChild(card);
+        });
+    }
+
+    window.executeAlgorithm = function() {
+        const strs = parseInput(document.getElementById('input-array').value);
+        clearLogs();
+        addLog(`<span class="log-info">[init] strs = [${strs.map(s => `"${s}"`).join(', ')}]</span>`);
+        
+        const anagramGroups = {};
+        strs.forEach((word, idx) => {
+            addLog(`<span class="log-info">--- Step ${idx + 1}: word = "${word}" ---</span>`);
+            const sortedWord = word.split('').sort().join('');
+            addLog(`  sorted_word = "${sortedWord}"`);
+            
+            if (!(sortedWord in anagramGroups)) {
+                addLog(`  "${sortedWord}" not in dict → create new list`);
+                anagramGroups[sortedWord] = [];
+            }
+            anagramGroups[sortedWord].push(word);
+            addLog(`  anagram_groups = { ... updated ... }`);
+        });
+        
+        const result = Object.values(anagramGroups);
+        updateState({ 'Input length': strs.length, 'Unique groups': Object.keys(anagramGroups).length });
+        visualizeResult(result);
+    }
+
+    window.resetExecutor = function() {
+        clearLogs();
+        document.getElementById('state-display').innerHTML = '<div class="state-entry text-slate-500">No execution yet</div>';
+        document.getElementById('result-viz').innerHTML = '<p class="text-slate-500">Run the algorithm to see groups</p>';
+        addLog('Ready to execute. Enter input and click "Execute".');
+    }
+  </script>
+</body>
+</html>

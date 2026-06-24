@@ -37,7 +37,7 @@
 
   <main class="max-w-7xl mx-auto px-6 py-12">
     <div class="mb-8">
-      <a href="./dashboard.html" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
+      <a href="./dashboard" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         Back to Courses
       </a>
@@ -73,7 +73,7 @@
 
     async function checkAuth() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = './index.html'; return; }
+        if (!session) { window.location.href = './'; return; }
         const avatar = document.getElementById('user-avatar');
         if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
         renderTracks();
@@ -93,7 +93,7 @@
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white">${track}</h3>
                     <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Practice patterns for ${track} structures.</p>
                   </div>
-                  <a href="./category.html?course=${courseKey}&type=${encodeURIComponent(track)}" class="mt-5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-xs text-center py-2.5 rounded-xl font-semibold block text-white transition cursor-pointer">Open Category</a>
+                  <a href="./category?course=${courseKey}&type=${encodeURIComponent(track)}" class="mt-5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-xs text-center py-2.5 rounded-xl font-semibold block text-white transition cursor-pointer">Open Category</a>
                 </div>
             `;
         }).join('');
@@ -101,7 +101,7 @@
 
     document.getElementById('btn-logout').onclick = async () => {
         await supabaseClient.auth.signOut();
-        window.location.href = './index.html';
+        window.location.href = './';
     };
 
     checkAuth();

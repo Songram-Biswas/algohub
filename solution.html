@@ -16,7 +16,7 @@
 <body class="text-slate-300 min-h-screen p-6 sm:p-12 font-sans selection:bg-blue-500/30 flex flex-col">
 
   <header class="w-full max-w-4xl mx-auto flex justify-between items-center mb-12">
-    <a href="./dashboard.html" class="text-xl font-black tracking-tight text-white flex items-center gap-2 hover:opacity-80 transition">
+    <a href="./dashboard" class="text-xl font-black tracking-tight text-white flex items-center gap-2 hover:opacity-80 transition">
       <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
       </div>
@@ -90,7 +90,6 @@
         { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", category: "Array" },
         { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", category: "String" },
         { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", category: "String" },
-        { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", category: "String" },
         { slug: "minimum-window-substring", id: 76, title: "Minimum Window Substring", difficulty: "Hard", category: "String" },
         { slug: "valid-palindrome", id: 125, title: "Valid Palindrome", difficulty: "Easy", category: "String" },
         { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", category: "String" },
@@ -163,14 +162,14 @@
     async function initialize() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
-            window.location.href = './index.html';
+            window.location.href = '.i/';
             return;
         }
         currentUserId = session.user.id;
         
         const params = new URLSearchParams(window.location.search);
         targetSlug = params.get('slug');
-        if (!targetSlug) window.location.href = './dashboard.html';
+        if (!targetSlug) window.location.href = './dashboard';
 
         renderProblemData();
         fetchCloudState();
@@ -183,7 +182,7 @@
         const prob = PROBLEM_REGISTRY[probIndex];
         
         document.title = `algoHub | ${prob.title}`;
-        document.getElementById('breadcrumb').innerHTML = `<a href="./category.html?course=blind-75&type=${encodeURIComponent(prob.category)}" class="hover:text-white transition">${prob.category}</a> <span class="text-slate-600">&gt;</span> <span># ${prob.title}</span>`;
+        document.getElementById('breadcrumb').innerHTML = `<a href="./category?course=blind-75&type=${encodeURIComponent(prob.category)}" class="hover:text-white transition">${prob.category}</a> <span class="text-slate-600">&gt;</span> <span># ${prob.title}</span>`;
         document.getElementById('prob-title').textContent = prob.title;
         document.getElementById('leetcode-link').href = `https://leetcode.com/problems/${prob.slug}/`;
         
@@ -201,14 +200,14 @@
             const prev = PROBLEM_REGISTRY[probIndex - 1];
             const prevLink = document.getElementById('link-prev');
             prevLink.classList.remove('invisible');
-            prevLink.href = `./solution.html?slug=${prev.slug}`;
+            prevLink.href = `./solution?slug=${prev.slug}`;
             document.getElementById('text-prev').textContent = `# ${prev.title}`;
         }
         if (probIndex < PROBLEM_REGISTRY.length - 1) {
             const next = PROBLEM_REGISTRY[probIndex + 1];
             const nextLink = document.getElementById('link-next');
             nextLink.classList.remove('invisible');
-            nextLink.href = `./solution.html?slug=${next.slug}`;
+            nextLink.href = `./solution?slug=${next.slug}`;
             document.getElementById('text-next').textContent = `# ${next.title}`;
         }
     }
@@ -290,7 +289,7 @@
 
     document.getElementById('btn-toggle-solved').onclick = () => setCloudState('solved');
     document.getElementById('btn-toggle-review').onclick = () => setCloudState('review');
-    document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = './index.html'; };
+    document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = './'; };
 
     initialize();
   </script>

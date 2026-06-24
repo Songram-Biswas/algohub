@@ -11,7 +11,7 @@
   <main class="max-w-4xl mx-auto">
     <div class="flex justify-between items-center border-b border-slate-900 pb-4 mb-6">
       <div>
-        <a href="../category.html?course=blind-75&type=String" class="text-sm text-blue-400 hover:underline">← Back to Category</a>
+        <a href="../category?course=blind-75&type=String" class="text-sm text-blue-400 hover:underline">← Back to Category</a>
         <h1 class="text-3xl font-bold mt-2 text-white font-sans">424. Longest Repeating Character Replacement</h1>
       </div>
       <span class="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider bg-amber-950 text-amber-400 border border-amber-900">Medium</span>
@@ -37,7 +37,7 @@
 
     async function checkRouteAccess() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) window.location.href = '../index.html';
+        if (!session) window.location.href = '../';
         else initializePlayer();
     }
 

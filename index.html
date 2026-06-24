@@ -136,14 +136,14 @@
     async function init() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
-            window.location.href = './dashboard.html';
+            window.location.href = './dashboard';
         }
     }
 
     function triggerGoogleLogin() {
         supabaseClient.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: 'https://songram-biswas.github.io/algohub/dashboard.html' }
+            options: { redirectTo: 'https://songram-biswas.github.io/algohub/dashboard' }
         });
     }
 

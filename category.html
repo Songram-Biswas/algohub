@@ -46,7 +46,7 @@
   <main class="max-w-4xl mx-auto px-6 py-12">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
       <div>
-        <a id="back-link" href="./dashboard.html" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
+        <a id="back-link" href="./dashboard" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
           Back
         </a>
@@ -190,7 +190,7 @@
     async function checkAuth() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
-            window.location.href = './index.html';
+            window.location.href = './';
             return;
         }
         const avatar = document.getElementById('user-avatar');
@@ -206,7 +206,7 @@
         const cat = params.get('type') || 'Array';
         const query = document.getElementById('search-box').value.toLowerCase();
 
-        document.getElementById('back-link').href = `./tracks.html?course=${course}`;
+        document.getElementById('back-link').href = `./tracks?course=${course}`;
         document.getElementById('category-title').textContent = `${cat} Problems`;
 
         const container = document.getElementById('problem-list');
@@ -224,7 +224,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-blue-500/30 transition";
                 
-                const btn = `<a href="./solution.html?slug=${prob.slug}" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Problem</a>`;
+                const btn = `<a href="./solution?slug=${prob.slug}" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Problem</a>`;
 
                 let diffColor = 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40';
                 if(prob.difficulty === 'Medium') diffColor = 'text-amber-500 bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/40';
