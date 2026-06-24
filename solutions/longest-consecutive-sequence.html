@@ -112,7 +112,7 @@
                       E --> A
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Python Code</h2>
-<pre>
+<pre class="bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 p-6 rounded-xl font-mono text-sm border border-slate-300 dark:border-slate-700 overflow-x-auto my-4">
 class Solution:
     def longestConsecutive(self, nums: List[int]) -> int:
         numSet = set(nums)
@@ -187,6 +187,16 @@ class Solution:
                 </div>
             </section>
         </div>
+        <div class="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#111111] p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Active Recall Notes
+                </h3>
+                <span id="save-status" class="text-xs font-mono font-bold text-slate-400"></span>
+            </div>
+            <textarea id="personal-notes" class="w-full bg-white dark:bg-[#0a0a0a] border border-slate-200 dark:border-[#333333] rounded-lg p-4 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-blue-500 transition-colors resize-y min-h-[120px]" placeholder="What was the trick? Write a hint for your future self..."></textarea>
+        </div>
     </div>
   </main>
   <script type="module">
@@ -227,15 +237,25 @@ class Solution:
         }
     }
     async function fetchCloudState() {
-        const { data } = await supabaseClient.from('user_progress').select('status').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
+        const { data } = await supabaseClient.from('user_progress').select('status, notes').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
         currentStatus = data ? data.status : null;
+        if (data && data.notes) {
+            document.getElementById('personal-notes').value = data.notes;
+        }
         updateStatusUI();
     }
     async function setCloudState(newStatus) {
         currentStatus = currentStatus === newStatus ? null : newStatus; 
         updateStatusUI(); 
-        if (currentStatus) await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
-        else await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
+        const currentNotes = document.getElementById('personal-notes').value;
+        if (currentStatus || currentNotes.trim() !== '') {
+            const payload = { user_id: currentUserId, problem_slug: CURRENT_SLUG, updated_at: new Date().toISOString() };
+            if (currentStatus) payload.status = currentStatus;
+            if (currentNotes.trim() !== '') payload.notes = currentNotes;
+            await supabaseClient.from('user_progress').upsert(payload, { onConflict: 'user_id, problem_slug' });
+        } else {
+            await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
+        }
     }
     function updateStatusUI() {
         const btnSolved = document.getElementById('btn-toggle-solved');
@@ -361,6 +381,25 @@ class Solution:
     }
     document.getElementById('btn-next').onclick = () => { if(activeIdx < timelineSteps.length - 1) { activeIdx++; renderTimelineState(); } };
     document.getElementById('btn-prev').onclick = () => { if(activeIdx > 0) { activeIdx--; renderTimelineState(); } };
+    
+    let saveTimeout;
+    const notesEl = document.getElementById('personal-notes');
+    const statusEl = document.getElementById('save-status');
+    notesEl.addEventListener('input', () => {
+        statusEl.textContent = 'Saving...';
+        statusEl.classList.add('text-amber-500');
+        statusEl.classList.remove('text-emerald-500', 'text-slate-400');
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(saveNotes, 1000);
+    });
+    async function saveNotes() {
+        const payload = { user_id: currentUserId, problem_slug: CURRENT_SLUG, notes: notesEl.value, updated_at: new Date().toISOString() };
+        if (currentStatus) payload.status = currentStatus;
+        await supabaseClient.from('user_progress').upsert(payload, { onConflict: 'user_id, problem_slug' });
+        statusEl.textContent = 'Saved';
+        statusEl.classList.remove('text-amber-500');
+        statusEl.classList.add('text-emerald-500');
+    }
     checkRouteAccess();
   </script>
 </body>
