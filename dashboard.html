@@ -23,12 +23,12 @@
         border: 1px solid #262626;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
     }
-    .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; }
   </style>
 </head>
-<body class="text-slate-900 dark:text-slate-200 min-h-screen font-sans antialiased selection:bg-blue-500/30">
+<body class="text-slate-900 dark:text-slate-200 min-h-screen font-sans antialiased selection:bg-blue-500/30 flex flex-col">
 
   <header class="sticky top-0 z-50 bg-white dark:bg-[#0a0a0a] border-b border-slate-200 dark:border-[#262626] px-6 py-3 flex justify-between items-center w-full">
     <a href="./dashboard" class="flex items-center gap-3 hover:opacity-80 transition cursor-pointer">
@@ -49,82 +49,91 @@
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-6 py-10">
+  <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-grow">
     <div class="mb-10">
       <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard</h2>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Track your execution consistency and manage your curriculums.</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Track your execution consistency and map your conceptual weaknesses.</p>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <div class="lg:col-span-2 flex flex-col gap-6">
-        
-        <div class="util-panel rounded-xl p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Active Curriculum</h3>
-          </div>
-          
-          <div class="border border-slate-200 dark:border-[#262626] rounded-lg p-5 bg-slate-50 dark:bg-[#0f0f0f] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">Core</span>
-                <h4 class="text-base font-bold text-slate-900 dark:text-white">Blind 75 Matrix</h4>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400">High-yield technical interview patterns.</p>
+          <div class="util-panel rounded-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Active Curriculum</h3>
             </div>
             
-            <div class="flex items-center gap-4 w-full sm:w-auto">
-              <div class="flex-grow sm:flex-grow-0 sm:w-32">
-                <div class="flex justify-between text-xs font-mono text-slate-500 dark:text-slate-400 mb-1">
-                  <span>Progress</span>
-                  <span id="progress-text">0%</span>
+            <div class="border border-slate-200 dark:border-[#262626] rounded-lg p-5 bg-slate-50 dark:bg-[#0f0f0f] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">Core</span>
+                  <h4 class="text-base font-bold text-slate-900 dark:text-white">Blind 75 Matrix</h4>
                 </div>
-                <div class="w-full bg-slate-200 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
-                  <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">High-yield technical interview patterns.</p>
               </div>
-              <a href="./tracks?course=blind-75" class="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 text-sm font-medium px-4 py-2 rounded-lg transition shadow-sm whitespace-nowrap">Resume</a>
+              
+              <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="flex-grow sm:flex-grow-0 sm:w-32">
+                  <div class="flex justify-between text-xs font-mono text-slate-500 dark:text-slate-400 mb-1">
+                    <span>Progress</span>
+                    <span id="progress-text">0%</span>
+                  </div>
+                  <div class="w-full bg-slate-200 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+                <a href="./tracks?course=blind-75" class="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 text-sm font-medium px-4 py-2 rounded-lg transition shadow-sm whitespace-nowrap">Resume</a>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="util-panel rounded-xl p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Execution Heatmap</h3>
-            <span class="text-sm font-mono text-slate-500 dark:text-slate-400" id="total-solves-lbl">0 Solves</span>
-          </div>
-          
-          <div class="flex gap-3 w-full overflow-x-auto pb-2 custom-scrollbar">
-            <div class="flex flex-col gap-[7px] text-[10px] text-slate-400 dark:text-slate-500 font-mono pt-5">
-              <span class="h-3.5 flex items-center"></span>
-              <span class="h-3.5 flex items-center">Mon</span>
-              <span class="h-3.5 flex items-center"></span>
-              <span class="h-3.5 flex items-center">Wed</span>
-              <span class="h-3.5 flex items-center"></span>
-              <span class="h-3.5 flex items-center">Fri</span>
-              <span class="h-3.5 flex items-center"></span>
+    
+          <div class="util-panel rounded-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Execution Heatmap</h3>
+              <span class="text-sm font-mono text-slate-500 dark:text-slate-400" id="total-solves-lbl">0 Solves</span>
             </div>
             
-            <div class="flex flex-col gap-1 w-full min-w-max">
-              <div class="flex text-[10px] text-slate-400 dark:text-slate-500 font-mono justify-between mb-1 pr-4" id="month-labels"></div>
-              <div class="grid grid-rows-7 gap-[3px] grid-flow-col" id="contribution-grid"></div>
+            <div class="flex gap-3 w-full overflow-x-auto pb-2 custom-scrollbar">
+              <div class="flex flex-col gap-[7px] text-[10px] text-slate-400 dark:text-slate-500 font-mono pt-5">
+                <span class="h-3.5 flex items-center"></span>
+                <span class="h-3.5 flex items-center">Mon</span>
+                <span class="h-3.5 flex items-center"></span>
+                <span class="h-3.5 flex items-center">Wed</span>
+                <span class="h-3.5 flex items-center"></span>
+                <span class="h-3.5 flex items-center">Fri</span>
+                <span class="h-3.5 flex items-center"></span>
+              </div>
+              <div class="flex flex-col gap-1 w-full min-w-max">
+                <div class="flex text-[10px] text-slate-400 dark:text-slate-500 font-mono justify-between mb-1 pr-4" id="month-labels"></div>
+                <div class="grid grid-rows-7 gap-[3px] grid-flow-col" id="contribution-grid"></div>
+              </div>
             </div>
           </div>
-        </div>
-
       </div>
 
-      <div class="util-panel rounded-xl flex flex-col h-full max-h-[500px]">
-        <div class="p-5 border-b border-slate-200 dark:border-[#262626]">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <h3 class="text-base font-bold text-slate-900 dark:text-white">Needs Review</h3>
+      <div class="flex flex-col gap-6">
+          <div class="util-panel rounded-xl flex flex-col h-[300px]">
+            <div class="p-5 border-b border-slate-200 dark:border-[#262626]">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Needs Review</h3>
+              </div>
+            </div>
+            <ul id="review-list" class="divide-y divide-slate-100 dark:divide-[#262626] overflow-y-auto custom-scrollbar flex-grow">
+              <li class="p-5 text-sm text-slate-500 dark:text-slate-400 text-center">No problems marked for review.</li>
+            </ul>
           </div>
-        </div>
-        
-        <ul id="review-list" class="divide-y divide-slate-100 dark:divide-[#262626] overflow-y-auto custom-scrollbar flex-grow">
-          <li class="p-5 text-sm text-slate-500 dark:text-slate-400 text-center">No problems marked for review.</li>
-        </ul>
+    
+          <div class="util-panel rounded-xl flex flex-col h-[350px]">
+            <div class="p-5 border-b border-slate-200 dark:border-[#262626]">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Weakness Mapper</h3>
+              </div>
+            </div>
+            <div id="weakness-list" class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-grow">
+            </div>
+          </div>
       </div>
 
     </div>
@@ -153,13 +162,94 @@
         }
     });
 
+    const PROBLEM_REGISTRY = [
+        { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", category: "Array" },
+        { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", category: "Array" },
+        { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", category: "Array" },
+        { slug: "best-time-to-buy-and-sell-stock", id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", category: "Array" },
+        { slug: "longest-consecutive-sequence", id: 128, title: "Longest Consecutive Sequence", difficulty: "Medium", category: "Array" },
+        { slug: "maximum-product-subarray", id: 152, title: "Maximum Product Subarray", difficulty: "Medium", category: "Array" },
+        { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", category: "Array" },
+        { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", category: "Array" },
+        { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", category: "Array" },
+        { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", category: "String" },
+        { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", category: "String" },
+        { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", category: "String" },
+        { slug: "minimum-window-substring", id: 76, title: "Minimum Window Substring", difficulty: "Hard", category: "String" },
+        { slug: "valid-palindrome", id: 125, title: "Valid Palindrome", difficulty: "Easy", category: "String" },
+        { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", category: "String" },
+        { slug: "encode-and-decode-strings", id: 271, title: "Encode and Decode Strings", difficulty: "Medium", category: "String" },
+        { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", category: "String" },
+        { slug: "palindromic-substrings", id: 647, title: "Palindromic Substrings", difficulty: "Medium", category: "String" },
+        { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", category: "Linked List" },
+        { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", category: "Linked List" },
+        { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", category: "Linked List" },
+        { slug: "merge-k-sorted-lists", id: 23, title: "Merge k Sorted Lists", difficulty: "Hard", category: "Linked List" },
+        { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", category: "Linked List" },
+        { slug: "reorder-list", id: 143, title: "Reorder List", difficulty: "Medium", category: "Linked List" },
+        { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", category: "Linked List" },
+        { slug: "reverse-bits", id: 190, title: "Reverse Bits", difficulty: "Easy", category: "Binary" },
+        { slug: "number-of-1-bits", id: 191, title: "Number of 1 Bits", difficulty: "Easy", category: "Binary" },
+        { slug: "missing-number", id: 268, title: "Missing Number", difficulty: "Easy", category: "Binary" },
+        { slug: "counting-bits", id: 338, title: "Counting Bits", difficulty: "Easy", category: "Binary" },
+        { slug: "sum-of-two-integers", id: 371, title: "Sum of Two Integers", difficulty: "Medium", category: "Binary" },
+        { slug: "rotate-image", id: 48, title: "Rotate Image", difficulty: "Medium", category: "Matrix" },
+        { slug: "spiral-matrix", id: 54, title: "Spiral Matrix", difficulty: "Medium", category: "Matrix" },
+        { slug: "set-matrix-zeroes", id: 73, title: "Set Matrix Zeroes", difficulty: "Medium", category: "Matrix" },
+        { slug: "merge-intervals", id: 56, title: "Merge Intervals", difficulty: "Medium", category: "Interval" },
+        { slug: "insert-interval", id: 57, title: "Insert Interval", difficulty: "Medium", category: "Interval" },
+        { slug: "meeting-rooms", id: 252, title: "Meeting Rooms", difficulty: "Easy", category: "Interval" },
+        { slug: "meeting-rooms-ii", id: 253, title: "Meeting Rooms II", difficulty: "Medium", category: "Interval" },
+        { slug: "non-overlapping-intervals", id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", category: "Interval" },
+        { slug: "validate-binary-search-tree", id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", category: "Tree" },
+        { slug: "same-tree", id: 100, title: "Same Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "binary-tree-level-order-traversal", id: 102, title: "Binary Tree Level Order Traversal", difficulty: "Medium", category: "Tree" },
+        { slug: "maximum-depth-of-binary-tree", id: 104, title: "Maximum Depth of Binary Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "construct-binary-tree-from-preorder-and-inorder-traversal", id: 105, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "Medium", category: "Tree" },
+        { slug: "binary-tree-maximum-path-sum", id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", category: "Tree" },
+        { slug: "invert-binary-tree", id: 226, title: "Invert Binary Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "kth-smallest-element-in-a-bst", id: 230, title: "Kth Smallest Element in a BST", difficulty: "Medium", category: "Tree" },
+        { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", category: "Tree" },
+        { slug: "serialize-and-deserialize-binary-tree", id: 297, title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", category: "Tree" },
+        { slug: "subtree-of-another-tree", id: 572, title: "Subtree of Another Tree", difficulty: "Easy", category: "Tree" },
+        { slug: "find-median-from-data-stream", id: 295, title: "Find Median from Data Stream", difficulty: "Hard", category: "Heap" },
+        { slug: "top-k-frequent-elements", id: 347, title: "Top K Frequent Elements", difficulty: "Medium", category: "Heap" },
+        { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", category: "Graph" },
+        { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", category: "Graph" },
+        { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", category: "Graph" },
+        { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", category: "Graph" },
+        { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", category: "Graph" },
+        { slug: "word-search-ii", id: 212, title: "Word Search II", difficulty: "Hard", category: "Graph" },
+        { slug: "graph-valid-tree", id: 261, title: "Graph Valid Tree", difficulty: "Medium", category: "Graph" },
+        { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", category: "Graph" },
+        { slug: "number-of-connected-components-in-an-undirected-graph", id: 323, title: "Number of Connected Components in an Undirected Graph", difficulty: "Medium", category: "Graph" },
+        { slug: "pacific-atlantic-water-flow", id: 417, title: "Pacific Atlantic Water Flow", difficulty: "Medium", category: "Graph" },
+        { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", category: "Array" },
+        { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "unique-paths", id: 62, title: "Unique Paths", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "climbing-stairs", id: 70, title: "Climbing Stairs", difficulty: "Easy", category: "Dynamic Programming" },
+        { slug: "word-search", id: 79, title: "Word Search", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "decode-ways", id: 91, title: "Decode Ways", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "word-break", id: 139, title: "Word Break", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "house-robber", id: 198, title: "House Robber", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "house-robber-ii", id: 213, title: "House Robber II", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "longest-increasing-subsequence", id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "coin-change", id: 322, title: "Coin Change", difficulty: "Medium", category: "Dynamic Programming" },
+        { slug: "longest-common-subsequence", id: 1143, title: "Longest Common Subsequence", difficulty: "Medium", category: "Dynamic Programming" }
+    ];
+
     async function checkAuth() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = './'; return; }
-        
+        if (!session) {
+            window.location.href = './';
+            return;
+        }
         const avatar = document.getElementById('user-avatar');
-        if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
-        
+        if (avatar && session.user.user_metadata.avatar_url) {
+            avatar.src = session.user.user_metadata.avatar_url;
+        }
         fetchCloudData(session.user.id);
     }
 
@@ -169,7 +259,7 @@
             .select('problem_slug, status, updated_at')
             .eq('user_id', userId);
 
-        if (error) return console.error("Database fetch error:", error.message);
+        if (error) return;
 
         const solved = data.filter(d => d.status === 'solved');
         const review = data.filter(d => d.status === 'review');
@@ -177,6 +267,7 @@
         updateProgression(solved.length);
         renderContributionGrid(solved);
         renderReviewList(review);
+        renderWeaknessMapper(solved);
     }
 
     function updateProgression(solvedCount) {
@@ -237,6 +328,45 @@
                 </a>
             </li>
         `).join('');
+    }
+
+    function renderWeaknessMapper(solvedData) {
+        const categoryStats = {};
+        
+        PROBLEM_REGISTRY.forEach(p => {
+            if (!categoryStats[p.category]) categoryStats[p.category] = { total: 0, solved: 0 };
+            categoryStats[p.category].total++;
+        });
+        
+        solvedData.forEach(s => {
+            const prob = PROBLEM_REGISTRY.find(p => p.slug === s.problem_slug);
+            if (prob && categoryStats[prob.category]) {
+                categoryStats[prob.category].solved++;
+            }
+        });
+
+        const list = document.getElementById('weakness-list');
+        
+        list.innerHTML = Object.entries(categoryStats)
+            .sort((a, b) => (a[1].solved / a[1].total) - (b[1].solved / b[1].total))
+            .map(([category, stats]) => {
+                const percent = Math.round((stats.solved / stats.total) * 100);
+                let colorClass = 'bg-red-500';
+                if (percent >= 80) colorClass = 'bg-emerald-500';
+                else if (percent >= 40) colorClass = 'bg-amber-500';
+                
+                return `
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${category}</span>
+                            <span class="text-xs font-mono text-slate-500">${percent}%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
+                            <div class="${colorClass} h-1.5 rounded-full transition-all duration-1000" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
     }
 
     document.getElementById('btn-logout').onclick = async () => {
