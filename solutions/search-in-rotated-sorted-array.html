@@ -139,11 +139,11 @@
 
                 <div class="mermaid bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-center my-6">
                     flowchart TD
-                      A["left=0, right=n-1"] --> B{"left <= right?"}
+                      A["left=0, right=n-1"] --> B{"left &lt;= right?"}
                       B -- Yes --> C["mid = (left+right)//2"]
                       C --> D{"nums[mid] == target?"}
                       D -- Yes --> E["Return mid"]
-                      D -- No --> F{"nums[left] <= nums[mid]?"}
+                      D -- No --> F{"nums[left] &lt;= nums[mid]?"}
                       F -- Yes --> G["Check left sorted half"]
                       F -- No --> H["Check right sorted half"]
                       G --> I["Update left or right"]

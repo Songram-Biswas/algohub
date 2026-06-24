@@ -1,85 +1,71 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>algoHub | Longest Repeating Character Replacement</title>
-    <link rel="icon" type="image/png" href="../favicon.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { background-attachment: fixed; font-family: 'Inter', sans-serif; }
-        html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
-        html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
-        .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
-
-        .problem-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05); overflow: hidden; }
-        html.dark .problem-container { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
-        
-        .tab-nav { display: flex; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
-        html.dark .tab-nav { background: #1e293b; border-color: #334155; }
-        
-        .tab-nav button { flex: 1; padding: 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
-        html.dark .tab-nav button { color: #94a3b8; }
-        .tab-nav button:hover { background: #f1f5f9; color: #334155; }
-        html.dark .tab-nav button:hover { background: #334155; color: #f8fafc; }
-        .tab-nav button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-
-        .content-section { padding: 2rem; display: none; }
-        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .info-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .info-box { background: #0f172a; border-left-color: #38bdf8; color: #cbd5e1;}
-        
-        .example-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .example-box { background: #0f172a; border-left-color: #818cf8; color: #cbd5e1;}
-
-        pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; border: 1px solid #334155;}
-        code { font-family: 'Fira Code', monospace; color: #ec4899; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>algoHub | Maximum Product Subarray</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { background-attachment: fixed; font-family: 'Inter', sans-serif; }
+    html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
+    html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
+    .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
+    .problem-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05); overflow: hidden; }
+    html.dark .problem-container { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+    .tab-nav { display: flex; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+    html.dark .tab-nav { background: #1e293b; border-color: #334155; }
+    .tab-nav button { flex: 1; padding: 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+    html.dark .tab-nav button { color: #94a3b8; }
+    .tab-nav button:hover { background: #f1f5f9; color: #334155; }
+    html.dark .tab-nav button:hover { background: #334155; color: #f8fafc; }
+    .tab-nav button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+    .content-section { padding: 2rem; display: none; }
+    .content-section.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .info-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
+    html.dark .info-box { background: #0f172a; border-left-color: #38bdf8; color: #cbd5e1;}
+    .example-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
+    html.dark .example-box { background: #0f172a; border-left-color: #818cf8; color: #cbd5e1;}
+    pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; border: 1px solid #334155;}
+    code { font-family: 'Fira Code', monospace; color: #ec4899; }
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-12 transition-colors duration-200">
-
   <header class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center w-full mb-8">
     <a href="../dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
       <img src="../icon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
       <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
     </a>
-
     <div class="flex items-center gap-4">
       <button id="theme-toggle" class="p-2 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
         <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
         <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
       </button>
-
       <div class="flex items-center gap-3 border-l border-slate-300/50 dark:border-slate-700/50 pl-4">
         <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover shadow-sm" src="" alt="Profile">
         <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
       </div>
     </div>
   </header>
-
   <main class="max-w-5xl mx-auto px-6">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
       <div>
         <div class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
-            <a href="../category?course=blind-75&type=String" class="hover:text-blue-500 transition">String</a> <span>&gt;</span> <span># Longest Repeating Character Replacement</span>
+            <a href="../category?course=blind-75&type=Array" class="hover:text-blue-500 transition">Array</a> <span>&gt;</span> <span># Maximum Product Subarray</span>
         </div>
         <div class="flex items-center gap-3 mt-2">
-          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">424. Longest Repeating Character Replacement</h1>
+          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">152. Maximum Product Subarray</h1>
           <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 mt-1">Medium</span>
         </div>
-        <a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
+        <a href="https://leetcode.com/problems/maximum-product-subarray/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
             Solve on LeetCode <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
       </div>
-      
       <div class="flex items-center gap-3">
         <button id="btn-copy-page" class="flex items-center gap-2 bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-lg text-sm transition cursor-pointer shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -96,108 +82,108 @@
         </button>
       </div>
     </div>
-
     <div class="problem-container glass">
         <nav class="tab-nav">
             <button class="nav-btn active" data-section="problem">Problem & Examples</button>
             <button class="nav-btn" data-section="solution">Solution & Code</button>
             <button class="nav-btn" data-section="logs">Execution Sandbox</button>
         </nav>
-
         <div class="p-6">
             <section id="problem" class="content-section active">
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Description</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">You are given a string <code>s</code> and an integer <code>k</code>. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most <code>k</code> times.</p>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">Return the length of the longest substring containing the same letter you can get after performing the above operations.</p>
-
+                <p class="mb-4 text-slate-700 dark:text-slate-300">Given an integer array <code>nums</code>, find a subarray that has the largest product, and return the product.</p>
                 <h3 class="text-xl font-bold mt-8 mb-4">Example 1</h3>
                 <div class="example-box">
-                    <p><strong>Input:</strong> <code>s = "ABAB", k = 2</code></p>
-                    <p><strong>Output:</strong> <code>4</code></p>
-                    <p class="text-sm mt-2">Explanation: Replace the two 'A's with two 'B's or vice versa.</p>
-                </div>
-
-                <h3 class="text-xl font-bold mt-8 mb-4">Example 2</h3>
-                <div class="example-box">
-                    <p><strong>Input:</strong> <code>s = "AABABBA", k = 1</code></p>
-                    <p><strong>Output:</strong> <code>4</code></p>
-                    <p class="text-sm mt-2">Explanation: Replace the one 'A' in the middle with 'B' and form "AABBBBA". The substring "BBBB" has the longest repeating letters, which is 4.</p>
-                </div>
-
-                <div class="info-box">
-                    <p class="font-bold">Constraints:</p>
-                    <ul class="list-disc ml-5 mt-2 text-sm space-y-1">
-                        <li><code>1 <= s.length <= 10⁵</code></li>
-                        <li><code>s</code> consists of only uppercase English letters.</li>
-                        <li><code>0 <= k <= s.length</code></li>
-                    </ul>
+                    <p><strong>Input:</strong> <code>nums = [2,3,-2,4]</code></p>
+                    <p><strong>Output:</strong> <code>6</code></p>
+                    <p class="text-sm mt-2">Explanation: [2,3] has the largest product 6.</p>
                 </div>
             </section>
-
             <section id="solution" class="content-section">
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Idea & Intuition</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">Use a sliding window. A window is valid if its size minus the frequency of the most common character is less than or equal to <code>k</code>. If the window becomes invalid, shrink it from the left.</p>
-
+                <p class="mb-4 text-slate-700 dark:text-slate-300">Similar to Kadane's, but because of negative numbers, multiplying a large negative number by another negative number can suddenly create a large positive number. We must track both the `curMax` and `curMin` at every step.</p>
                 <div class="mermaid bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-center my-6">
                     flowchart TD
-                      A["Expand right pointer"] --> B["Update char frequency"]
-                      B --> C["Update max_freq"]
-                      C --> D{"window size - max_freq &gt; k?"}
-                      D -- Yes --> E["Decrease frequency of left char"]
-                      E --> F["left += 1"]
-                      F --> D
-                      D -- No --> G["Update max length"]
-                      G --> A
+                      A["Loop n in nums"] --> B["tmp = curMax * n"]
+                      B --> C["curMax = max(n*curMax, n*curMin, n)"]
+                      C --> D["curMin = min(tmp, n*curMin, n)"]
+                      D --> E["res = max(res, curMax)"]
+                      E --> A
                 </div>
-
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Python Code</h2>
 <pre>
 class Solution:
-    def characterReplacement(self, s: str, k: int) -> int:
-        count = {}
-        res = 0
-        l = 0
-        maxf = 0
-
-        for r in range(len(s)):
-            count[s[r]] = 1 + count.get(s[r], 0)
-            maxf = max(maxf, count[s[r]])
-
-            while (r - l + 1) - maxf > k:
-                count[s[l]] -= 1
-                l += 1
-
-            res = max(res, r - l + 1)
+    def maxProduct(self, nums: List[int]) -> int:
+        res = max(nums)
+        curMin, curMax = 1, 1
+        
+        for n in nums:
+            if n == 0:
+                curMin, curMax = 1, 1
+                continue
+            tmp = curMax * n
+            curMax = max(n * curMax, n * curMin, n)
+            curMin = min(tmp, n * curMin, n)
+            res = max(res, curMax)
             
         return res
 </pre>
-
-                <div class="info-box mt-6">
-                    <p><strong>Time Complexity: O(n)</strong> - Both the left and right pointers traverse the string at most once.</p>
-                    <p><strong>Space Complexity: O(26) = O(1)</strong> - We only store uppercase English letters in the hash map.</p>
+                <div id="complexity-test-panel" class="mt-8 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900 shadow-sm">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Complexity Blind-Test
+                        </h3>
+                    </div>
+                    <div class="p-6" id="complexity-question-area">
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Before seeing the final analysis, evaluate your algorithm's efficiency.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Time Complexity</label>
+                                <select id="time-guess" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer appearance-none">
+                                    <option value="">Select Time...</option>
+                                    <option value="O(1)">O(1)</option>
+                                    <option value="O(log n)">O(log n)</option>
+                                    <option value="O(n)">O(n)</option>
+                                    <option value="O(n log n)">O(n log n)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Space Complexity</label>
+                                <select id="space-guess" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer appearance-none">
+                                    <option value="">Select Space...</option>
+                                    <option value="O(1)">O(1)</option>
+                                    <option value="O(log n)">O(log n)</option>
+                                    <option value="O(n)">O(n)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="btn-check-complexity" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-6 rounded-lg transition-colors cursor-pointer">Check Answer</button>
+                        <p id="complexity-feedback" class="mt-4 text-sm font-medium hidden"></p>
+                    </div>
+                    <div id="complexity-reveal-area" class="hidden border-t border-slate-200 dark:border-slate-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-6">
+                        <h4 class="font-bold text-emerald-800 dark:text-emerald-400 mb-3 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Analysis Revealed
+                        </h4>
+                        <div class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                            <p><strong class="text-slate-900 dark:text-white font-mono bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-700">Time: O(n)</strong></p>
+                            <p><strong class="text-slate-900 dark:text-white font-mono bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-700">Space: O(1)</strong></p>
+                        </div>
+                    </div>
                 </div>
             </section>
-
             <section id="logs" class="content-section">
                 <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Interactive Execution Sandbox</h2>
-                
-                <div class="flex gap-4 mb-6">
-                    <div class="flex-1">
-                        <label class="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider">String s</label>
-                        <input id="input-s" type="text" value="AABABBA" class="w-full mt-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 font-mono text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 uppercase tracking-widest text-sm" />
-                    </div>
-                    <div class="w-32">
-                        <label class="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider">Int k</label>
-                        <input id="input-k" type="number" value="1" class="w-full mt-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 font-mono text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-sm" />
-                    </div>
+                <div class="flex flex-col gap-2 mb-6">
+                    <label class="text-xs uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider">nums array</label>
+                    <input id="input-nums" type="text" value="[2, 3, -2, 4]" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 font-mono text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 tracking-widest text-sm" />
                 </div>
-
                 <div class="flex items-center gap-4 mb-8 bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
                     <button id="btn-prev" class="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg font-medium disabled:opacity-40 transition cursor-pointer text-sm">Previous</button>
                     <span id="step-lbl" class="font-mono text-sm text-slate-500 dark:text-slate-400 min-w-[100px] text-center font-bold">Step 0 / 0</span>
                     <button id="btn-next" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium disabled:opacity-40 transition cursor-pointer text-sm shadow-sm">Next Step</button>
                 </div>
-
                 <div class="space-y-6">
                     <div id="array-track" class="flex gap-2 font-mono text-xl font-bold py-6 overflow-x-auto min-h-[120px]"></div>
                     <div id="narrative-box" class="bg-slate-950 text-emerald-400 border border-slate-800 p-5 rounded-xl text-sm font-mono min-h-[70px] leading-relaxed"></div>
@@ -206,23 +192,18 @@ class Solution:
         </div>
     </div>
   </main>
-
   <script type="module">
     import { SUPABASE_CONFIG } from '../config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-    
     mermaid.initialize({ startOnLoad: true, theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' });
-
     const themeToggleBtn = document.getElementById('theme-toggle');
     const darkIcon = document.getElementById('theme-toggle-dark-icon');
     const lightIcon = document.getElementById('theme-toggle-light-icon');
-
     if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.remove('dark'); lightIcon.classList.remove('hidden');
     } else {
         document.documentElement.classList.add('dark'); darkIcon.classList.remove('hidden');
     }
-
     themeToggleBtn.addEventListener('click', function() {
         darkIcon.classList.toggle('hidden'); lightIcon.classList.toggle('hidden');
         if (document.documentElement.classList.contains('dark')) {
@@ -232,44 +213,33 @@ class Solution:
         }
         location.reload(); 
     });
-
-    const CURRENT_SLUG = "longest-repeating-character-replacement"; 
+    const CURRENT_SLUG = "maximum-product-subarray"; 
     let currentUserId = null;
     let currentStatus = null; 
-
     let timelineSteps = [];
     let activeIdx = 0;
-
     async function checkRouteAccess() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) { window.location.href = '../'; } 
         else {
             currentUserId = session.user.id;
             const avatar = document.getElementById('user-avatar');
-            if (avatar && session.user.user_metadata.avatar_url) {
-                avatar.src = session.user.user_metadata.avatar_url;
-            }
+            if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
             fetchCloudState();
             compileSimulation();
         }
     }
-
     async function fetchCloudState() {
         const { data } = await supabaseClient.from('user_progress').select('status').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
         currentStatus = data ? data.status : null;
         updateStatusUI();
     }
-
     async function setCloudState(newStatus) {
         currentStatus = currentStatus === newStatus ? null : newStatus; 
         updateStatusUI(); 
-        if (currentStatus) {
-            await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
-        } else {
-            await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
-        }
+        if (currentStatus) await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
+        else await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
     }
-
     function updateStatusUI() {
         const btnSolved = document.getElementById('btn-toggle-solved');
         const textSolved = document.getElementById('text-solved-status');
@@ -277,12 +247,10 @@ class Solution:
         const iconSolved = document.getElementById('icon-solved');
         const btnReview = document.getElementById('btn-toggle-review');
         const textReview = document.getElementById('text-review-status');
-
         btnSolved.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
         btnReview.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
         iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
-        textSolved.textContent = 'Mark as Complete'; textReview.textContent = 'Needs Review';
-
+        textSolved.textContent = 'Mark Complete'; textReview.textContent = 'Needs Review';
         if (currentStatus === 'solved') {
             btnSolved.className = "flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
             iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
@@ -292,11 +260,9 @@ class Solution:
             textReview.textContent = 'Reviewing';
         }
     }
-
     document.getElementById('btn-toggle-solved').onclick = () => setCloudState('solved');
     document.getElementById('btn-toggle-review').onclick = () => setCloudState('review');
     document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = '../'; };
-
     document.getElementById('btn-copy-page').onclick = async (e) => {
         try {
             await navigator.clipboard.writeText(window.location.href);
@@ -304,15 +270,9 @@ class Solution:
             const originalText = btn.textContent;
             btn.textContent = 'Copied!';
             e.currentTarget.classList.add('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400');
-            setTimeout(() => { 
-                btn.textContent = originalText; 
-                e.currentTarget.classList.remove('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400');
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy', err);
-        }
+            setTimeout(() => { btn.textContent = originalText; e.currentTarget.classList.remove('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400'); }, 2000);
+        } catch (err) {}
     };
-
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -321,83 +281,81 @@ class Solution:
             e.target.classList.add('active');
         });
     });
-
-    document.getElementById('input-s').addEventListener('change', compileSimulation);
-    document.getElementById('input-k').addEventListener('change', compileSimulation);
-
+    const correctTime = "O(n)";
+    const correctSpace = "O(1)";
+    document.getElementById('btn-check-complexity').addEventListener('click', () => {
+        const timeGuess = document.getElementById('time-guess').value;
+        const spaceGuess = document.getElementById('space-guess').value;
+        const feedback = document.getElementById('complexity-feedback');
+        const revealArea = document.getElementById('complexity-reveal-area');
+        feedback.classList.remove('hidden', 'text-red-500', 'text-emerald-500', 'text-amber-500');
+        if (!timeGuess || !spaceGuess) {
+            feedback.textContent = "Please select both Time and Space complexity predictions.";
+            feedback.classList.add('text-amber-500');
+            feedback.classList.remove('hidden');
+            return;
+        }
+        if (timeGuess === correctTime && spaceGuess === correctSpace) {
+            feedback.textContent = "Spot on! Excellent analytical evaluation.";
+            feedback.classList.add('text-emerald-500');
+            feedback.classList.remove('hidden');
+            document.getElementById('time-guess').disabled = true;
+            document.getElementById('space-guess').disabled = true;
+            document.getElementById('btn-check-complexity').classList.add('hidden');
+            revealArea.classList.remove('hidden');
+        } else {
+            feedback.textContent = "Not quite. Think about how many times the pointers move and the variables we store, then try again.";
+            feedback.classList.add('text-red-500');
+            feedback.classList.remove('hidden');
+        }
+    });
+    document.getElementById('input-nums').addEventListener('change', compileSimulation);
     function compileSimulation() {
-        const s = document.getElementById('input-s').value.toUpperCase();
-        const k = parseInt(document.getElementById('input-k').value, 10);
-        
+        const nums = JSON.parse(document.getElementById('input-nums').value);
         timelineSteps = (() => {
             let steps = [];
-            let freq = {};
-            let left = 0, maxFreq = 0, maxLen = 0;
-
-            for (let right = 0; right < s.length; right++) {
-                let char = s[right];
-                freq[char] = (freq[char] || 0) + 1;
-                maxFreq = Math.max(maxFreq, freq[char]);
-
-                steps.push({
-                    phase: "EXPAND RIGHT", left, right, maxFreq, maxLen,
-                    explanation: `Added character '${char}' at index ${right}. Current window size is ${right - left + 1}.`
-                });
-
-                while ((right - left + 1) - maxFreq > k) {
-                    freq[s[left]]--;
-                    if (freq[s[left]] === 0) delete freq[s[left]];
-                    left++;
-                    
-                    steps.push({
-                        phase: "SHRINK LEFT", left, right, maxFreq, maxLen,
-                        explanation: `Window size minus max frequency exceeds k (${k}). Moving left pointer rightward.`
-                    });
+            let res = Math.max(...nums);
+            let curMin = 1, curMax = 1;
+            steps.push({ idx: -1, curMin, curMax, res, explanation: `Initialize res = max(nums) = ${res}. curMin = 1, curMax = 1.` });
+            for(let i = 0; i < nums.length; i++) {
+                let n = nums[i];
+                if(n === 0) {
+                    curMin = 1; curMax = 1;
+                    steps.push({ idx: i, curMin, curMax, res, explanation: `nums[${i}] is 0. Reset curMin and curMax to 1.` });
+                    continue;
                 }
-
-                maxLen = Math.max(maxLen, right - left + 1);
-                
-                steps.push({
-                    phase: "COMMIT WINDOW", left, right, maxFreq, maxLen,
-                    explanation: `Valid window state confirmed. Maximum historical length updated to ${maxLen}.`
-                });
+                let tmp = curMax * n;
+                curMax = Math.max(n * curMax, n * curMin, n);
+                curMin = Math.min(tmp, n * curMin, n);
+                res = Math.max(res, curMax);
+                steps.push({ idx: i, curMin, curMax, res, explanation: `Process ${n}. curMax = ${curMax}. curMin = ${curMin}. Updated res to ${res}.` });
             }
             return steps;
         })();
-        
         activeIdx = 0;
         renderTimelineState();
     }
-
     function renderTimelineState() {
         if (timelineSteps.length === 0) return;
         const currentFrame = timelineSteps[activeIdx];
-        const rawInputTrack = document.getElementById('input-s').value.toUpperCase().split('');
-
+        const rawInputTrack = JSON.parse(document.getElementById('input-nums').value);
         document.getElementById('step-lbl').textContent = `Step ${activeIdx + 1} / ${timelineSteps.length}`;
         document.getElementById('narrative-box').innerHTML = currentFrame.explanation;
-
         const track = document.getElementById('array-track');
         track.innerHTML = rawInputTrack.map((char, idx) => {
-            const inWindow = idx >= currentFrame.left && idx <= currentFrame.right;
+            const isTarget = idx === currentFrame.idx;
             let bgClass = 'bg-white border-slate-200 text-slate-400 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-500';
-            if (inWindow) bgClass = 'bg-blue-100 border-blue-400 text-blue-900 dark:bg-blue-900/60 dark:border-blue-500 dark:text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]';
-            
+            if (isTarget) bgClass = 'bg-blue-100 border-blue-400 text-blue-900 dark:bg-blue-900/60 dark:border-blue-500 dark:text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]';
             let badges = [];
-            if (idx === currentFrame.left) badges.push('L');
-            if (idx === currentFrame.right) badges.push('R');
+            if (isTarget) badges.push('I');
             const labelStr = badges.length > 0 ? `<span class="absolute -bottom-6 text-[11px] text-amber-500 dark:text-amber-400 font-black tracking-tighter">${badges.join(' & ')}</span>` : '';
-
-            return `<div class="w-14 h-16 rounded-xl border-2 flex flex-col items-center justify-center relative flex-shrink-0 transition-all duration-150 ${bgClass}">${char}${labelStr}</div>`;
+            return `<div class="w-14 h-16 rounded-xl border-2 flex flex-col items-center justify-center relative flex-shrink-0 transition-all duration-200 ${bgClass}">${char}${labelStr}</div>`;
         }).join('');
-
         document.getElementById('btn-prev').disabled = activeIdx === 0;
         document.getElementById('btn-next').disabled = activeIdx === timelineSteps.length - 1;
     }
-
     document.getElementById('btn-next').onclick = () => { if(activeIdx < timelineSteps.length - 1) { activeIdx++; renderTimelineState(); } };
     document.getElementById('btn-prev').onclick = () => { if(activeIdx > 0) { activeIdx--; renderTimelineState(); } };
-
     checkRouteAccess();
   </script>
 </body>
