@@ -1,234 +1,253 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>algoHub | Problems Pack</title>
-  <link rel="icon" type="image/png" href="./favicon.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
-    body { background-attachment: fixed; }
-    html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
-    html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>algoHub | Problems Pack</title>
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .glass {
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+        }
+
+        body {
+            background-attachment: fixed;
+        }
+
+        html.dark body {
+            background-color: #020617;
+            background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%);
+        }
+
+        html:not(.dark) body {
+            background-color: #f8fafc;
+            background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+        }
+    </style>
 </head>
-<body class="text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
-    <a href="./dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
-      <img src="./favicon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
-      <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
-    </a>
-    <div class="flex items-center gap-4">
-      <button id="theme-toggle" class="p-2 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
-        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
-        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-      </button>
-      <div class="flex items-center gap-3 border-l border-slate-300/50 dark:border-slate-700/50 pl-4">
-        <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover shadow-sm" src="" alt="Profile">
-        <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
-      </div>
-    </div>
-  </header>
+<body
+    class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
-
-  
-
-  <main class="max-w-4xl mx-auto px-6 py-12">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-      <div>
-        <a id="back-link" href="./dashboard" class="text-sm text-blue-500 hover:underline flex items-center gap-1">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-          Back
+    <header
+        class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center w-full">
+        <a href="./dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
+            <img src="./icon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
+            <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
         </a>
-        <h1 id="category-title" class="text-3xl font-extrabold tracking-tight mt-2 text-slate-900 dark:text-white">Problems</h1>
-      </div>
-      
-      <div class="w-full sm:w-72">
-        <input id="search-box" type="text" placeholder="Search questions..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-slate-100" />
-      </div>
-    </div>
 
-    <div class="space-y-3" id="problem-list"></div>
-  </main>
+        <div class="flex items-center gap-4">
+            <button id="theme-toggle"
+                class="p-2 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z">
+                    </path>
+                </svg>
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-indigo-500" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
 
-  <script type="module">
-    import { SUPABASE_CONFIG } from './config.js';
-    const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+            <div class="flex items-center gap-3 border-l border-slate-300/50 dark:border-slate-700/50 pl-4">
+                <img id="user-avatar"
+                    class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover shadow-sm"
+                    src="" alt="Profile">
+                <button id="btn-logout"
+                    class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign
+                    Out</button>
+            </div>
+        </div>
+    </header>
 
-    // Theme implementation
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const darkIcon = document.getElementById('theme-toggle-dark-icon');
-    const lightIcon = document.getElementById('theme-toggle-light-icon');
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+                <a id="back-link" href="./dashboard"
+                    class="text-sm text-blue-500 hover:underline flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
+                    Back
+                </a>
+                <h1 id="category-title"
+                    class="text-3xl font-extrabold tracking-tight mt-2 text-slate-900 dark:text-white">Problems</h1>
+            </div>
 
-    if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.remove('dark');
-        lightIcon.classList.remove('hidden');
-    } else {
-        document.documentElement.classList.add('dark');
-        darkIcon.classList.remove('hidden');
-    }
+            <div class="w-full sm:w-72">
+                <input id="search-box" type="text" placeholder="Search questions..."
+                    class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-slate-900 dark:text-slate-100" />
+            </div>
+        </div>
 
-    themeToggleBtn.addEventListener('click', function() {
-        darkIcon.classList.toggle('hidden');
-        lightIcon.classList.toggle('hidden');
-        if (document.documentElement.classList.contains('dark')) {
+        <div class="space-y-3" id="problem-list"></div>
+    </main>
+
+    <script type="module">
+        import { SUPABASE_CONFIG } from './config.js';
+        const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
+            lightIcon.classList.remove('hidden');
         } else {
             document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
+            darkIcon.classList.remove('hidden');
         }
-    });
 
-    const PROBLEM_REGISTRY = [
-        // --- ARRAY ---
-        { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", course: "blind-75", category: "Array", implemented: true },
-        { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
-        { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
-        { slug: "best-time-to-buy-and-sell-stock", id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", course: "blind-75", category: "Array", implemented: false },
-        { slug: "longest-consecutive-sequence", id: 128, title: "Longest Consecutive Sequence", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
-        { slug: "maximum-product-subarray", id: 152, title: "Maximum Product Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
-        { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
-        { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", course: "blind-75", category: "Array", implemented: false },
-        { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+        themeToggleBtn.addEventListener('click', function () {
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        });
 
-        // --- STRING ---
-        { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
-        { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
-        { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
-        { slug: "minimum-window-substring", id: 76, title: "Minimum Window Substring", difficulty: "Hard", course: "blind-75", category: "String", implemented: false },
-        { slug: "valid-palindrome", id: 125, title: "Valid Palindrome", difficulty: "Easy", course: "blind-75", category: "String", implemented: false },
-        { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", course: "blind-75", category: "String", implemented: false },
-        { slug: "encode-and-decode-strings", id: 271, title: "Encode and Decode Strings", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
-        { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", course: "blind-75", category: "String", implemented: true },
-        { slug: "palindromic-substrings", id: 647, title: "Palindromic Substrings", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+        const PROBLEM_REGISTRY = [
+            { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", course: "blind-75", category: "Array", implemented: true },
+            { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+            { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+            { slug: "best-time-to-buy-and-sell-stock", id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", course: "blind-75", category: "Array", implemented: false },
+            { slug: "longest-consecutive-sequence", id: 128, title: "Longest Consecutive Sequence", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+            { slug: "maximum-product-subarray", id: 152, title: "Maximum Product Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+            { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+            { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", course: "blind-75", category: "Array", implemented: false },
+            { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", course: "blind-75", category: "Array", implemented: false },
+            { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+            { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+            { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+            { slug: "minimum-window-substring", id: 76, title: "Minimum Window Substring", difficulty: "Hard", course: "blind-75", category: "String", implemented: false },
+            { slug: "valid-palindrome", id: 125, title: "Valid Palindrome", difficulty: "Easy", course: "blind-75", category: "String", implemented: false },
+            { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", course: "blind-75", category: "String", implemented: false },
+            { slug: "encode-and-decode-strings", id: 271, title: "Encode and Decode Strings", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+            { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", course: "blind-75", category: "String", implemented: true },
+            { slug: "palindromic-substrings", id: 647, title: "Palindromic Substrings", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+            { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "merge-k-sorted-lists", id: 23, title: "Merge k Sorted Lists", difficulty: "Hard", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "reorder-list", id: 143, title: "Reorder List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
+            { slug: "reverse-bits", id: 190, title: "Reverse Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
+            { slug: "number-of-1-bits", id: 191, title: "Number of 1 Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
+            { slug: "missing-number", id: 268, title: "Missing Number", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
+            { slug: "counting-bits", id: 338, title: "Counting Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
+            { slug: "sum-of-two-integers", id: 371, title: "Sum of Two Integers", difficulty: "Medium", course: "blind-75", category: "Binary", implemented: false },
+            { slug: "rotate-image", id: 48, title: "Rotate Image", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
+            { slug: "spiral-matrix", id: 54, title: "Spiral Matrix", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
+            { slug: "set-matrix-zeroes", id: 73, title: "Set Matrix Zeroes", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
+            { slug: "merge-intervals", id: 56, title: "Merge Intervals", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
+            { slug: "insert-interval", id: 57, title: "Insert Interval", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
+            { slug: "meeting-rooms", id: 252, title: "Meeting Rooms", difficulty: "Easy", course: "blind-75", category: "Interval", implemented: false },
+            { slug: "meeting-rooms-ii", id: 253, title: "Meeting Rooms II", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
+            { slug: "non-overlapping-intervals", id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
+            { slug: "validate-binary-search-tree", id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "same-tree", id: 100, title: "Same Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "binary-tree-level-order-traversal", id: 102, title: "Binary Tree Level Order Traversal", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "maximum-depth-of-binary-tree", id: 104, title: "Maximum Depth of Binary Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "construct-binary-tree-from-preorder-and-inorder-traversal", id: 105, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "binary-tree-maximum-path-sum", id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "invert-binary-tree", id: 226, title: "Invert Binary Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "kth-smallest-element-in-a-bst", id: 230, title: "Kth Smallest Element in a BST", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "serialize-and-deserialize-binary-tree", id: 297, title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "subtree-of-another-tree", id: 572, title: "Subtree of Another Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
+            { slug: "find-median-from-data-stream", id: 295, title: "Find Median from Data Stream", difficulty: "Hard", course: "blind-75", category: "Heap", implemented: false },
+            { slug: "top-k-frequent-elements", id: 347, title: "Top K Frequent Elements", difficulty: "Medium", course: "blind-75", category: "Heap", implemented: false },
+            { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "word-search-ii", id: 212, title: "Word Search II", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "graph-valid-tree", id: 261, title: "Graph Valid Tree", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "number-of-connected-components-in-an-undirected-graph", id: 323, title: "Number of Connected Components in an Undirected Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "pacific-atlantic-water-flow", id: 417, title: "Pacific Atlantic Water Flow", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
+            { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: true },
+            { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "unique-paths", id: 62, title: "Unique Paths", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "climbing-stairs", id: 70, title: "Climbing Stairs", difficulty: "Easy", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "word-search", id: 79, title: "Word Search", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "decode-ways", id: 91, title: "Decode Ways", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "word-break", id: 139, title: "Word Break", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "house-robber", id: 198, title: "House Robber", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "house-robber-ii", id: 213, title: "House Robber II", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "longest-increasing-subsequence", id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "coin-change", id: 322, title: "Coin Change", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
+            { slug: "longest-common-subsequence", id: 1143, title: "Longest Common Subsequence", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false }
+        ];
 
-        // --- LINKED LIST ---
-        { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
-        { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
-        { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
-        { slug: "merge-k-sorted-lists", id: 23, title: "Merge k Sorted Lists", difficulty: "Hard", course: "blind-75", category: "Linked List", implemented: false },
-        { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
-        { slug: "reorder-list", id: 143, title: "Reorder List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
-        { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
-
-        // --- BINARY ---
-        { slug: "reverse-bits", id: 190, title: "Reverse Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
-        { slug: "number-of-1-bits", id: 191, title: "Number of 1 Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
-        { slug: "missing-number", id: 268, title: "Missing Number", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
-        { slug: "counting-bits", id: 338, title: "Counting Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
-        { slug: "sum-of-two-integers", id: 371, title: "Sum of Two Integers", difficulty: "Medium", course: "blind-75", category: "Binary", implemented: false },
-
-        // --- MATRIX ---
-        { slug: "rotate-image", id: 48, title: "Rotate Image", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
-        { slug: "spiral-matrix", id: 54, title: "Spiral Matrix", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
-        { slug: "set-matrix-zeroes", id: 73, title: "Set Matrix Zeroes", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
-
-        // --- INTERVAL ---
-        { slug: "merge-intervals", id: 56, title: "Merge Intervals", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
-        { slug: "insert-interval", id: 57, title: "Insert Interval", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
-        { slug: "meeting-rooms", id: 252, title: "Meeting Rooms", difficulty: "Easy", course: "blind-75", category: "Interval", implemented: false },
-        { slug: "meeting-rooms-ii", id: 253, title: "Meeting Rooms II", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
-        { slug: "non-overlapping-intervals", id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
-
-        // --- TREE ---
-        { slug: "validate-binary-search-tree", id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "same-tree", id: 100, title: "Same Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "binary-tree-level-order-traversal", id: 102, title: "Binary Tree Level Order Traversal", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "maximum-depth-of-binary-tree", id: 104, title: "Maximum Depth of Binary Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "construct-binary-tree-from-preorder-and-inorder-traversal", id: 105, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "binary-tree-maximum-path-sum", id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "invert-binary-tree", id: 226, title: "Invert Binary Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "kth-smallest-element-in-a-bst", id: 230, title: "Kth Smallest Element in a BST", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "serialize-and-deserialize-binary-tree", id: 297, title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", course: "blind-75", category: "Tree", implemented: false },
-        { slug: "subtree-of-another-tree", id: 572, title: "Subtree of Another Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
-
-        // --- HEAP ---
-        { slug: "find-median-from-data-stream", id: 295, title: "Find Median from Data Stream", difficulty: "Hard", course: "blind-75", category: "Heap", implemented: false },
-        { slug: "top-k-frequent-elements", id: 347, title: "Top K Frequent Elements", difficulty: "Medium", course: "blind-75", category: "Heap", implemented: false },
-
-        // --- GRAPH ---
-        { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "word-search-ii", id: 212, title: "Word Search II", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "graph-valid-tree", id: 261, title: "Graph Valid Tree", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "number-of-connected-components-in-an-undirected-graph", id: 323, title: "Number of Connected Components in an Undirected Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-        { slug: "pacific-atlantic-water-flow", id: 417, title: "Pacific Atlantic Water Flow", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-
-        // --- DYNAMIC PROGRAMMING ---
-        { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: true },
-        { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "unique-paths", id: 62, title: "Unique Paths", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "climbing-stairs", id: 70, title: "Climbing Stairs", difficulty: "Easy", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "word-search", id: 79, title: "Word Search", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "decode-ways", id: 91, title: "Decode Ways", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "word-break", id: 139, title: "Word Break", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "house-robber", id: 198, title: "House Robber", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "house-robber-ii", id: 213, title: "House Robber II", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "longest-increasing-subsequence", id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "coin-change", id: 322, title: "Coin Change", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
-        { slug: "longest-common-subsequence", id: 1143, title: "Longest Common Subsequence", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false }
-    ];
-
-    async function checkAuth() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) {
-            window.location.href = './';
-            return;
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = './';
+                return;
+            }
+            const avatar = document.getElementById('user-avatar');
+            if (avatar && session.user.user_metadata.avatar_url) {
+                avatar.src = session.user.user_metadata.avatar_url;
+            }
+            renderCategory();
         }
-        const avatar = document.getElementById('user-avatar');
-        if (avatar && session.user.user_metadata.avatar_url) {
-            avatar.src = session.user.user_metadata.avatar_url;
-        }
-        renderCategory();
-    }
 
-    function renderCategory() {
-        const params = new URLSearchParams(window.location.search);
-        const course = params.get('course') || 'blind-75';
-        const cat = params.get('type') || 'Array';
-        const query = document.getElementById('search-box').value.toLowerCase();
+        function renderCategory() {
+            const params = new URLSearchParams(window.location.search);
+            const course = params.get('course') || 'blind-75';
+            const cat = params.get('type') || 'Array';
+            const query = document.getElementById('search-box').value.toLowerCase();
 
-        document.getElementById('back-link').href = `./tracks?course=${course}`;
-        document.getElementById('category-title').textContent = `${cat} Problems`;
+            document.getElementById('back-link').href = `./tracks?course=${course}`;
+            document.getElementById('category-title').textContent = `${cat} Problems`;
 
-        const container = document.getElementById('problem-list');
-        container.innerHTML = '';
+            const container = document.getElementById('problem-list');
+            container.innerHTML = '';
 
-        const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+            const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
 
-        PROBLEM_REGISTRY.forEach(prob => {
-            if (prob.category === cat) {
-                if (query && !prob.title.toLowerCase().includes(query) && !prob.id.toString().includes(query)) {
-                    return;
-                }
+            PROBLEM_REGISTRY.forEach(prob => {
+                if (prob.category === cat) {
+                    if (query && !prob.title.toLowerCase().includes(query) && !prob.id.toString().includes(query)) {
+                        return;
+                    }
 
-                const isSolved = solvedArray.includes(prob.slug);
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-blue-500/30 transition";
-                
-                const btn = `<a href="./solution?slug=${prob.slug}" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Problem</a>`;
+                    const isSolved = solvedArray.includes(prob.slug);
+                    const card = document.createElement('div');
+                    card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-900/60 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-blue-500/30 transition";
 
-                let diffColor = 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40';
-                if(prob.difficulty === 'Medium') diffColor = 'text-amber-500 bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/40';
-                if(prob.difficulty === 'Hard') diffColor = 'text-red-500 bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-900/40';
+                    let targetUrl = `./solution?slug=${prob.slug}`;
+                    if (prob.implemented) {
+                        targetUrl = `./solutions/${prob.slug}`;
+                    }
+                    const btn = `<a href="${targetUrl}" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">View Problem</a>`;
+                    let diffColor = 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40';
+                    if (prob.difficulty === 'Medium') diffColor = 'text-amber-500 bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/40';
+                    if (prob.difficulty === 'Hard') diffColor = 'text-red-500 bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-900/40';
 
-                card.innerHTML = `
+                    card.innerHTML = `
                   <div class="flex items-center gap-4">
                     <div>
                       <span class="text-xs text-slate-400 font-mono">#${prob.id}</span>
@@ -238,12 +257,13 @@
                   </div>
                   ${btn}
                 `;
-                container.appendChild(card);
-            }
-        });
-    }
-    document.getElementById('search-box').addEventListener('input', renderCategory);
-    checkAuth();
-  </script>
+                    container.appendChild(card);
+                }
+            });
+        }
+        document.getElementById('search-box').addEventListener('input', renderCategory);
+        checkAuth();
+    </script>
 </body>
+
 </html>

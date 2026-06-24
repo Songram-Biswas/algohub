@@ -71,12 +71,10 @@
 <body class="text-slate-900 dark:text-slate-100 min-h-screen pb-12">
 
   <header class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center mb-8">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-      </div>
-      <a href="../dashboard" class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white hover:opacity-80">algoHub</a>
-    </div>
+    <a href="./dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
+      <img src="./favicon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
+      <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
+    </a>
     <div class="flex items-center gap-4">
       <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
     </div>
