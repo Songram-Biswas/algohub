@@ -1,370 +1,560 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>algoHub | Search in Rotated Sorted Array</title>
-    <link rel="icon" type="image/png" href="../favicon.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { background-attachment: fixed; font-family: 'Inter', sans-serif; }
-        html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
-        html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
-        .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>algoHub | Search in Rotated Sorted Array</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fb; --panel: #ffffff; --panel-border: #e7e9f0; --ink: #14161f; --ink-soft: #6b7080; --rail: #eef0f5;
+    --accent: #4f6df5; --accent-soft: #eef1ff;
+    --good: #1ea672; --good-soft: #e8f8f1;
+    --warn: #c2780a; --warn-soft: #fdf1e0;
+    --bad: #d23c4f; --bad-soft: #fde9ec;
+    --trace-scan: #4f6df5; --trace-hit: #1ea672; --trace-discard: #d23c4f;
+  }
+  html.dark {
+    --bg: #07080d; --panel: #0e1018; --panel-border: #1d2030; --ink: #eef0f7; --ink-soft: #8e93a8; --rail: #11131d;
+    --accent: #7c93ff; --accent-soft: #161a30;
+    --good: #34d399; --good-soft: #0e2420;
+    --warn: #f5b35a; --warn-soft: #271d0d;
+    --bad: #fb7185; --bad-soft: #2a1419;
+    --trace-scan: #7c93ff; --trace-hit: #34d399; --trace-discard: #fb7185;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; transition: background .25s, color .25s; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .panel { background: var(--panel); border: 1px solid var(--panel-border); }
+  .rail-bg { background: var(--rail); }
+  .text-soft { color: var(--ink-soft); }
+  .accent-text { color: var(--accent); }
+  .border-soft { border-color: var(--panel-border); }
 
-        .problem-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05); overflow: hidden; }
-        html.dark .problem-container { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
-        
-        .tab-nav { display: flex; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
-        html.dark .tab-nav { background: #1e293b; border-color: #334155; }
-        
-        .tab-nav button { flex: 1; padding: 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
-        html.dark .tab-nav button { color: #94a3b8; }
-        .tab-nav button:hover { background: #f1f5f9; color: #334155; }
-        html.dark .tab-nav button:hover { background: #334155; color: #f8fafc; }
-        .tab-nav button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+  .cell {
+    width: 50px; height: 50px;
+    border: 1.5px solid var(--panel-border);
+    background: var(--panel);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 16px;
+    position: relative;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+  }
+  .cell .idx { position: absolute; bottom: -20px; font-size: 10px; color: var(--ink-soft); font-weight: 500; white-space: nowrap; }
+  .cell .ptr { position: absolute; top: -22px; font-size: 10px; font-weight: 700; white-space: nowrap; opacity: 0; transition: opacity .2s; }
+  .cell.discarded { opacity: .25; filter: grayscale(1); }
+  .cell.mid { border-color: var(--trace-scan); background: color-mix(in srgb, var(--trace-scan) 14%, var(--panel)); transform: translateY(-4px); box-shadow: 0 6px 16px -6px var(--trace-scan); }
+  .cell.hit { border-color: var(--trace-hit); background: color-mix(in srgb, var(--trace-hit) 18%, var(--panel)); transform: translateY(-4px) scale(1.08); box-shadow: 0 8px 20px -6px var(--trace-hit); }
 
-        .content-section { padding: 2rem; display: none; }
-        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .tab-btn { color: var(--ink-soft); border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: var(--accent); border-color: var(--accent); }
 
-        .info-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .info-box { background: #0f172a; border-left-color: #38bdf8; color: #cbd5e1;}
-        
-        .example-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .example-box { background: #0f172a; border-left-color: #818cf8; color: #cbd5e1;}
+  .code-block { background: var(--rail); border: 1px solid var(--panel-border); font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.65; }
+  .kw { color: #c678dd; } .fn { color: #61afef; } .num { color: #d19a66; } .str { color: #98c379; } .cm { color: var(--ink-soft); font-style: italic; }
+  html:not(.dark) .kw { color: #9333ea; } html:not(.dark) .fn { color: #2563eb; } html:not(.dark) .num { color: #c2410c; } html:not(.dark) .str { color: #15803d; }
 
-        pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; border: 1px solid #334155;}
-        code { font-family: 'Fira Code', monospace; color: #ec4899; }
-    </style>
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-12 transition-colors duration-200">
+<body class="min-h-screen flex flex-col selection:bg-indigo-500/30">
 
-  <header class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center w-full mb-8">
+  <header class="sticky top-0 z-50 panel border-b px-6 py-3 flex justify-between items-center w-full backdrop-blur-sm" style="background: color-mix(in srgb, var(--panel) 88%, transparent);">
     <a href="../dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
-      <img src="../icon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
-      <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
+      <img src="../favicon.png" alt="algoHub" class="w-8 h-8 rounded-lg shadow-sm">
+      <span class="text-xl font-extrabold tracking-tight">algoHub</span>
     </a>
-
-    <div class="flex items-center gap-4">
-      <button id="theme-toggle" class="p-2 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
-        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
-        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+    <div class="flex items-center gap-3">
+      <button id="theme-toggle" class="p-2 rounded-lg text-soft hover:bg-[var(--rail)] transition cursor-pointer">
+        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
       </button>
-
-      <div class="flex items-center gap-3 border-l border-slate-300/50 dark:border-slate-700/50 pl-4">
-        <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover shadow-sm" src="" alt="Profile">
-        <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
+      <div class="flex items-center gap-3 pl-3 border-l border-soft">
+        <img id="user-avatar" class="w-8 h-8 rounded-full border border-soft object-cover rail-bg" src="" alt="Profile">
+        <button id="btn-logout" class="text-xs font-semibold text-soft hover:text-red-500 transition cursor-pointer">Sign Out</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-6">
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
-      <div>
-        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
-            <a href="../category?course=blind-75&type=Array" class="hover:text-blue-500 transition">Array</a> <span>&gt;</span> <span># Search in Rotated Sorted Array</span>
+  <div class="w-full max-w-6xl mx-auto px-6 pb-16 flex-grow flex flex-col lg:flex-row gap-8 items-start">
+
+    <aside class="w-full lg:w-72 lg:sticky lg:top-24 flex-shrink-0 order-2 lg:order-1">
+      <div class="panel rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-soft flex items-center justify-between">
+          <h3 class="text-sm font-bold">Array</h3>
+          <span id="sidebar-progress" class="text-xs mono text-soft">0/0</span>
         </div>
-        <div class="flex items-center gap-3 mt-2">
-          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">33. Search in Rotated Sorted Array</h1>
-          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 mt-1">Medium</span>
-        </div>
-        <a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
-            Solve on LeetCode <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-        </a>
+        <ul id="sidebar-list" class="max-h-[70vh] overflow-y-auto divide-y" style="border-color: var(--panel-border);"></ul>
       </div>
-      
-      <div class="flex items-center gap-3">
-        <button id="btn-copy-page" class="flex items-center gap-2 bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-lg text-sm transition cursor-pointer shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            <span>Copy Link</span>
-        </button>
-        <button id="btn-toggle-review" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
-          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    </aside>
+
+    <main class="w-full flex-grow flex flex-col order-1 lg:order-2 pt-8">
+
+      <div id="breadcrumb" class="text-sm text-soft mb-3 flex items-center gap-2 mono">
+        <a href="../category?course=blind-75&type=Array" class="hover:accent-text transition">Array</a>
+        <span>/</span><span>#33</span>
+      </div>
+
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div>
+          <h1 class="text-4xl font-extrabold tracking-tight mb-3">Search in Rotated Sorted Array</h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold" style="background:var(--warn-soft); color:var(--warn)">Medium</span>
+            <span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Binary Search</span>
+            <span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Array</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank" class="flex items-center gap-1.5 text-sm font-semibold accent-text hover:underline">
+            LeetCode ↗
+          </a>
+          <button id="btn-copy-page" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-3 py-1.5 rounded-lg text-sm transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <span>Copy link</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PROBLEM STATEMENT -->
+      <div class="panel rounded-2xl p-6 mb-6">
+        <p class="leading-relaxed mb-4">
+          You are given an integer array <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">nums</code>, sorted in ascending order and rotated at an unknown pivot, and an integer <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">target</code>. Return the index of <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">target</code>, or <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">-1</code> if it isn't present.
+        </p>
+        <p class="text-soft text-sm mb-5">All values are unique. You must solve it in <span class="mono accent-text">O(log n)</span> time.</p>
+
+        <div class="rounded-xl p-4 mono text-sm" style="background:var(--rail)">
+          <p class="mb-1"><span class="text-soft">Input:</span> nums = [4,5,6,7,0,1,2], target = 0</p>
+          <p><span class="text-soft">Output:</span> 4 <span class="cm">// nums[4] == 0</span></p>
+        </div>
+      </div>
+
+      <!-- SIGNATURE: EXECUTION TRACE -->
+      <div class="panel rounded-2xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h3 class="text-base font-bold">Execution Trace</h3>
+            <p class="text-xs text-soft mt-0.5">Watch the search window collapse as each half is checked for sortedness.</p>
+          </div>
+          <button id="btn-play-trace" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-white transition cursor-pointer" style="background:var(--accent)">
+            <svg id="play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            <span id="play-label">Run</span>
+          </button>
+        </div>
+
+        <div class="flex flex-col items-center gap-8 py-6">
+          <div id="array-track" class="flex gap-3 pb-7 pt-7"></div>
+          <p id="trace-caption" class="text-sm mono text-soft min-h-[20px] text-center">Press Run to step through the search.</p>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="panel rounded-2xl overflow-hidden mb-6">
+        <div class="flex border-b border-soft px-2">
+          <button data-tab="approach" class="tab-btn active px-4 py-3 text-sm font-bold transition cursor-pointer">Approach</button>
+          <button data-tab="code" class="tab-btn px-4 py-3 text-sm font-bold transition cursor-pointer">Code</button>
+          <button data-tab="complexity" class="tab-btn px-4 py-3 text-sm font-bold transition cursor-pointer">Complexity</button>
+        </div>
+
+        <div id="tab-approach" class="p-6 text-sm leading-relaxed">
+          <p class="mb-3">A rotated sorted array still has one useful property: <strong>at least one half of any window is always fully sorted.</strong> Standard binary search, but at each step you first figure out which half is sorted, then decide whether the target could live there.</p>
+          <ol class="list-decimal list-inside space-y-2 text-soft">
+            <li>Compute <code class="mono accent-text">mid</code>. If <code class="mono accent-text">nums[mid] === target</code>, return <code class="mono accent-text">mid</code>.</li>
+            <li>If <code class="mono accent-text">nums[low] &lt;= nums[mid]</code>, the left half is sorted.</li>
+            <li>Check whether <code class="mono accent-text">target</code> falls inside that sorted half's range — if so, search there; otherwise search the other half.</li>
+            <li>Repeat until the window closes or the target is found.</li>
+          </ol>
+        </div>
+
+        <div id="tab-code" class="hidden p-6">
+          <div class="code-block rounded-xl p-5 overflow-x-auto relative">
+            <button id="btn-copy-code" class="absolute top-3 right-3 text-xs font-semibold text-soft hover:accent-text transition cursor-pointer">Copy</button>
+<pre><span class="kw">function</span> <span class="fn">search</span>(nums, target) {
+  <span class="kw">let</span> low = <span class="num">0</span>, high = nums.length - <span class="num">1</span>;
+
+  <span class="kw">while</span> (low &lt;= high) {
+    <span class="kw">const</span> mid = Math.floor((low + high) / <span class="num">2</span>);
+    <span class="kw">if</span> (nums[mid] === target) <span class="kw">return</span> mid;
+
+    <span class="kw">const</span> leftSorted = nums[low] &lt;= nums[mid];
+
+    <span class="kw">if</span> (leftSorted) {
+      <span class="kw">if</span> (target &gt;= nums[low] &amp;&amp; target &lt; nums[mid]) {
+        high = mid - <span class="num">1</span>;
+      } <span class="kw">else</span> {
+        low = mid + <span class="num">1</span>;
+      }
+    } <span class="kw">else</span> {
+      <span class="kw">if</span> (target &gt; nums[mid] &amp;&amp; target &lt;= nums[high]) {
+        low = mid + <span class="num">1</span>;
+      } <span class="kw">else</span> {
+        high = mid - <span class="num">1</span>;
+      }
+    }
+  }
+  <span class="kw">return</span> -<span class="num">1</span>; <span class="cm">// not found</span>
+}</pre>
+          </div>
+        </div>
+
+        <div id="tab-complexity" class="hidden p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-xl p-4" style="background:var(--good-soft)">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--good)">Time</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--good)">O(log n)</p>
+              <p class="text-xs text-soft mt-1">Window halves every iteration.</p>
+            </div>
+            <div class="rounded-xl p-4" style="background:var(--good-soft)">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--good)">Space</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--good)">O(1)</p>
+              <p class="text-xs text-soft mt-1">Only three pointers are tracked.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="flex justify-end gap-3 mb-6">
+        <button id="btn-toggle-review" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer">
+          <svg class="w-4 h-4" style="color:var(--warn)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span id="text-review-status">Needs Review</span>
         </button>
-        <button id="btn-toggle-solved" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
-          <svg id="icon-unsolved" class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
-          <svg id="icon-solved" class="w-4 h-4 text-emerald-500 dark:text-emerald-400 hidden" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-          <span id="text-solved-status">Mark Complete</span>
+        <button id="btn-toggle-solved" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer">
+          <svg id="icon-unsolved" class="w-4 h-4 text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
+          <svg id="icon-solved" class="w-4 h-4 hidden" style="color:var(--good)" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+          <span id="text-solved-status">Mark as Complete</span>
         </button>
       </div>
-    </div>
 
-    <div class="problem-container glass">
-        <nav class="tab-nav">
-            <button class="nav-btn active" data-section="problem">Problem & Examples</button>
-            <button class="nav-btn" data-section="solution">Solution & Code</button>
-            <button class="nav-btn" data-section="logs">Execution Sandbox</button>
-        </nav>
+      <div class="border-t border-soft pt-6 flex justify-between items-center">
+        <a id="link-prev" href="../solution?slug=two-sum" class="text-soft hover:accent-text transition flex items-center gap-2 text-sm font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          <span># Two Sum</span>
+        </a>
+        <a id="link-next" href="../solution?slug=maximum-subarray" class="text-soft hover:accent-text transition flex items-center gap-2 text-sm font-semibold">
+          <span># Maximum Subarray</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      </div>
 
-        <div class="p-6">
-            <section id="problem" class="content-section active">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Description</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">There is an integer array <code>nums</code> sorted in ascending order (with distinct values). Prior to being passed to your function, <code>nums</code> is possibly rotated at an unknown pivot index. Given the array <code>nums</code> after the possible rotation and an integer <code>target</code>, return the index of <code>target</code> if it is in <code>nums</code>, or <code>-1</code> if it is not in <code>nums</code>.</p>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">You must write an algorithm with <code>O(log n)</code> runtime complexity.</p>
-
-                <h3 class="text-xl font-bold mt-8 mb-4">Example 1</h3>
-                <div class="example-box">
-                    <p><strong>Input:</strong> <code>nums = [4,5,6,7,0,1,2], target = 0</code></p>
-                    <p><strong>Output:</strong> <code>4</code></p>
-                </div>
-
-                <h3 class="text-xl font-bold mt-8 mb-4">Example 2</h3>
-                <div class="example-box">
-                    <p><strong>Input:</strong> <code>nums = [4,5,6,7,0,1,2], target = 3</code></p>
-                    <p><strong>Output:</strong> <code>-1</code></p>
-                </div>
-
-                <div class="info-box">
-                    <p class="font-bold">Constraints:</p>
-                    <ul class="list-disc ml-5 mt-2 text-sm space-y-1">
-                        <li><code>1 <= nums.length <= 5000</code></li>
-                        <li><code>-10⁴ <= nums[i] <= 10⁴</code></li>
-                        <li>All values of <code>nums</code> are unique.</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section id="solution" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Idea & Intuition</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">We use a modified Binary Search. If we divide a rotated sorted array into two halves, at least one half will always be perfectly sorted. We can determine which half is sorted, check if our target falls within the bounds of that sorted half, and if so, discard the other half.</p>
-
-                <div class="mermaid bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-center my-6">
-                    flowchart TD
-                      A["left=0, right=n-1"] --> B{"left &lt;= right?"}
-                      B -- Yes --> C["mid = (left+right)//2"]
-                      C --> D{"nums[mid] == target?"}
-                      D -- Yes --> E["Return mid"]
-                      D -- No --> F{"nums[left] &lt;= nums[mid]?"}
-                      F -- Yes --> G["Check left sorted half"]
-                      F -- No --> H["Check right sorted half"]
-                      G --> I["Update left or right"]
-                      H --> I
-                      I --> B
-                </div>
-
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Python Code</h2>
-<pre>
-from typing import List
-
-class Solution:
-    def search(self, nums: List[int], target: int) -> int:
-        left, right = 0, len(nums) - 1
-        
-        while left <= right:
-            mid = (left + right) // 2
-            
-            if nums[mid] == target:
-                return mid
-                
-            if nums[left] <= nums[mid]:
-                if nums[left] <= target < nums[mid]:
-                    right = mid - 1
-                else:
-                    left = mid + 1
-            else:
-                if nums[mid] < target <= nums[right]:
-                    left = mid + 1
-                else:
-                    right = mid - 1
-                    
-        return -1
-</pre>
-
-                <div class="info-box mt-6">
-                    <p><strong>Time Complexity: O(log n)</strong> - We cut the search space in half at every step, making it highly efficient.</p>
-                    <p><strong>Space Complexity: O(1)</strong> - We only store pointer variables.</p>
-                </div>
-            </section>
-
-            <section id="logs" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Interactive Execution</h2>
-                
-                <div class="flex gap-4 mb-6">
-                    <div class="flex-1">
-                        <label class="text-xs font-bold text-slate-500 uppercase">nums</label>
-                        <input type="text" id="input-nums" class="w-full mt-1 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500" value="4, 5, 6, 7, 0, 1, 2">
-                    </div>
-                    <div class="w-32">
-                        <label class="text-xs font-bold text-slate-500 uppercase">target</label>
-                        <input type="number" id="input-target" class="w-full mt-1 p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:border-blue-500" value="0">
-                    </div>
-                </div>
-
-                <button onclick="executeAlgorithm()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold transition shadow-sm mb-6">Execute</button>
-
-                <div id="execution-log" class="bg-slate-950 text-emerald-400 p-6 rounded-xl font-mono text-sm leading-relaxed border border-slate-800 overflow-x-auto min-h-[200px]">
-                    Ready. Click execute to begin timeline trace.
-                </div>
-            </section>
-        </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <script type="module">
     import { SUPABASE_CONFIG } from '../config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-    
-    mermaid.initialize({ startOnLoad: true, theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' });
 
+    const targetSlug = 'search-in-rotated-sorted-array';
+    const currentDifficulty = 'Medium';
+    let currentUserId = null;
+    let currentStatus = null;
+    let solvedSlugSet = new Set();
+
+    // ---- theme ----
     const themeToggleBtn = document.getElementById('theme-toggle');
     const darkIcon = document.getElementById('theme-toggle-dark-icon');
     const lightIcon = document.getElementById('theme-toggle-light-icon');
 
     if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.remove('dark'); lightIcon.classList.remove('hidden');
+      document.documentElement.classList.remove('dark'); lightIcon.classList.remove('hidden');
     } else {
-        document.documentElement.classList.add('dark'); darkIcon.classList.remove('hidden');
+      document.documentElement.classList.add('dark'); darkIcon.classList.remove('hidden');
     }
-
-    themeToggleBtn.addEventListener('click', function() {
-        darkIcon.classList.toggle('hidden'); lightIcon.classList.toggle('hidden');
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark'); localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark'); localStorage.setItem('color-theme', 'dark');
-        }
-        location.reload(); 
+    themeToggleBtn.addEventListener('click', () => {
+      darkIcon.classList.toggle('hidden'); lightIcon.classList.toggle('hidden');
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark'); localStorage.setItem('color-theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark'); localStorage.setItem('color-theme', 'dark');
+      }
     });
 
-    const CURRENT_SLUG = "search-in-rotated-sorted-array"; 
-    let currentUserId = null;
-    let currentStatus = null; 
+    // ---- tabs ----
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['approach', 'code', 'complexity'].forEach(t => {
+          document.getElementById('tab-' + t).classList.toggle('hidden', t !== btn.dataset.tab);
+        });
+      });
+    });
 
-    async function checkRouteAccess() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = '../'; } 
-        else {
-            currentUserId = session.user.id;
-            const avatar = document.getElementById('user-avatar');
-            if (avatar && session.user.user_metadata.avatar_url) {
-                avatar.src = session.user.user_metadata.avatar_url;
-            }
-            fetchCloudState();
-        }
+    // ---- sidebar (Array category) ----
+    const ARRAY_PROBLEMS = [
+      { slug: "two-sum", title: "Two Sum", implemented: true },
+      { slug: "container-with-most-water", title: "Container With Most Water", implemented: false },
+      { slug: "search-in-rotated-sorted-array", title: "Search in Rotated Sorted Array", implemented: true },
+      { slug: "maximum-subarray", title: "Maximum Subarray", implemented: false },
+      { slug: "best-time-to-buy-and-sell-stock", title: "Best Time to Buy and Sell Stock", implemented: false },
+      { slug: "longest-consecutive-sequence", title: "Longest Consecutive Sequence", implemented: false },
+      { slug: "maximum-product-subarray", title: "Maximum Product Subarray", implemented: false },
+      { slug: "find-minimum-in-rotated-sorted-array", title: "Find Minimum in Rotated Sorted Array", implemented: false },
+      { slug: "contains-duplicate", title: "Contains Duplicate", implemented: false },
+      { slug: "product-of-array-except-self", title: "Product of Array Except Self", implemented: false }
+    ];
+
+    function urlFor(p) { return p.implemented ? `./${p.slug}` : `../solution?slug=${p.slug}`; }
+
+    async function init() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = '../'; return; }
+      currentUserId = session.user.id;
+      const avatar = document.getElementById('user-avatar');
+      if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
+
+      await fetchSolvedSet();
+      renderSidebar();
+      await fetchCloudState();
+      buildTrace();
+    }
+
+    async function fetchSolvedSet() {
+      const { data, error } = await supabaseClient
+        .from('user_progress').select('problem_slug').eq('user_id', currentUserId).eq('status', 'solved');
+      solvedSlugSet = (!error && data) ? new Set(data.map(d => d.problem_slug)) : new Set();
+    }
+
+    function renderSidebar() {
+      const solvedCount = ARRAY_PROBLEMS.filter(p => solvedSlugSet.has(p.slug)).length;
+      document.getElementById('sidebar-progress').textContent = `${solvedCount}/${ARRAY_PROBLEMS.length}`;
+      const list = document.getElementById('sidebar-list');
+      list.innerHTML = ARRAY_PROBLEMS.map(p => {
+        const isSolved = solvedSlugSet.has(p.slug);
+        const isActive = p.slug === targetSlug;
+        const icon = isSolved
+          ? `<svg class="w-4 h-4 flex-shrink-0" style="color:var(--good)" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`
+          : `<div class="w-3.5 h-3.5 rounded-full border-2 flex-shrink-0" style="border-color:var(--panel-border)"></div>`;
+        return `<li>
+          <a href="${urlFor(p)}" class="flex items-center gap-3 px-4 py-3 text-sm transition-colors" style="border-left:2px solid ${isActive ? 'var(--accent)' : 'transparent'}; ${isActive ? 'background:var(--accent-soft)' : ''}">
+            ${icon}
+            <span class="truncate ${isActive ? 'font-bold accent-text' : ''}">${p.title}</span>
+          </a>
+        </li>`;
+      }).join('');
     }
 
     async function fetchCloudState() {
-        const { data } = await supabaseClient.from('user_progress').select('status').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
-        currentStatus = data ? data.status : null;
-        updateStatusUI();
+      const { data } = await supabaseClient.from('user_progress').select('status')
+        .eq('user_id', currentUserId).eq('problem_slug', targetSlug).single();
+      currentStatus = data ? data.status : null;
+      updateStatusUI();
     }
 
     async function setCloudState(newStatus) {
-        currentStatus = currentStatus === newStatus ? null : newStatus; 
-        updateStatusUI(); 
-        if (currentStatus) {
-            await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
-        } else {
-            await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
+      const previousStatus = currentStatus;
+      currentStatus = currentStatus === newStatus ? null : newStatus;
+      updateStatusUI();
+
+      if (currentStatus) {
+        await supabaseClient.from('user_progress').upsert({
+          user_id: currentUserId, problem_slug: targetSlug, status: currentStatus, updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id, problem_slug' });
+
+        if (newStatus === 'solved' && previousStatus !== 'solved') {
+          solvedSlugSet.add(targetSlug);
+          awardXPAndStreak(currentDifficulty);
         }
+      } else {
+        solvedSlugSet.delete(targetSlug);
+        await supabaseClient.from('user_progress').delete()
+          .eq('user_id', currentUserId).eq('problem_slug', targetSlug);
+      }
+      renderSidebar();
     }
 
     function updateStatusUI() {
-        const btnSolved = document.getElementById('btn-toggle-solved');
-        const textSolved = document.getElementById('text-solved-status');
-        const iconUnsolved = document.getElementById('icon-unsolved');
-        const iconSolved = document.getElementById('icon-solved');
-        const btnReview = document.getElementById('btn-toggle-review');
-        const textReview = document.getElementById('text-review-status');
+      const btnSolved = document.getElementById('btn-toggle-solved');
+      const textSolved = document.getElementById('text-solved-status');
+      const iconUnsolved = document.getElementById('icon-unsolved');
+      const iconSolved = document.getElementById('icon-solved');
+      const btnReview = document.getElementById('btn-toggle-review');
+      const textReview = document.getElementById('text-review-status');
 
-        btnSolved.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
-        btnReview.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
-        iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
-        textSolved.textContent = 'Mark as Complete'; textReview.textContent = 'Needs Review';
+      iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
+      textSolved.textContent = 'Mark as Complete'; textReview.textContent = 'Needs Review';
+      btnSolved.style.background = ''; btnSolved.style.color = ''; btnSolved.style.borderColor = '';
+      btnReview.style.background = ''; btnReview.style.color = ''; btnReview.style.borderColor = '';
 
-        if (currentStatus === 'solved') {
-            btnSolved.className = "flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
-            iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
-            textSolved.textContent = 'Completed';
-        } else if (currentStatus === 'review') {
-            btnReview.className = "flex items-center gap-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
-            textReview.textContent = 'Reviewing';
-        }
+      if (currentStatus === 'solved') {
+        iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
+        textSolved.textContent = 'Completed';
+        btnSolved.style.background = 'var(--good-soft)'; btnSolved.style.color = 'var(--good)'; btnSolved.style.borderColor = 'var(--good)';
+      } else if (currentStatus === 'review') {
+        textReview.textContent = 'Reviewing';
+        btnReview.style.background = 'var(--warn-soft)'; btnReview.style.color = 'var(--warn)'; btnReview.style.borderColor = 'var(--warn)';
+      }
     }
+
+    // ---- XP / streak (shared logic) ----
+    async function awardXPAndStreak(difficulty) {
+      const XP_MAP = { Easy: 10, Medium: 20, Hard: 30 };
+      const xpGain = XP_MAP[difficulty] || 10;
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
+      const { data: stats } = await supabaseClient.from('user_stats').select('*').eq('user_id', currentUserId).single();
+
+      let xp = xpGain, newStreak = 1, longestStreak = 1, streakExtended = true;
+      if (stats) {
+        xp = (stats.xp || 0) + xpGain;
+        longestStreak = stats.longest_streak || 1;
+        if (stats.last_active_date === todayStr) {
+          newStreak = stats.current_streak || 1; streakExtended = false;
+        } else {
+          const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+          const yStr = yesterday.toISOString().split('T')[0];
+          newStreak = (stats.last_active_date === yStr) ? (stats.current_streak || 0) + 1 : 1;
+        }
+        longestStreak = Math.max(longestStreak, newStreak);
+      }
+
+      await supabaseClient.from('user_stats').upsert({
+        user_id: currentUserId, xp, current_streak: newStreak, longest_streak: longestStreak,
+        last_active_date: todayStr, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+
+      showRewardToast(xpGain, newStreak, streakExtended);
+    }
+
+    function showRewardToast(xpGain, streak, streakExtended) {
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-6 right-6 z-[100] panel shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-3 translate-y-4 opacity-0 transition-all duration-300";
+      toast.innerHTML = `
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:var(--good-soft)">
+          <svg class="w-5 h-5" style="color:var(--good)" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold">+${xpGain} XP earned</p>
+          <p class="text-xs text-soft flex items-center gap-1">
+            <span>🔥</span>${streakExtended ? `${streak} day streak${streak > 1 ? ' — keep it going!' : ' started!'}` : `Streak: ${streak} day${streak > 1 ? 's' : ''}`}
+          </p>
+        </div>`;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.remove('translate-y-4', 'opacity-0'));
+      setTimeout(() => { toast.classList.add('translate-y-4', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3200);
+    }
+
+    // ---- Execution trace: binary search on rotated array ----
+    const NUMS = [4, 5, 6, 7, 0, 1, 2];
+    const TARGET = 0;
+
+    function buildTrace() {
+      const track = document.getElementById('array-track');
+      track.innerHTML = NUMS.map((n, i) => `
+        <div class="cell" id="cell-${i}">
+          ${n}
+          <span class="idx">i=${i}</span>
+          <span class="ptr" id="ptr-${i}"></span>
+        </div>`).join('');
+    }
+
+    function setPointers(low, mid, high) {
+      NUMS.forEach((_, i) => {
+        const p = document.getElementById(`ptr-${i}`);
+        let labels = [];
+        if (i === low) labels.push('low');
+        if (i === mid) labels.push('mid');
+        if (i === high) labels.push('high');
+        p.textContent = labels.join('/');
+        p.style.opacity = labels.length ? 1 : 0;
+        p.style.color = i === mid ? 'var(--trace-scan)' : 'var(--ink-soft)';
+      });
+    }
+
+    let traceRunning = false;
+
+    async function runTrace() {
+      if (traceRunning) return;
+      traceRunning = true;
+      const playBtn = document.getElementById('btn-play-trace');
+      const playLabel = document.getElementById('play-label');
+      const caption = document.getElementById('trace-caption');
+      playLabel.textContent = 'Running…';
+      playBtn.style.opacity = 0.7;
+
+      buildTrace();
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+
+      let low = 0, high = NUMS.length - 1;
+      let found = -1;
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        setPointers(low, mid, high);
+        for (let i = 0; i < NUMS.length; i++) {
+          document.getElementById(`cell-${i}`).classList.toggle('discarded', i < low || i > high);
+        }
+        document.getElementById(`cell-${mid}`).classList.add('mid');
+        caption.textContent = `low=${low}, mid=${mid}, high=${high} → nums[mid]=${NUMS[mid]}`;
+        await wait(900);
+
+        if (NUMS[mid] === TARGET) {
+          document.getElementById(`cell-${mid}`).classList.remove('mid');
+          document.getElementById(`cell-${mid}`).classList.add('hit');
+          caption.textContent = `nums[${mid}] === target → return ${mid}`;
+          found = mid;
+          break;
+        }
+
+        const leftSorted = NUMS[low] <= NUMS[mid];
+        document.getElementById(`cell-${mid}`).classList.remove('mid');
+
+        if (leftSorted) {
+          if (TARGET >= NUMS[low] && TARGET < NUMS[mid]) {
+            caption.textContent = `Left half [${low}..${mid}] is sorted and contains target → search left`;
+            high = mid - 1;
+          } else {
+            caption.textContent = `Left half sorted but target not in range → search right`;
+            low = mid + 1;
+          }
+        } else {
+          if (TARGET > NUMS[mid] && TARGET <= NUMS[high]) {
+            caption.textContent = `Right half [${mid}..${high}] is sorted and contains target → search right`;
+            low = mid + 1;
+          } else {
+            caption.textContent = `Right half sorted but target not in range → search left`;
+            high = mid - 1;
+          }
+        }
+        await wait(900);
+      }
+
+      if (found === -1 && NUMS[Math.floor((low + high) / 2)] !== TARGET) {
+        // no-op if already found above
+      }
+
+      playLabel.textContent = 'Run again';
+      playBtn.style.opacity = 1;
+      traceRunning = false;
+    }
+
+    document.getElementById('btn-play-trace').onclick = runTrace;
+
+    document.getElementById('btn-copy-page').onclick = async (e) => {
+      await navigator.clipboard.writeText(window.location.href);
+      const span = e.currentTarget.querySelector('span');
+      const orig = span.textContent; span.textContent = 'Copied!';
+      setTimeout(() => span.textContent = orig, 2000);
+    };
+
+    document.getElementById('btn-copy-code').onclick = async (e) => {
+      const code = `function search(nums, target) {\n  let low = 0, high = nums.length - 1;\n\n  while (low <= high) {\n    const mid = Math.floor((low + high) / 2);\n    if (nums[mid] === target) return mid;\n\n    const leftSorted = nums[low] <= nums[mid];\n\n    if (leftSorted) {\n      if (target >= nums[low] && target < nums[mid]) {\n        high = mid - 1;\n      } else {\n        low = mid + 1;\n      }\n    } else {\n      if (target > nums[mid] && target <= nums[high]) {\n        low = mid + 1;\n      } else {\n        high = mid - 1;\n      }\n    }\n  }\n  return -1;\n}`;
+      await navigator.clipboard.writeText(code);
+      const btn = e.currentTarget; const orig = btn.textContent;
+      btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 2000);
+    };
 
     document.getElementById('btn-toggle-solved').onclick = () => setCloudState('solved');
     document.getElementById('btn-toggle-review').onclick = () => setCloudState('review');
     document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = '../'; };
 
-    document.getElementById('btn-copy-page').onclick = async (e) => {
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            const btn = e.currentTarget.querySelector('span');
-            const originalText = btn.textContent;
-            btn.textContent = 'Copied!';
-            e.currentTarget.classList.add('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400');
-            setTimeout(() => { 
-                btn.textContent = originalText; 
-                e.currentTarget.classList.remove('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400');
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy', err);
-        }
-    };
-
-    checkRouteAccess();
-
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(e.target.dataset.section).classList.add('active');
-            e.target.classList.add('active');
-        });
-    });
-
-    window.executeAlgorithm = function() {
-        const nums = document.getElementById('input-nums').value.split(',').map(n => parseInt(n.trim()));
-        const target = parseInt(document.getElementById('input-target').value);
-        const log = document.getElementById('execution-log');
-        
-        log.innerHTML = `[init] nums=[${nums}], target=${target}<br><br>`;
-        let left = 0;
-        let right = nums.length - 1;
-        let step = 0;
-        
-        while (left <= right) {
-            step++;
-            let mid = Math.floor((left + right) / 2);
-            log.innerHTML += `<span style="color:#fbbf24">Step ${step}</span>: left=${left}, right=${right}, mid=${mid} (value: ${nums[mid]})<br>`;
-            
-            if (nums[mid] === target) {
-                log.innerHTML += `       <span style="color:#60a5fa">Target ${target} found at index ${mid}!</span><br><br>[return] ${mid}`;
-                return;
-            }
-            
-            if (nums[left] <= nums[mid]) {
-                log.innerHTML += `       Left half [${left}...${mid}] is strictly sorted.<br>`;
-                if (nums[left] <= target && target < nums[mid]) {
-                    log.innerHTML += `       Target ${target} is within the left sorted half. Discarding right half.<br>`;
-                    right = mid - 1;
-                } else {
-                    log.innerHTML += `       Target ${target} is NOT within the left sorted half. Discarding left half.<br>`;
-                    left = mid + 1;
-                }
-            } else {
-                log.innerHTML += `       Right half [${mid}...${right}] is strictly sorted.<br>`;
-                if (nums[mid] < target && target <= nums[right]) {
-                    log.innerHTML += `       Target ${target} is within the right sorted half. Discarding left half.<br>`;
-                    left = mid + 1;
-                } else {
-                    log.innerHTML += `       Target ${target} is NOT within the right sorted half. Discarding right half.<br>`;
-                    right = mid - 1;
-                }
-            }
-            log.innerHTML += `<br>`;
-        }
-        log.innerHTML += `<span style="color:#ef4444">Loop ended.</span> Target ${target} not found.<br><br>[return] -1`;
-    };
+    init();
   </script>
 </body>
 </html>
