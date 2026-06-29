@@ -192,6 +192,7 @@
     let currentUserId = null;
     let currentStatus = null;
     let targetSlug = null;
+    let currentDifficulty = null;
 
     async function initialize() {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -220,6 +221,7 @@
         if (probIndex === -1) return;
         
         const prob = PROBLEM_REGISTRY[probIndex];
+        currentDifficulty = prob.difficulty;
         
         document.title = `algoHub | ${prob.title}`;
         document.getElementById('breadcrumb').innerHTML = `<a href="./category?course=blind-75&type=${encodeURIComponent(prob.category)}" class="hover:text-blue-500 transition">${prob.category}</a> <span class="text-slate-400 dark:text-slate-600">&gt;</span> <span># ${prob.title}</span>`;
@@ -265,6 +267,7 @@
     }
 
     async function setCloudState(newStatus) {
+        const previousStatus = currentStatus;
         currentStatus = currentStatus === newStatus ? null : newStatus; 
         updateStatusUI(); 
         
@@ -275,12 +278,89 @@
                 status: currentStatus,
                 updated_at: new Date().toISOString()
             }, { onConflict: 'user_id, problem_slug' });
+
+            if (newStatus === 'solved' && previousStatus !== 'solved') {
+                awardXPAndStreak(currentDifficulty);
+            }
         } else {
             await supabaseClient.from('user_progress')
                 .delete()
                 .eq('user_id', currentUserId)
                 .eq('problem_slug', targetSlug);
         }
+    }
+
+    async function awardXPAndStreak(difficulty) {
+        const XP_MAP = { Easy: 10, Medium: 20, Hard: 30 };
+        const xpGain = XP_MAP[difficulty] || 10;
+
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        const { data: stats } = await supabaseClient
+            .from('user_stats')
+            .select('*')
+            .eq('user_id', currentUserId)
+            .single();
+
+        let xp = xpGain;
+        let newStreak = 1;
+        let longestStreak = 1;
+        let streakExtended = true;
+
+        if (stats) {
+            xp = (stats.xp || 0) + xpGain;
+            longestStreak = stats.longest_streak || 1;
+
+            if (stats.last_active_date === todayStr) {
+                // Already solved something today; streak doesn't change again
+                newStreak = stats.current_streak || 1;
+                streakExtended = false;
+            } else {
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yStr = yesterday.toISOString().split('T')[0];
+
+                newStreak = (stats.last_active_date === yStr) ? (stats.current_streak || 0) + 1 : 1;
+            }
+            longestStreak = Math.max(longestStreak, newStreak);
+        }
+
+        await supabaseClient.from('user_stats').upsert({
+            user_id: currentUserId,
+            xp: xp,
+            current_streak: newStreak,
+            longest_streak: longestStreak,
+            last_active_date: todayStr,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+        showRewardToast(xpGain, newStreak, streakExtended);
+    }
+
+    function showRewardToast(xpGain, streak, streakExtended) {
+        const toast = document.createElement('div');
+        toast.className = "fixed bottom-6 right-6 z-[100] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-3 translate-y-4 opacity-0 transition-all duration-300";
+        toast.innerHTML = `
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-slate-900 dark:text-white">+${xpGain} XP earned</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <span>🔥</span>
+                    ${streakExtended ? `${streak} day streak${streak > 1 ? ' — keep it going!' : ' started!'}` : `Streak: ${streak} day${streak > 1 ? 's' : ''}`}
+                </p>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-4', 'opacity-0');
+        });
+        setTimeout(() => {
+            toast.classList.add('translate-y-4', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3200);
     }
 
     function updateStatusUI() {
