@@ -83,6 +83,8 @@
     <script type="module">
         import { SUPABASE_CONFIG } from './config.js';
         const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
+        let currentUserId = null;
+        let solvedSet = new Set();
 
         const themeToggleBtn = document.getElementById('theme-toggle');
         const darkIcon = document.getElementById('theme-toggle-dark-icon');
@@ -191,7 +193,23 @@
             if (avatar && session.user.user_metadata.avatar_url) {
                 avatar.src = session.user.user_metadata.avatar_url;
             }
+            currentUserId = session.user.id;
+            await loadSolvedSet();
             renderCategory();
+        }
+
+        async function loadSolvedSet() {
+            const { data, error } = await supabaseClient
+                .from('user_progress')
+                .select('problem_slug')
+                .eq('user_id', currentUserId)
+                .eq('status', 'solved');
+
+            if (error || !data) {
+                solvedSet = new Set();
+                return;
+            }
+            solvedSet = new Set(data.map(d => d.problem_slug));
         }
 
         function renderCategory() {
@@ -206,7 +224,7 @@
             const container = document.getElementById('problem-list');
             container.innerHTML = '';
 
-            const solvedArray = JSON.parse(localStorage.getItem('algolab_solved_keys') || '[]');
+            const solvedArray = Array.from(solvedSet);
 
             PROBLEM_REGISTRY.forEach(prob => {
                 if (prob.category === cat) {

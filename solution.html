@@ -38,8 +38,20 @@
     </div>
   </header>
 
-  <main class="w-full max-w-4xl mx-auto px-6 pb-12 flex-grow flex flex-col">
-    
+  <div class="w-full max-w-6xl mx-auto px-6 pb-12 flex-grow flex flex-col lg:flex-row gap-8 items-start">
+
+    <aside class="w-full lg:w-72 lg:sticky lg:top-24 flex-shrink-0 order-2 lg:order-1">
+      <div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <h3 id="sidebar-category-title" class="text-sm font-bold text-slate-900 dark:text-white"></h3>
+          <span id="sidebar-progress" class="text-xs font-mono text-slate-500 dark:text-slate-400"></span>
+        </div>
+        <ul id="sidebar-list" class="max-h-[70vh] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60"></ul>
+      </div>
+    </aside>
+
+    <main class="w-full flex-grow flex flex-col order-1 lg:order-2">
+
     <div class="flex justify-between items-start mb-6">
       <div>
         <div id="breadcrumb" class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2"></div>
@@ -85,7 +97,8 @@
       </a>
     </div>
 
-  </main>
+    </main>
+  </div>
 
   <script type="module">
     import { SUPABASE_CONFIG } from './config.js';
@@ -213,7 +226,51 @@
         if (!targetSlug) window.location.href = './dashboard';
 
         renderProblemData();
+        await fetchSolvedSetForSidebar();
+        renderSidebar();
         fetchCloudState();
+    }
+
+    let solvedSlugSet = new Set();
+
+    async function fetchSolvedSetForSidebar() {
+        const { data, error } = await supabaseClient
+            .from('user_progress')
+            .select('problem_slug')
+            .eq('user_id', currentUserId)
+            .eq('status', 'solved');
+
+        solvedSlugSet = (!error && data) ? new Set(data.map(d => d.problem_slug)) : new Set();
+    }
+
+    function renderSidebar() {
+        const prob = PROBLEM_REGISTRY.find(p => p.slug === targetSlug);
+        if (!prob) return;
+
+        const sameCategory = PROBLEM_REGISTRY.filter(p => p.category === prob.category);
+        const solvedCount = sameCategory.filter(p => solvedSlugSet.has(p.slug)).length;
+
+        document.getElementById('sidebar-category-title').textContent = prob.category;
+        document.getElementById('sidebar-progress').textContent = `${solvedCount}/${sameCategory.length}`;
+
+        const list = document.getElementById('sidebar-list');
+        list.innerHTML = sameCategory.map(p => {
+            const isSolved = solvedSlugSet.has(p.slug);
+            const isActive = p.slug === targetSlug;
+
+            const icon = isSolved
+                ? `<svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`
+                : `<div class="w-3.5 h-3.5 rounded-full border-2 border-slate-300 dark:border-slate-700 flex-shrink-0"></div>`;
+
+            return `
+                <li>
+                    <a href="./solution?slug=${p.slug}" class="flex items-center gap-3 px-4 py-3 text-sm transition-colors ${isActive ? 'bg-blue-50 dark:bg-blue-950/30 border-l-2 border-blue-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50 border-l-2 border-transparent'}">
+                        ${icon}
+                        <span class="truncate ${isActive ? 'font-semibold text-blue-700 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}">${p.title}</span>
+                    </a>
+                </li>
+            `;
+        }).join('');
     }
 
     function renderProblemData() {
@@ -280,14 +337,17 @@
             }, { onConflict: 'user_id, problem_slug' });
 
             if (newStatus === 'solved' && previousStatus !== 'solved') {
+                solvedSlugSet.add(targetSlug);
                 awardXPAndStreak(currentDifficulty);
             }
         } else {
+            solvedSlugSet.delete(targetSlug);
             await supabaseClient.from('user_progress')
                 .delete()
                 .eq('user_id', currentUserId)
                 .eq('problem_slug', targetSlug);
         }
+        renderSidebar();
     }
 
     async function awardXPAndStreak(difficulty) {
