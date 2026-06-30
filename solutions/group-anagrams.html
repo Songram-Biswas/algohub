@@ -1,346 +1,578 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>algoHub | Group Anagrams</title>
-    <link rel="icon" type="image/png" href="./favicon.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* algoHub Aurora Background */
-        body { background-attachment: fixed; font-family: 'Inter', sans-serif; }
-        html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
-        html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
-        .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>algoHub | Group Anagrams</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fb; --panel: #ffffff; --panel-border: #e7e9f0; --ink: #14161f; --ink-soft: #6b7080; --rail: #eef0f5;
+    --accent: #4f6df5; --accent-soft: #eef1ff;
+    --good: #1ea672; --good-soft: #e8f8f1;
+    --warn: #c2780a; --warn-soft: #fdf1e0;
+    --bad: #d23c4f; --bad-soft: #fde9ec;
+    --trace-scan: #4f6df5; --trace-hit: #1ea672;
+    --sun: #f5a623; --moon: #94a3ff;
+  }
+  html.dark {
+    --bg: #07080d; --panel: #0e1018; --panel-border: #1d2030; --ink: #eef0f7; --ink-soft: #8e93a8; --rail: #11131d;
+    --accent: #7c93ff; --accent-soft: #161a30;
+    --good: #34d399; --good-soft: #0e2420;
+    --warn: #f5b35a; --warn-soft: #271d0d;
+    --bad: #fb7185; --bad-soft: #2a1419;
+    --trace-scan: #7c93ff; --trace-hit: #34d399;
+    --sun: #f5a623; --moon: #b9c3ff;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; transition: background .25s, color .25s; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .panel { background: var(--panel); border: 1px solid var(--panel-border); }
+  .rail-bg { background: var(--rail); }
+  .text-soft { color: var(--ink-soft); }
+  .accent-text { color: var(--accent); }
+  .border-soft { border-color: var(--panel-border); }
 
-        /* Scoped Styles for the Interactive Problem Content */
-        .problem-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05); overflow: hidden; }
-        html.dark .problem-container { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
-        
-        .tab-nav { display: flex; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
-        html.dark .tab-nav { background: #1e293b; border-color: #334155; }
-        
-        .tab-nav button { flex: 1; padding: 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
-        html.dark .tab-nav button { color: #94a3b8; }
-        .tab-nav button:hover { background: #f1f5f9; color: #334155; }
-        html.dark .tab-nav button:hover { background: #334155; color: #f8fafc; }
-        .tab-nav button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+  .cell {
+    width: 52px; height: 52px;
+    border: 1.5px solid var(--panel-border);
+    background: var(--panel);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 17px;
+    position: relative;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+  }
+  .cell .idx { position: absolute; bottom: -20px; font-size: 10px; color: var(--ink-soft); font-weight: 500; }
+  .cell.scan { border-color: var(--trace-scan); background: color-mix(in srgb, var(--trace-scan) 14%, var(--panel)); transform: translateY(-4px); box-shadow: 0 6px 16px -6px var(--trace-scan); }
+  .cell.hit { border-color: var(--trace-hit); background: color-mix(in srgb, var(--trace-hit) 18%, var(--panel)); transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 20px -6px var(--trace-hit); }
+  .cell.done { opacity: .45; }
+  .cell.discarded { opacity: .2; }
 
-        .content-section { padding: 2rem; display: none; }
-        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .map-slot {
+    border: 1.5px dashed var(--panel-border); border-radius: 10px; padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-soft);
+    transition: all .3s; opacity: .35;
+  }
+  .map-slot.filled { border-style: solid; border-color: var(--accent); color: var(--ink); opacity: 1; background: var(--accent-soft); }
 
-        /* Problem Elements */
-        .info-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .info-box { background: #0f172a; border-left-color: #38bdf8; color: #cbd5e1;}
-        
-        .example-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .example-box { background: #0f172a; border-left-color: #818cf8; color: #cbd5e1;}
+  .tab-btn { color: var(--ink-soft); border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: var(--accent); border-color: var(--accent); }
 
-        pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; border: 1px solid #334155;}
-        code { font-family: 'Fira Code', monospace; color: #ec4899; }
-        
-        .execution-log { background: #0f172a; color: #68d391; padding: 1.5rem; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.8; max-height: 500px; overflow-y: auto; margin: 1rem 0; border: 1px solid #334155;}
-        .log-keyword { color: #fbbf24; }
-        .log-value { color: #60a5fa; }
-        .log-string { color: #86efac; }
-        .log-info { color: #94a3b8; }
+  .code-block { background: var(--rail); border: 1px solid var(--panel-border); font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.65; }
+  .kw { color: #c678dd; } .fn { color: #61afef; } .num { color: #d19a66; } .str { color: #98c379; } .cm { color: var(--ink-soft); font-style: italic; }
+  html:not(.dark) .kw { color: #9333ea; } html:not(.dark) .fn { color: #2563eb; } html:not(.dark) .num { color: #c2410c; } html:not(.dark) .str { color: #15803d; }
 
-        .state-display { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; }
-        html.dark .state-display { background: #0f172a; border-color: #334155; color: #cbd5e1;}
-        .state-entry { padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0; }
-        html.dark .state-entry { border-bottom-color: #334155; }
-        .state-entry:last-child { border-bottom: none; }
+  .step-btn { background: var(--panel); border: 1px solid var(--panel-border); color: var(--ink); }
+  .step-btn:hover:not(:disabled) { background: var(--rail); }
+  .step-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-        .visualization { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-        .group-card { background: #f0f4ff; border: 2px solid #6366f1; border-radius: 8px; padding: 1rem; text-align: center; }
-        html.dark .group-card { background: #0f172a; border-color: #818cf8; }
-        .group-key { font-family: 'Fira Code', monospace; font-weight: 600; color: #6366f1; margin-bottom: 0.5rem; }
-        html.dark .group-key { color: #a5b4fc; }
-        .group-items { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
-        .item { background: white; border: 1px solid #cbd5e0; padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.9rem; }
-        html.dark .item { background: #1e293b; border-color: #475569; color: #e2e8f0;}
-    </style>
+  .quiz-opt { border: 1.5px solid var(--panel-border); background: var(--panel); cursor: pointer; transition: all .15s; }
+  .quiz-opt:hover { border-color: var(--accent); }
+  .quiz-opt.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .quiz-opt.correct { border-color: var(--good) !important; background: var(--good-soft) !important; }
+  .quiz-opt.incorrect { border-color: var(--bad) !important; background: var(--bad-soft) !important; }
+
+  .theme-orb { width: 22px; height: 22px; border-radius: 50%; position: relative; transition: all .3s; }
+  .theme-orb.sun { background: radial-gradient(circle at 35% 30%, #ffe9b0, var(--sun) 70%); box-shadow: 0 0 14px 2px color-mix(in srgb, var(--sun) 60%, transparent); }
+  .theme-orb.moon { background: radial-gradient(circle at 65% 35%, #d8def8, var(--moon) 75%); box-shadow: 0 0 12px 1px color-mix(in srgb, var(--moon) 50%, transparent); }
+  .theme-orb.moon::before { content:''; position:absolute; top:3px; left:2px; width:8px; height:8px; border-radius:50%; background: var(--rail); opacity:.5; }
+  .theme-orb.moon::after { content:''; position:absolute; top:11px; left:11px; width:5px; height:5px; border-radius:50%; background: var(--rail); opacity:.4; }
+
+  /* Linked list trace styles */
+  .ll-node { display: flex; align-items: center; }
+  .ll-box { width: 40px; height: 40px; border: 2px solid var(--panel-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; position: relative; }
+  .ll-box.cur { border-color: var(--trace-scan); }
+  .ll-box.prev { border-color: var(--trace-hit); }
+  .ll-label { position: absolute; top: -20px; font-size: 10px; font-weight: 600; }
+  .ll-arrow { margin: 0 8px; color: var(--ink-soft); font-weight: 600; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
+</style>
 </head>
-<body class="text-slate-900 dark:text-slate-100 min-h-screen pb-12">
+<body class="min-h-screen flex flex-col selection:bg-indigo-500/30">
 
-  <header class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center mb-8">
-    <a href="./dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
-      <img src="./favicon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
-      <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
+  <header class="sticky top-0 z-50 panel border-b px-6 py-3 flex justify-between items-center w-full backdrop-blur-sm" style="background: color-mix(in srgb, var(--panel) 88%, transparent);">
+    <a href="../dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
+      <img src="../favicon.png" alt="algoHub" class="w-8 h-8 rounded-lg shadow-sm">
+      <span class="text-xl font-extrabold tracking-tight">algoHub</span>
     </a>
-    <div class="flex items-center gap-4">
-      <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
+    <div class="flex items-center gap-3">
+      <button id="theme-toggle" class="p-2 rounded-lg hover:bg-[var(--rail)] transition cursor-pointer flex items-center justify-center" title="Toggle theme">
+        <span id="theme-orb" class="theme-orb sun"></span>
+      </button>
+      <div class="flex items-center gap-3 pl-3 border-l border-soft">
+        <img id="user-avatar" class="w-8 h-8 rounded-full border border-soft object-cover rail-bg" src="" alt="Profile">
+        <button id="btn-logout" class="text-xs font-semibold text-soft hover:text-red-500 transition cursor-pointer">Sign Out</button>
+      </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-6">
-    
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
-      <div>
-        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
-            <a href="../category?course=blind-75&type=String" class="hover:text-blue-500 transition">String</a> <span>&gt;</span> <span># Group Anagrams</span>
+  <div class="w-full max-w-6xl mx-auto px-6 pb-16 flex-grow flex flex-col lg:flex-row gap-8 items-start">
+
+    <aside class="w-full lg:w-72 lg:sticky lg:top-24 flex-shrink-0 order-2 lg:order-1">
+      <div class="panel rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-soft flex items-center justify-between">
+          <h3 class="text-sm font-bold">String</h3>
+          <span id="sidebar-progress" class="text-xs mono text-soft">0/0</span>
         </div>
-        <div class="flex items-center gap-3 mt-2">
-          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">49. Group Anagrams</h1>
-          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800/50 mt-1">Medium</span>
-        </div>
-        <a href="https://leetcode.com/problems/group-anagrams/" target="_blank" class="text-blue-500 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
-            Solve on LeetCode <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-        </a>
+        <ul id="sidebar-list" class="max-h-[70vh] overflow-y-auto divide-y" style="border-color: var(--panel-border);"></ul>
       </div>
-      
-      <div class="flex items-center gap-3">
-        <button id="btn-copy-page" class="flex items-center gap-2 bg-transparent border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-2 rounded-lg text-sm font-medium transition cursor-pointer">
+    </aside>
+
+    <main class="w-full flex-grow flex flex-col order-1 lg:order-2 pt-8">
+
+      <div id="breadcrumb" class="text-sm text-soft mb-3 flex items-center gap-2 mono">
+        <a href="../category?course=blind-75&type=String" class="hover:accent-text transition">String</a>
+        <span>/</span><span>#1</span>
+      </div>
+
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div>
+          <h1 class="text-4xl font-extrabold tracking-tight mb-3">Group Anagrams</h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold" style="background:var(--warn-soft); color:var(--warn)">Medium</span>
+            <span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Hash Map</span><span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">String</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="https://leetcode.com/problems/group-anagrams/" target="_blank" class="flex items-center gap-1.5 text-sm font-semibold accent-text hover:underline">
+            LeetCode ↗
+          </a>
+          <button id="btn-copy-page" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-3 py-1.5 rounded-lg text-sm transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            <span>Copy Link</span>
-        </button>
-        <button id="btn-toggle-review" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
-          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Copy link</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel rounded-2xl p-6 mb-6">
+        <p class="leading-relaxed mb-4">Given an array of strings <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">strs</code>, group the anagrams together. Two strings are anagrams if one can be rearranged to form the other.</p>
+        <div class="rounded-xl p-4 mono text-sm" style="background:var(--rail)">
+          <p class="mb-1"><span class="text-soft">Input:</span> strs = ["eat","tea","tan","ate","nat","bat"]</p><p><span class="text-soft">Output:</span> [["eat","tea","ate"],["tan","nat"],["bat"]]</p>
+        </div>
+      </div>
+
+      <div class="panel rounded-2xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div>
+            <h3 class="text-base font-bold">Execution Trace</h3>
+            <p class="text-xs text-soft mt-0.5">Step through the algorithm at your own pace.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btn-prev" class="step-btn flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer" disabled>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Prev
+            </button>
+            <span id="step-counter" class="text-xs mono text-soft px-2">Step 0 / 0</span>
+            <button id="btn-next" class="step-btn flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer">
+              Next
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+            <button id="btn-reset" class="step-btn px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer" title="Reset">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-8 py-4">
+          <div id="array-track" class="flex gap-3 pb-5 flex-wrap justify-center"></div>
+          <div class="w-full"><p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">groups &nbsp;(sorted key → words)</p>
+          <div id="map-track" class="flex flex-col gap-2 min-h-[42px] w-full"></div></div>
+          <p id="trace-caption" class="text-sm mono text-soft min-h-[20px] text-center">Click "Next" to begin.</p>
+        </div>
+      </div>
+
+      <div class="panel rounded-2xl p-6 mb-6">
+        <h3 class="text-base font-bold mb-1">Guess the Complexity</h3>
+        <p class="text-xs text-soft mb-5">Before peeking at the answer — what's the time and space complexity?</p>
+
+        <div class="grid sm:grid-cols-2 gap-6 mb-5">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">Time Complexity</p>
+            <div id="quiz-time" class="flex flex-col gap-2" data-correct="O(n·k log k)">
+              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n)">O(n)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n·k log k)">O(n·k log k)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n²)">O(n²)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n log n)">O(n log n)</div>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">Space Complexity</p>
+            <div id="quiz-space" class="flex flex-col gap-2" data-correct="O(n·k)">
+              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(1)">O(1)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n·k)">O(n·k)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(log n)">O(log n)</div>
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-check-quiz" class="px-4 py-2 rounded-lg text-sm font-bold text-white transition cursor-pointer" style="background:var(--accent)">Check my answer</button>
+
+        <div id="quiz-feedback" class="hidden mt-5 rounded-xl p-4 text-sm leading-relaxed"></div>
+
+        <div id="quiz-tricks" class="hidden mt-4 rounded-xl p-4 text-sm leading-relaxed" style="background:var(--rail)">
+          <p class="font-bold mb-2 flex items-center gap-1.5">💡 Secret tricks</p>
+          <ul class="list-disc list-inside space-y-1.5 text-soft">
+            <li><strong class="accent-text">Count the loops, not the lines.</strong> One pass over n elements with O(1) work per element gives O(n); nested loops over the same input usually multiply.</li><li><strong class="accent-text">Hash set/map operations are O(1) average.</strong> A loop doing one lookup or insert per iteration stays O(n) overall — the hash structure doesn't add a factor.</li><li><strong class="accent-text">Space tracks "extra" memory, not the input.</strong> Ask what new structure you're building and how big it can get.</li><li><strong class="accent-text">Two pointers / sliding window ≠ O(n²).</strong> Even though it looks like nested loops, each pointer only ever moves forward — total work stays O(n).</li><li><strong class="accent-text">A sorted string is a perfect anagram fingerprint.</strong> Any two anagrams collapse to the exact same sorted key, so a hash map keyed on that string groups them in one pass.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel rounded-2xl overflow-hidden mb-6">
+        <div class="flex border-b border-soft px-2">
+          <button data-tab="approach" class="tab-btn active px-4 py-3 text-sm font-bold transition cursor-pointer">Approach</button>
+          <button data-tab="code" class="tab-btn px-4 py-3 text-sm font-bold transition cursor-pointer">Code</button>
+          <button data-tab="complexity" class="tab-btn px-4 py-3 text-sm font-bold transition cursor-pointer">Complexity</button>
+        </div>
+
+        <div id="tab-approach" class="p-6 text-sm leading-relaxed">
+          <p class="mb-3">Anagrams share the same letters, just in different orders — so sorting each string's letters gives a canonical key that's identical for every anagram in a group. Use that sorted string as a hash map key.</p>
+        <ol class="list-decimal list-inside space-y-2 text-soft">
+          <li>For each word, compute <code class="mono accent-text">key = sorted(word)</code>.</li>
+          <li>Append the original word to <code class="mono accent-text">groups[key]</code>.</li>
+          <li>After processing every word, return all the map's values as the grouped lists.</li>
+        </ol>
+        </div>
+
+        <div id="tab-code" class="hidden p-6">
+          <div class="code-block rounded-xl p-5 overflow-x-auto relative">
+            <button id="btn-copy-code" class="absolute top-3 right-3 text-xs font-semibold text-soft hover:accent-text transition cursor-pointer">Copy</button>
+<pre><span class="kw">from</span> typing <span class="kw">import</span> List
+<span class="kw">from</span> collections <span class="kw">import</span> defaultdict
+
+<span class="kw">class</span> Solution:
+    <span class="kw">def</span> <span class="fn">groupAnagrams</span>(<span class="kw">self</span>, strs: List[str]) -&gt; List[List[str]]:
+        groups = <span class="fn">defaultdict</span>(list)
+
+        <span class="kw">for</span> s <span class="kw">in</span> strs:
+            key = <span class="str">''</span>.join(<span class="fn">sorted</span>(s))
+            groups[key].append(s)
+
+        <span class="kw">return</span> <span class="fn">list</span>(groups.values())</pre>
+          </div>
+        </div>
+
+        <div id="tab-complexity" class="hidden p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-xl p-4" style="background:var(--good-soft)">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--good)">Time</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--good)">O(n·k log k)</p>
+              <p class="text-xs text-soft mt-1">n strings, each sorted in O(k log k) where k is the max string length.</p>
+            </div>
+            <div class="rounded-xl p-4" style="background:var(--warn-soft)">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--warn)">Space</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--warn)">O(n·k)</p>
+              <p class="text-xs text-soft mt-1">The map stores every input string across all groups.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mb-6">
+        <button id="btn-toggle-review" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer">
+          <svg class="w-4 h-4" style="color:var(--warn)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span id="text-review-status">Needs Review</span>
         </button>
-        <button id="btn-toggle-solved" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
-          <svg id="icon-unsolved" class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
-          <svg id="icon-solved" class="w-4 h-4 text-emerald-500 dark:text-emerald-400 hidden" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-          <span id="text-solved-status">Mark Complete</span>
+        <button id="btn-toggle-solved" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer">
+          <svg id="icon-unsolved" class="w-4 h-4 text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
+          <svg id="icon-solved" class="w-4 h-4 hidden" style="color:var(--good)" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+          <span id="text-solved-status">Mark as Complete</span>
         </button>
       </div>
-    </div>
 
-    <div class="problem-container glass">
-        <nav class="tab-nav">
-            <button class="nav-btn active" data-section="problem">Problem</button>
-            <button class="nav-btn" data-section="intuition">Intuition</button>
-            <button class="nav-btn" data-section="solution">Solution</button>
-            <button class="nav-btn" data-section="executor">Executor Engine</button>
-            <button class="nav-btn" data-section="complexity">Complexity</button>
-        </nav>
+      <div class="border-t border-soft pt-6 flex justify-between items-center">
+        <span class="invisible"></span>
+        <a id="link-next" href="./longest-repeating-character-replacement" class="text-soft hover:accent-text transition flex items-center gap-2 text-sm font-semibold">
+          <span># Longest Repeating Character Replacement</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      </div>
 
-        <div class="p-6">
-            <section id="problem" class="content-section active">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Problem Statement</h2>
-                <p class="mb-4 text-slate-700 dark:text-slate-300">Given an array of strings <code>strs</code>, group the anagrams together. You can return the answer in any order.</p>
-                <div class="example-box">
-                    <p><strong>Input:</strong> <code>strs = ["eat","tea","tan","ate","nat","bat"]</code></p>
-                    <p><strong>Output:</strong> <code>[["bat"],["nat","tan"],["ate","eat","tea"]]</code></p>
-                </div>
-            </section>
-
-            <section id="intuition" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Solution Intuition</h2>
-                <div class="info-box">
-                    <p class="font-bold mb-2">🔑 Key Insight</p>
-                    <p>Two anagrams have the <strong>same canonical form</strong> when sorted alphabetically! Sort the string and use it as a Hash Map key.</p>
-                </div>
-            </section>
-
-            <section id="solution" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Code Solution</h2>
-<pre>
-class Solution:
-    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
-        anagram_groups = {}
-        
-        for word in strs:
-            sorted_word = ''.join(sorted(word))
-            if sorted_word not in anagram_groups:
-                anagram_groups[sorted_word] = []
-            anagram_groups[sorted_word].append(word)
-            
-        return list(anagram_groups.values())
-</pre>
-            </section>
-
-            <section id="executor" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Interactive Sandbox</h2>
-                
-                <div class="flex flex-col gap-2 mb-6">
-                    <label class="text-sm font-bold text-slate-500 uppercase tracking-wider">Input Array (comma-separated):</label>
-                    <input type="text" id="input-array" class="p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none focus:border-blue-500 w-full" value="eat,tea,tan,ate,nat,bat">
-                </div>
-
-                <div class="flex gap-3 mb-8">
-                    <button onclick="executeAlgorithm()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold transition shadow-sm">▶ Execute</button>
-                    <button onclick="resetExecutor()" class="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2 rounded-lg font-bold transition hover:opacity-80">⟲ Reset</button>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Execution Log</h3>
-                <div class="execution-log" id="execution-log">
-                    <div class="log-line">Ready to execute. Enter input and click "Execute".</div>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-8 mb-2">State at Each Step</h3>
-                <div class="state-display" id="state-display">
-                    <div class="state-entry">No execution yet</div>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-8 mb-2">Result Visualization</h3>
-                <div class="visualization" id="result-viz">
-                    <p class="text-slate-500">Run the algorithm to see groups</p>
-                </div>
-            </section>
-
-            <section id="complexity" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Complexity Analysis</h2>
-                <div class="info-box">
-                    <p><strong>Time: O(n·k log k)</strong> where n is strings and k is max length.</p>
-                    <p><strong>Space: O(n·k)</strong> to store the hash map.</p>
-                </div>
-            </section>
-        </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <script type="module">
-    // ---------------------------------------------------------
-    // 1. SUPABASE CLOUD SYNC & AUTHENTICATION (ALGOHUB CORE)
-    // ---------------------------------------------------------
     import { SUPABASE_CONFIG } from '../config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
-    const CURRENT_SLUG = "group-anagrams"; // 👈 THE GOLDEN RULE #4
+    const targetSlug = 'group-anagrams';
+    const currentDifficulty = 'Medium';
+    const sidebar = [{"slug": "group-anagrams", "title": "Group Anagrams", "implemented": true}, {"slug": "longest-repeating-character-replacement", "title": "Longest Repeating Character Replacement", "implemented": true}];
     let currentUserId = null;
-    let currentStatus = null; 
+    let currentStatus = null;
+    let solvedSlugSet = new Set();
 
-    async function checkRouteAccess() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = '../'; } 
-        else {
-            currentUserId = session.user.id;
-            fetchCloudState();
-        }
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const orb = document.getElementById('theme-orb');
+
+    function applyTheme(isDark) {
+      document.documentElement.classList.toggle('dark', isDark);
+      orb.classList.toggle('sun', !isDark);
+      orb.classList.toggle('moon', isDark);
+    }
+    const storedTheme = localStorage.getItem('color-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(storedTheme === 'dark' || (!storedTheme && prefersDark));
+
+    themeToggleBtn.addEventListener('click', () => {
+      const goingDark = !document.documentElement.classList.contains('dark');
+      applyTheme(goingDark);
+      localStorage.setItem('color-theme', goingDark ? 'dark' : 'light');
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['approach', 'code', 'complexity'].forEach(t => {
+          document.getElementById('tab-' + t).classList.toggle('hidden', t !== btn.dataset.tab);
+        });
+      });
+    });
+
+    let timeSelected = null, spaceSelected = null;
+    document.querySelectorAll('#quiz-time .quiz-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#quiz-time .quiz-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        timeSelected = opt.dataset.val;
+      });
+    });
+    document.querySelectorAll('#quiz-space .quiz-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#quiz-space .quiz-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        spaceSelected = opt.dataset.val;
+      });
+    });
+
+    document.getElementById('btn-check-quiz').onclick = () => {
+      if (!timeSelected || !spaceSelected) {
+        alert('Pick both a time and space complexity first!');
+        return;
+      }
+      const correctTime = document.getElementById('quiz-time').dataset.correct;
+      const correctSpace = document.getElementById('quiz-space').dataset.correct;
+
+      document.querySelectorAll('#quiz-time .quiz-opt').forEach(o => {
+        if (o.dataset.val === correctTime) o.classList.add('correct');
+        else if (o.dataset.val === timeSelected) o.classList.add('incorrect');
+      });
+      document.querySelectorAll('#quiz-space .quiz-opt').forEach(o => {
+        if (o.dataset.val === correctSpace) o.classList.add('correct');
+        else if (o.dataset.val === spaceSelected) o.classList.add('incorrect');
+      });
+
+      const timeRight = timeSelected === correctTime;
+      const spaceRight = spaceSelected === correctSpace;
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+
+      if (timeRight && spaceRight) {
+        feedback.style.background = 'var(--good-soft)'; feedback.style.color = 'var(--good)';
+        feedback.innerHTML = `<strong>Nailed it 🎯</strong>`;
+      } else {
+        feedback.style.background = 'var(--bad-soft)'; feedback.style.color = 'var(--bad)';
+        feedback.innerHTML = `<strong>Not quite.</strong> Check the Complexity tab below.`;
+      }
+      document.getElementById('quiz-tricks').classList.remove('hidden');
+    };
+
+    function urlFor(p) { return p.implemented ? `./${p.slug}` : `../solution?slug=${p.slug}`; }
+
+    async function init() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = '../'; return; }
+      currentUserId = session.user.id;
+      const avatar = document.getElementById('user-avatar');
+      if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
+
+      await fetchSolvedSet();
+      renderSidebar();
+      await fetchCloudState();
+      buildTrace();
+    }
+
+    async function fetchSolvedSet() {
+      const { data, error } = await supabaseClient
+        .from('user_progress').select('problem_slug').eq('user_id', currentUserId).eq('status', 'solved');
+      solvedSlugSet = (!error && data) ? new Set(data.map(d => d.problem_slug)) : new Set();
+    }
+
+    function renderSidebar() {
+      const solvedCount = sidebar.filter(p => solvedSlugSet.has(p.slug)).length;
+      document.getElementById('sidebar-progress').textContent = `${solvedCount}/${sidebar.length}`;
+      const list = document.getElementById('sidebar-list');
+      list.innerHTML = sidebar.map(p => {
+        const isSolved = solvedSlugSet.has(p.slug);
+        const isActive = p.slug === targetSlug;
+        const icon = isSolved
+          ? `<svg class="w-4 h-4 flex-shrink-0" style="color:var(--good)" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`
+          : `<div class="w-3.5 h-3.5 rounded-full border-2 flex-shrink-0" style="border-color:var(--panel-border)"></div>`;
+        return `<li>
+          <a href="${urlFor(p)}" class="flex items-center gap-3 px-4 py-3 text-sm transition-colors" style="border-left:2px solid ${isActive ? 'var(--accent)' : 'transparent'}; ${isActive ? 'background:var(--accent-soft)' : ''}">
+            ${icon}
+            <span class="truncate ${isActive ? 'font-bold accent-text' : ''}">${p.title}</span>
+          </a>
+        </li>`;
+      }).join('');
     }
 
     async function fetchCloudState() {
-        const { data } = await supabaseClient.from('user_progress').select('status').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
-        currentStatus = data ? data.status : null;
-        updateStatusUI();
+      const { data } = await supabaseClient.from('user_progress').select('status')
+        .eq('user_id', currentUserId).eq('problem_slug', targetSlug).single();
+      currentStatus = data ? data.status : null;
+      updateStatusUI();
     }
 
     async function setCloudState(newStatus) {
-        currentStatus = currentStatus === newStatus ? null : newStatus; 
-        updateStatusUI(); 
-        if (currentStatus) {
-            await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
-        } else {
-            await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
+      const previousStatus = currentStatus;
+      currentStatus = currentStatus === newStatus ? null : newStatus;
+      updateStatusUI();
+
+      if (currentStatus) {
+        await supabaseClient.from('user_progress').upsert({
+          user_id: currentUserId, problem_slug: targetSlug, status: currentStatus, updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id, problem_slug' });
+
+        if (newStatus === 'solved' && previousStatus !== 'solved') {
+          solvedSlugSet.add(targetSlug);
+          awardXPAndStreak(currentDifficulty);
         }
+      } else {
+        solvedSlugSet.delete(targetSlug);
+        await supabaseClient.from('user_progress').delete()
+          .eq('user_id', currentUserId).eq('problem_slug', targetSlug);
+      }
+      renderSidebar();
     }
 
     function updateStatusUI() {
-        const btnSolved = document.getElementById('btn-toggle-solved');
-        const textSolved = document.getElementById('text-solved-status');
-        const iconUnsolved = document.getElementById('icon-unsolved');
-        const iconSolved = document.getElementById('icon-solved');
-        const btnReview = document.getElementById('btn-toggle-review');
-        const textReview = document.getElementById('text-review-status');
+      const btnSolved = document.getElementById('btn-toggle-solved');
+      const textSolved = document.getElementById('text-solved-status');
+      const iconUnsolved = document.getElementById('icon-unsolved');
+      const iconSolved = document.getElementById('icon-solved');
+      const btnReview = document.getElementById('btn-toggle-review');
+      const textReview = document.getElementById('text-review-status');
 
-        btnSolved.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
-        btnReview.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
-        iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
-        textSolved.textContent = 'Mark Complete'; textReview.textContent = 'Needs Review';
+      iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
+      textSolved.textContent = 'Mark as Complete'; textReview.textContent = 'Needs Review';
+      btnSolved.style.background = ''; btnSolved.style.color = ''; btnSolved.style.borderColor = '';
+      btnReview.style.background = ''; btnReview.style.color = ''; btnReview.style.borderColor = '';
 
-        if (currentStatus === 'solved') {
-            btnSolved.className = "flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
-            iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
-            textSolved.textContent = 'Completed';
-        } else if (currentStatus === 'review') {
-            btnReview.className = "flex items-center gap-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-amber-600 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
-            textReview.textContent = 'Reviewing';
-        }
+      if (currentStatus === 'solved') {
+        iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
+        textSolved.textContent = 'Completed';
+        btnSolved.style.background = 'var(--good-soft)'; btnSolved.style.color = 'var(--good)'; btnSolved.style.borderColor = 'var(--good)';
+      } else if (currentStatus === 'review') {
+        textReview.textContent = 'Reviewing';
+        btnReview.style.background = 'var(--warn-soft)'; btnReview.style.color = 'var(--warn)'; btnReview.style.borderColor = 'var(--warn)';
+      }
     }
+
+    async function awardXPAndStreak(difficulty) {
+      const XP_MAP = { Easy: 10, Medium: 20, Hard: 30 };
+      const xpGain = XP_MAP[difficulty] || 10;
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
+      const { data: stats } = await supabaseClient.from('user_stats').select('*').eq('user_id', currentUserId).single();
+
+      let xp = xpGain, newStreak = 1, longestStreak = 1, streakExtended = true;
+      if (stats) {
+        xp = (stats.xp || 0) + xpGain;
+        longestStreak = stats.longest_streak || 1;
+        if (stats.last_active_date === todayStr) {
+          newStreak = stats.current_streak || 1; streakExtended = false;
+        } else {
+          const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+          const yStr = yesterday.toISOString().split('T')[0];
+          newStreak = (stats.last_active_date === yStr) ? (stats.current_streak || 0) + 1 : 1;
+        }
+        longestStreak = Math.max(longestStreak, newStreak);
+      }
+
+      await supabaseClient.from('user_stats').upsert({
+        user_id: currentUserId, xp, current_streak: newStreak, longest_streak: longestStreak,
+        last_active_date: todayStr, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    }
+
+    
+    const WORDS = ["eat", "tea", "tan", "ate", "nat", "bat"];
+    function sortedKey(w) { return w.split('').sort().join(''); }
+    let steps = [], stepIndex = -1;
+
+    function computeSteps() {
+      steps = [];
+      const groups = new Map();
+      for (let i = 0; i < WORDS.length; i++) {
+        const key = sortedKey(WORDS[i]);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(WORDS[i]);
+        steps.push({ i, key, snapshot: new Map([...groups].map(([k, v]) => [k, [...v]])) });
+      }
+    }
+
+    function buildTrace() {
+      computeSteps(); stepIndex = -1;
+      const track = document.getElementById('array-track');
+      track.innerHTML = WORDS.map((w, i) => `<div class="cell" id="cell-${i}" style="min-width:64px;">${w}<span class="idx">i=${i}</span></div>`).join('');
+      document.getElementById('map-track').innerHTML = '';
+      document.getElementById('trace-caption').textContent = 'Click "Next" to begin.';
+      updateStepControls();
+    }
+
+    function renderStep() {
+      WORDS.forEach((_, i) => document.getElementById(`cell-${i}`).classList.remove('scan', 'hit', 'done'));
+      const mapTrack = document.getElementById('map-track');
+      const caption = document.getElementById('trace-caption');
+      if (stepIndex < 0) { mapTrack.innerHTML = ''; caption.textContent = 'Click "Next" to begin.'; updateStepControls(); return; }
+      const s = steps[stepIndex];
+      mapTrack.innerHTML = Array.from(s.snapshot.entries()).map(([k, words]) =>
+        `<div class="map-slot filled" style="display:flex; gap:6px; align-items:center;"><span class="text-soft">"${k}"</span> → [${words.join(', ')}]</div>`
+      ).join('');
+      for (let i = 0; i < s.i; i++) document.getElementById(`cell-${i}`).classList.add('done');
+      document.getElementById(`cell-${s.i}`).classList.add('scan');
+      caption.textContent = `"${WORDS[s.i]}" → sorted key "${s.key}" → append to that group`;
+      updateStepControls();
+    }
+
+    function updateStepControls() {
+      document.getElementById('step-counter').textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+      document.getElementById('btn-prev').disabled = stepIndex < 0;
+      document.getElementById('btn-next').disabled = stepIndex >= steps.length - 1;
+    }
+
+
+    document.getElementById('btn-next').onclick = () => {
+      if (stepIndex < steps.length - 1) { stepIndex++; renderStep(); }
+    };
+    document.getElementById('btn-prev').onclick = () => {
+      if (stepIndex >= 0) { stepIndex--; renderStep(); }
+    };
+    document.getElementById('btn-reset').onclick = () => { buildTrace(); };
+
+    document.getElementById('btn-copy-page').onclick = async (e) => {
+      await navigator.clipboard.writeText(window.location.href);
+      const span = e.currentTarget.querySelector('span');
+      const orig = span.textContent; span.textContent = 'Copied!';
+      setTimeout(() => span.textContent = orig, 2000);
+    };
+
+    document.getElementById('btn-copy-code').onclick = async (e) => {
+      await navigator.clipboard.writeText("from typing import List\nfrom collections import defaultdict\n\nclass Solution:\n    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:\n        groups = defaultdict(list)\n\n        for s in strs:\n            key = ''.join(sorted(s))\n            groups[key].append(s)\n\n        return list(groups.values())");
+      const btn = e.currentTarget; const orig = btn.textContent;
+      btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 2000);
+    };
 
     document.getElementById('btn-toggle-solved').onclick = () => setCloudState('solved');
     document.getElementById('btn-toggle-review').onclick = () => setCloudState('review');
     document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = '../'; };
 
-    document.getElementById('btn-copy-page').onclick = async (e) => {
-        await navigator.clipboard.writeText(window.location.href);
-        const btn = e.currentTarget.querySelector('span');
-        const orig = btn.textContent; btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = orig; }, 2000);
-    };
-
-    checkRouteAccess();
-
-    // ---------------------------------------------------------
-    // 2. CUSTOM INTERACTIVE LOGIC (From Uploaded HTML)
-    // ---------------------------------------------------------
-    
-    // Tab Navigation
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(e.target.dataset.section).classList.add('active');
-            e.target.classList.add('active');
-        });
-    });
-
-    // Make functions globally available for inline onclick attributes
-    window.parseInput = function(inputStr) { return inputStr.split(',').map(s => s.trim()).filter(s => s.length > 0 || inputStr.includes('""')); }
-    window.addLog = function(line) {
-        const log = document.getElementById('execution-log');
-        log.innerHTML += `<div class="log-line mb-1">${line}</div>`;
-        log.scrollTop = log.scrollHeight;
-    }
-    window.clearLogs = function() { document.getElementById('execution-log').innerHTML = ''; }
-    
-    window.updateState = function(state) {
-        const display = document.getElementById('state-display');
-        display.innerHTML = '';
-        for (const [key, value] of Object.entries(state)) {
-            display.innerHTML += `<div class="state-entry"><span class="font-bold text-blue-500">${key}:</span> <span class="text-emerald-500">${JSON.stringify(value)}</span></div>`;
-        }
-    }
-
-    window.visualizeResult = function(groups) {
-        const viz = document.getElementById('result-viz');
-        viz.innerHTML = '';
-        groups.forEach(group => {
-            const card = document.createElement('div'); card.className = 'group-card';
-            const sorted = [...group].sort().join('');
-            card.innerHTML = `<div class="group-key">Key: "${sorted}"</div><div class="group-items">${group.map(i => `<div class="item">"${i}"</div>`).join('')}</div>`;
-            viz.appendChild(card);
-        });
-    }
-
-    window.executeAlgorithm = function() {
-        const strs = parseInput(document.getElementById('input-array').value);
-        clearLogs();
-        addLog(`<span class="log-info">[init] strs = [${strs.map(s => `"${s}"`).join(', ')}]</span>`);
-        
-        const anagramGroups = {};
-        strs.forEach((word, idx) => {
-            addLog(`<span class="log-info">--- Step ${idx + 1}: word = "${word}" ---</span>`);
-            const sortedWord = word.split('').sort().join('');
-            addLog(`  sorted_word = "${sortedWord}"`);
-            
-            if (!(sortedWord in anagramGroups)) {
-                addLog(`  "${sortedWord}" not in dict → create new list`);
-                anagramGroups[sortedWord] = [];
-            }
-            anagramGroups[sortedWord].push(word);
-            addLog(`  anagram_groups = { ... updated ... }`);
-        });
-        
-        const result = Object.values(anagramGroups);
-        updateState({ 'Input length': strs.length, 'Unique groups': Object.keys(anagramGroups).length });
-        visualizeResult(result);
-    }
-
-    window.resetExecutor = function() {
-        clearLogs();
-        document.getElementById('state-display').innerHTML = '<div class="state-entry text-slate-500">No execution yet</div>';
-        document.getElementById('result-viz').innerHTML = '<p class="text-slate-500">Run the algorithm to see groups</p>';
-        addLog('Ready to execute. Enter input and click "Execute".');
-    }
+    init();
   </script>
 </body>
 </html>

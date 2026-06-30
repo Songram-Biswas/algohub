@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>algoHub | Two Sum</title>
+<title>algoHub | __TITLE__</title>
 <link rel="icon" type="image/png" href="../favicon.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config = { darkMode: 'class' }</script>
@@ -52,6 +52,7 @@
   .cell.scan { border-color: var(--trace-scan); background: color-mix(in srgb, var(--trace-scan) 14%, var(--panel)); transform: translateY(-4px); box-shadow: 0 6px 16px -6px var(--trace-scan); }
   .cell.hit { border-color: var(--trace-hit); background: color-mix(in srgb, var(--trace-hit) 18%, var(--panel)); transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 20px -6px var(--trace-hit); }
   .cell.done { opacity: .45; }
+  .cell.discarded { opacity: .2; }
 
   .map-slot {
     border: 1.5px dashed var(--panel-border); border-radius: 10px; padding: 8px 12px;
@@ -83,6 +84,14 @@
   .theme-orb.moon::before { content:''; position:absolute; top:3px; left:2px; width:8px; height:8px; border-radius:50%; background: var(--rail); opacity:.5; }
   .theme-orb.moon::after { content:''; position:absolute; top:11px; left:11px; width:5px; height:5px; border-radius:50%; background: var(--rail); opacity:.4; }
 
+  /* Linked list trace styles */
+  .ll-node { display: flex; align-items: center; }
+  .ll-box { width: 40px; height: 40px; border: 2px solid var(--panel-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; position: relative; }
+  .ll-box.cur { border-color: var(--trace-scan); }
+  .ll-box.prev { border-color: var(--trace-hit); }
+  .ll-label { position: absolute; top: -20px; font-size: 10px; font-weight: 600; }
+  .ll-arrow { margin: 0 8px; color: var(--ink-soft); font-weight: 600; }
+
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
 </style>
@@ -110,7 +119,7 @@
     <aside class="w-full lg:w-72 lg:sticky lg:top-24 flex-shrink-0 order-2 lg:order-1">
       <div class="panel rounded-xl overflow-hidden">
         <div class="px-4 py-3 border-b border-soft flex items-center justify-between">
-          <h3 class="text-sm font-bold">Array</h3>
+          <h3 class="text-sm font-bold">__CATEGORY__</h3>
           <span id="sidebar-progress" class="text-xs mono text-soft">0/0</span>
         </div>
         <ul id="sidebar-list" class="max-h-[70vh] overflow-y-auto divide-y" style="border-color: var(--panel-border);"></ul>
@@ -120,21 +129,20 @@
     <main class="w-full flex-grow flex flex-col order-1 lg:order-2 pt-8">
 
       <div id="breadcrumb" class="text-sm text-soft mb-3 flex items-center gap-2 mono">
-        <a href="../category?course=blind-75&type=Array" class="hover:accent-text transition">Array</a>
+        <a href="../category?course=blind-75&type=__CATEGORY_URL__" class="hover:accent-text transition">__CATEGORY__</a>
         <span>/</span><span>#1</span>
       </div>
 
       <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-          <h1 class="text-4xl font-extrabold tracking-tight mb-3">Two Sum</h1>
+          <h1 class="text-4xl font-extrabold tracking-tight mb-3">__TITLE__</h1>
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="px-2.5 py-1 rounded-md text-xs font-bold" style="background:var(--good-soft); color:var(--good)">Easy</span>
-            <span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Hash Map</span>
-            <span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Array</span>
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold" style="background:var(--__DIFF_VAR__-soft); color:var(--__DIFF_VAR__)">__DIFFICULTY__</span>
+            __TAGS_HTML__
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <a href="https://leetcode.com/problems/two-sum/" target="_blank" class="flex items-center gap-1.5 text-sm font-semibold accent-text hover:underline">
+          <a href="__LEETCODE_URL__" target="_blank" class="flex items-center gap-1.5 text-sm font-semibold accent-text hover:underline">
             LeetCode ↗
           </a>
           <button id="btn-copy-page" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-3 py-1.5 rounded-lg text-sm transition cursor-pointer">
@@ -145,13 +153,9 @@
       </div>
 
       <div class="panel rounded-2xl p-6 mb-6">
-        <p class="leading-relaxed mb-4">
-          Given an array of integers <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">nums</code> and an integer <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">target</code>, return the indices of the two numbers that add up to <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">target</code>.
-        </p>
-        <p class="text-soft text-sm mb-5">You may assume exactly one solution exists, and you may not use the same element twice.</p>
+        __STATEMENT_HTML__
         <div class="rounded-xl p-4 mono text-sm" style="background:var(--rail)">
-          <p class="mb-1"><span class="text-soft">Input:</span> nums = [2,7,11,15], target = 9</p>
-          <p><span class="text-soft">Output:</span> [0,1] <span class="cm">// nums[0] + nums[1] == 9</span></p>
+          __EXAMPLE_HTML__
         </div>
       </div>
 
@@ -159,7 +163,7 @@
         <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
           <div>
             <h3 class="text-base font-bold">Execution Trace</h3>
-            <p class="text-xs text-soft mt-0.5">Step through the algorithm at your own pace — no autoplay, you're in control.</p>
+            <p class="text-xs text-soft mt-0.5">Step through the algorithm at your own pace.</p>
           </div>
           <div class="flex items-center gap-2">
             <button id="btn-prev" class="step-btn flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer" disabled>
@@ -178,35 +182,26 @@
         </div>
 
         <div class="flex flex-col items-center gap-8 py-4">
-          <div id="array-track" class="flex gap-3 pb-5"></div>
-          <div class="w-full">
-            <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">hash map &nbsp;(value → index)</p>
-            <div id="map-track" class="flex gap-2 flex-wrap min-h-[42px]"></div>
-          </div>
+          __TRACE_HTML__
           <p id="trace-caption" class="text-sm mono text-soft min-h-[20px] text-center">Click "Next" to begin.</p>
         </div>
       </div>
 
       <div class="panel rounded-2xl p-6 mb-6">
         <h3 class="text-base font-bold mb-1">Guess the Complexity</h3>
-        <p class="text-xs text-soft mb-5">Before peeking at the answer — what's the time and space complexity of the optimal solution?</p>
+        <p class="text-xs text-soft mb-5">Before peeking at the answer — what's the time and space complexity?</p>
 
         <div class="grid sm:grid-cols-2 gap-6 mb-5">
           <div>
             <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">Time Complexity</p>
-            <div id="quiz-time" class="flex flex-col gap-2" data-correct="O(n)">
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(1)">O(1)</div>
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n)">O(n)</div>
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n log n)">O(n log n)</div>
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n²)">O(n²)</div>
+            <div id="quiz-time" class="flex flex-col gap-2" data-correct="__QUIZ_TIME_CORRECT__">
+              __QUIZ_TIME_OPTIONS__
             </div>
           </div>
           <div>
             <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">Space Complexity</p>
-            <div id="quiz-space" class="flex flex-col gap-2" data-correct="O(n)">
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(1)">O(1)</div>
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n)">O(n)</div>
-              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(log n)">O(log n)</div>
+            <div id="quiz-space" class="flex flex-col gap-2" data-correct="__QUIZ_SPACE_CORRECT__">
+              __QUIZ_SPACE_OPTIONS__
             </div>
           </div>
         </div>
@@ -216,13 +211,9 @@
         <div id="quiz-feedback" class="hidden mt-5 rounded-xl p-4 text-sm leading-relaxed"></div>
 
         <div id="quiz-tricks" class="hidden mt-4 rounded-xl p-4 text-sm leading-relaxed" style="background:var(--rail)">
-          <p class="font-bold mb-2 flex items-center gap-1.5">💡 Secret tricks for spotting complexity fast</p>
+          <p class="font-bold mb-2 flex items-center gap-1.5">💡 Secret tricks</p>
           <ul class="list-disc list-inside space-y-1.5 text-soft">
-            <li><strong class="accent-text">Count the loops, not the lines.</strong> One pass over n elements with O(1) work per element → O(n). Nested loops over the same input → multiply (often O(n²)).</li>
-            <li><strong class="accent-text">Hash map operations are O(1) average.</strong> If a loop does one map lookup/insert per iteration, the loop's total time stays O(n) — the map doesn't add a factor.</li>
-            <li><strong class="accent-text">Space tracks "extra" memory, not input.</strong> The input array itself doesn't count. Ask: "what new data structure am I building, and how big can it get?" Here, the map can hold up to n entries → O(n) space.</li>
-            <li><strong class="accent-text">Sorting costs O(n log n)</strong> — if you see <code class="mono">.sort()</code> anywhere, that's usually your time complexity floor unless something else is worse.</li>
-            <li><strong class="accent-text">Two pointers / sliding window ≠ O(n²).</strong> Even though it "looks" like two loops, each pointer only moves forward — total work is still O(n).</li>
+            __TRICKS_HTML__
           </ul>
         </div>
       </div>
@@ -235,33 +226,13 @@
         </div>
 
         <div id="tab-approach" class="p-6 text-sm leading-relaxed">
-          <p class="mb-3">A brute-force check of every pair costs O(n²). The interview-standard fix: walk the array once, and at each index ask <em>"have I already seen the number that completes this pair?"</em></p>
-          <ol class="list-decimal list-inside space-y-2 text-soft">
-            <li>For the current number, compute <code class="mono accent-text">complement = target - num</code>.</li>
-            <li>Look up <code class="mono accent-text">complement</code> in the hash map.</li>
-            <li>If found, return the stored index and the current index — done in a single pass.</li>
-            <li>Otherwise, store <code class="mono accent-text">num → index</code> and continue.</li>
-          </ol>
+          __APPROACH_HTML__
         </div>
 
         <div id="tab-code" class="hidden p-6">
           <div class="code-block rounded-xl p-5 overflow-x-auto relative">
             <button id="btn-copy-code" class="absolute top-3 right-3 text-xs font-semibold text-soft hover:accent-text transition cursor-pointer">Copy</button>
-<pre><span class="kw">from</span> typing <span class="kw">import</span> List
-
-<span class="kw">class</span> <span class="fn">Solution</span>:
-    <span class="kw">def</span> <span class="fn">twoSum</span>(<span class="kw">self</span>, nums: List[<span class="fn">int</span>], target: <span class="fn">int</span>) -&gt; List[<span class="fn">int</span>]:
-        seen = {}  <span class="cm"># value -> index</span>
-
-        <span class="kw">for</span> i, num <span class="kw">in</span> <span class="fn">enumerate</span>(nums):
-            complement = target - num
-
-            <span class="kw">if</span> complement <span class="kw">in</span> seen:
-                <span class="kw">return</span> [seen[complement], i]
-
-            seen[num] = i
-
-        <span class="kw">return</span> []  <span class="cm"># no solution found</span></pre>
+<pre>__PYTHON_CODE_HTML__</pre>
           </div>
         </div>
 
@@ -269,13 +240,13 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="rounded-xl p-4" style="background:var(--good-soft)">
               <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--good)">Time</p>
-              <p class="text-2xl font-extrabold mono" style="color:var(--good)">O(n)</p>
-              <p class="text-xs text-soft mt-1">Single pass; each hash map op is O(1) average.</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--good)">__TIME_BIG__</p>
+              <p class="text-xs text-soft mt-1">__TIME_EXPLAIN__</p>
             </div>
             <div class="rounded-xl p-4" style="background:var(--warn-soft)">
               <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--warn)">Space</p>
-              <p class="text-2xl font-extrabold mono" style="color:var(--warn)">O(n)</p>
-              <p class="text-xs text-soft mt-1">Hash map stores up to n entries in the worst case.</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--warn)">__SPACE_BIG__</p>
+              <p class="text-xs text-soft mt-1">__SPACE_EXPLAIN__</p>
             </div>
           </div>
         </div>
@@ -294,14 +265,7 @@
       </div>
 
       <div class="border-t border-soft pt-6 flex justify-between items-center">
-        <a id="link-prev" href="#" class="text-soft hover:accent-text transition flex items-center gap-2 text-sm font-semibold invisible">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-          <span id="text-prev"></span>
-        </a>
-        <a id="link-next" href="../solution?slug=search-in-rotated-sorted-array" class="text-soft hover:accent-text transition flex items-center gap-2 text-sm font-semibold">
-          <span># Search in Rotated Sorted Array</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-        </a>
+        __PREV_NEXT_HTML__
       </div>
 
     </main>
@@ -311,8 +275,9 @@
     import { SUPABASE_CONFIG } from '../config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
-    const targetSlug = 'two-sum';
-    const currentDifficulty = 'Easy';
+    const targetSlug = '__SLUG__';
+    const currentDifficulty = '__DIFFICULTY__';
+    const sidebar = __SIDEBAR_JSON__;
     let currentUserId = null;
     let currentStatus = null;
     let solvedSlugSet = new Set();
@@ -385,29 +350,13 @@
 
       if (timeRight && spaceRight) {
         feedback.style.background = 'var(--good-soft)'; feedback.style.color = 'var(--good)';
-        feedback.innerHTML = `<strong>Nailed it 🎯</strong> — O(n) time and O(n) space is exactly the interview-optimal answer here. You're reasoning about hash map costs correctly.`;
-      } else if (timeRight || spaceRight) {
-        feedback.style.background = 'var(--warn-soft)'; feedback.style.color = 'var(--warn)';
-        feedback.innerHTML = `<strong>Halfway there.</strong> You got the ${timeRight ? 'time' : 'space'} complexity right, but double-check the ${timeRight ? 'space' : 'time'} — see the breakdown in the Complexity tab below.`;
+        feedback.innerHTML = `<strong>Nailed it 🎯</strong>`;
       } else {
         feedback.style.background = 'var(--bad-soft)'; feedback.style.color = 'var(--bad)';
-        feedback.innerHTML = `<strong>Not quite</strong> — but this is exactly the kind of thing that clicks fast once you see the pattern. Check the tricks below, then look at the Complexity tab.`;
+        feedback.innerHTML = `<strong>Not quite.</strong> Check the Complexity tab below.`;
       }
       document.getElementById('quiz-tricks').classList.remove('hidden');
     };
-
-    const ARRAY_PROBLEMS = [
-      { slug: "two-sum", title: "Two Sum", implemented: true },
-      { slug: "container-with-most-water", title: "Container With Most Water", implemented: false },
-      { slug: "search-in-rotated-sorted-array", title: "Search in Rotated Sorted Array", implemented: true },
-      { slug: "maximum-subarray", title: "Maximum Subarray", implemented: false },
-      { slug: "best-time-to-buy-and-sell-stock", title: "Best Time to Buy and Sell Stock", implemented: false },
-      { slug: "longest-consecutive-sequence", title: "Longest Consecutive Sequence", implemented: false },
-      { slug: "maximum-product-subarray", title: "Maximum Product Subarray", implemented: false },
-      { slug: "find-minimum-in-rotated-sorted-array", title: "Find Minimum in Rotated Sorted Array", implemented: false },
-      { slug: "contains-duplicate", title: "Contains Duplicate", implemented: false },
-      { slug: "product-of-array-except-self", title: "Product of Array Except Self", implemented: false }
-    ];
 
     function urlFor(p) { return p.implemented ? `./${p.slug}` : `../solution?slug=${p.slug}`; }
 
@@ -431,10 +380,10 @@
     }
 
     function renderSidebar() {
-      const solvedCount = ARRAY_PROBLEMS.filter(p => solvedSlugSet.has(p.slug)).length;
-      document.getElementById('sidebar-progress').textContent = `${solvedCount}/${ARRAY_PROBLEMS.length}`;
+      const solvedCount = sidebar.filter(p => solvedSlugSet.has(p.slug)).length;
+      document.getElementById('sidebar-progress').textContent = `${solvedCount}/${sidebar.length}`;
       const list = document.getElementById('sidebar-list');
-      list.innerHTML = ARRAY_PROBLEMS.map(p => {
+      list.innerHTML = sidebar.map(p => {
         const isSolved = solvedSlugSet.has(p.slug);
         const isActive = p.slug === targetSlug;
         const icon = isSolved
@@ -527,101 +476,9 @@
         user_id: currentUserId, xp, current_streak: newStreak, longest_streak: longestStreak,
         last_active_date: todayStr, updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
-
-      showRewardToast(xpGain, newStreak, streakExtended);
     }
 
-    function showRewardToast(xpGain, streak, streakExtended) {
-      const toast = document.createElement('div');
-      toast.className = "fixed bottom-6 right-6 z-[100] panel shadow-2xl rounded-2xl px-5 py-4 flex items-center gap-3 translate-y-4 opacity-0 transition-all duration-300";
-      toast.innerHTML = `
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:var(--good-soft)">
-          <svg class="w-5 h-5" style="color:var(--good)" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-        </div>
-        <div>
-          <p class="text-sm font-bold">+${xpGain} XP earned</p>
-          <p class="text-xs text-soft flex items-center gap-1">
-            <span>🔥</span>${streakExtended ? `${streak} day streak${streak > 1 ? ' — keep it going!' : ' started!'}` : `Streak: ${streak} day${streak > 1 ? 's' : ''}`}
-          </p>
-        </div>`;
-      document.body.appendChild(toast);
-      requestAnimationFrame(() => toast.classList.remove('translate-y-4', 'opacity-0'));
-      setTimeout(() => { toast.classList.add('translate-y-4', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3200);
-    }
-
-    const NUMS = [2, 7, 11, 15];
-    const TARGET = 9;
-    let steps = [];
-    let stepIndex = -1;
-
-    function computeSteps() {
-      steps = [];
-      const seen = new Map();
-      for (let i = 0; i < NUMS.length; i++) {
-        const complement = TARGET - NUMS[i];
-        steps.push({ type: 'scan', i, complement, mapSnapshot: new Map(seen) });
-        if (seen.has(complement)) {
-          steps.push({ type: 'hit', i, j: seen.get(complement), mapSnapshot: new Map(seen) });
-          break;
-        }
-        seen.set(NUMS[i], i);
-        steps.push({ type: 'store', i, mapSnapshot: new Map(seen) });
-      }
-    }
-
-    function buildTrace() {
-      computeSteps();
-      stepIndex = -1;
-      const track = document.getElementById('array-track');
-      track.innerHTML = NUMS.map((n, i) => `
-        <div class="cell" id="cell-${i}">${n}<span class="idx">i=${i}</span></div>`).join('');
-      document.getElementById('map-track').innerHTML = '';
-      document.getElementById('trace-caption').textContent = 'Click "Next" to begin.';
-      updateStepControls();
-    }
-
-    function renderStep() {
-      NUMS.forEach((_, i) => {
-        const cell = document.getElementById(`cell-${i}`);
-        cell.classList.remove('scan', 'hit', 'done');
-      });
-
-      const mapTrack = document.getElementById('map-track');
-      const caption = document.getElementById('trace-caption');
-
-      if (stepIndex < 0) {
-        mapTrack.innerHTML = '';
-        caption.textContent = 'Click "Next" to begin.';
-        updateStepControls();
-        return;
-      }
-
-      const step = steps[stepIndex];
-      mapTrack.innerHTML = Array.from(step.mapSnapshot.entries())
-        .map(([val, idx]) => `<div class="map-slot filled">${val} → ${idx}</div>`).join('')
-        || '<span class="text-xs text-soft mono">empty</span>';
-
-      for (let i = 0; i < step.i; i++) document.getElementById(`cell-${i}`).classList.add('done');
-
-      if (step.type === 'scan') {
-        document.getElementById(`cell-${step.i}`).classList.add('scan');
-        caption.textContent = `i=${step.i} → complement of ${NUMS[step.i]} is ${step.complement}. Checking map…`;
-      } else if (step.type === 'store') {
-        document.getElementById(`cell-${step.i}`).classList.add('scan');
-        caption.textContent = `Not found. Storing nums[${step.i}]=${NUMS[step.i]} → index ${step.i} in the map.`;
-      } else if (step.type === 'hit') {
-        document.getElementById(`cell-${step.i}`).classList.add('hit');
-        document.getElementById(`cell-${step.j}`).classList.add('hit');
-        caption.textContent = `Found! nums[${step.j}] + nums[${step.i}] = ${TARGET} → return [${step.j}, ${step.i}]`;
-      }
-      updateStepControls();
-    }
-
-    function updateStepControls() {
-      document.getElementById('step-counter').textContent = `Step ${stepIndex + 1} / ${steps.length}`;
-      document.getElementById('btn-prev').disabled = stepIndex < 0;
-      document.getElementById('btn-next').disabled = stepIndex >= steps.length - 1;
-    }
+    __TRACE_JS__
 
     document.getElementById('btn-next').onclick = () => {
       if (stepIndex < steps.length - 1) { stepIndex++; renderStep(); }
@@ -639,8 +496,7 @@
     };
 
     document.getElementById('btn-copy-code').onclick = async (e) => {
-      const code = `from typing import List\n\nclass Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        seen = {}  # value -> index\n\n        for i, num in enumerate(nums):\n            complement = target - num\n\n            if complement in seen:\n                return [seen[complement], i]\n\n            seen[num] = i\n\n        return []  # no solution found`;
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(__PYTHON_CODE_JS_STRING__);
       const btn = e.currentTarget; const orig = btn.textContent;
       btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 2000);
     };

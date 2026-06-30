@@ -11,6 +11,13 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+
+  .theme-orb { width: 20px; height: 20px; border-radius: 50%; position: relative; transition: all .3s; flex-shrink: 0; }
+  .theme-orb.sun { background: radial-gradient(circle at 35% 30%, #ffe9b0, #f5a623 70%); box-shadow: 0 0 12px 2px rgba(245,166,35,0.55); }
+  .theme-orb.moon { background: radial-gradient(circle at 65% 35%, #d8def8, #94a3ff 75%); box-shadow: 0 0 10px 1px rgba(148,163,255,0.5); }
+  .theme-orb.moon::before { content:''; position:absolute; top:3px; left:2px; width:7px; height:7px; border-radius:50%; background:#0a0a14; opacity:.35; }
+  .theme-orb.moon::after { content:''; position:absolute; top:10px; left:10px; width:4px; height:4px; border-radius:50%; background:#0a0a14; opacity:.3; }
+
     .glass-panel {
       background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(16px);
@@ -57,10 +64,7 @@
       <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white transition-colors duration-300">algoHub</span>
     </div>
     <div class="flex items-center gap-4">
-      <button id="theme-toggle" class="p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-sm flex items-center justify-center cursor-pointer">
-        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
-        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-      </button>
+      <button id="theme-toggle" class="p-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-sm flex items-center justify-center cursor-pointer"><span id="theme-orb" class="theme-orb sun"></span></button>
       <button id="btn-login-nav" class="glass-panel text-slate-900 dark:text-white px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-pointer flex items-center gap-2 shadow-lg group">
         Sign In
         <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -110,9 +114,8 @@
     import { SUPABASE_CONFIG } from './config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
     
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const darkIcon = document.getElementById('theme-toggle-dark-icon');
-    const lightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+    const orb = document.getElementById('theme-orb');
 
     function updateParticlesColor() {
         const isDark = document.documentElement.classList.contains('dark');
@@ -121,28 +124,20 @@
 
     let particleColor = updateParticlesColor();
 
-    if (localStorage.getItem('color-theme') === 'light' || (!('color-theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.remove('dark');
-        lightIcon.classList.remove('hidden');
-        particleColor = 'rgba(59, 130, 246, 0.5)';
-    } else {
-        document.documentElement.classList.add('dark');
-        darkIcon.classList.remove('hidden');
-        particleColor = 'rgba(99, 102, 241, 0.6)';
+    function applyTheme(isDark) {
+        document.documentElement.classList.toggle('dark', isDark);
+        orb.classList.toggle('sun', !isDark);
+        orb.classList.toggle('moon', isDark);
+        particleColor = isDark ? 'rgba(99, 102, 241, 0.6)' : 'rgba(59, 130, 246, 0.5)';
     }
+    const storedTheme = localStorage.getItem('color-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(storedTheme === 'dark' || (!storedTheme && prefersDark));
 
     themeToggleBtn.addEventListener('click', function() {
-        darkIcon.classList.toggle('hidden');
-        lightIcon.classList.toggle('hidden');
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-            particleColor = 'rgba(59, 130, 246, 0.5)';
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-            particleColor = 'rgba(99, 102, 241, 0.6)';
-        }
+        const goingDark = !document.documentElement.classList.contains('dark');
+        applyTheme(goingDark);
+        localStorage.setItem('color-theme', goingDark ? 'dark' : 'light');
     });
 
     async function init() {

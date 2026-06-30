@@ -1,523 +1,603 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>algoHub | Reverse Linked List</title>
-    <link rel="icon" type="image/png" href="../favicon.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body { background-attachment: fixed; font-family: 'Inter', sans-serif; }
-        html.dark body { background-color: #020617; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(79, 70, 229, 0.08) 0px, transparent 50%); }
-        html:not(.dark) body { background-color: #f8fafc; background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%); }
-        .glass { backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>algoHub | Reverse Linked List</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fb; --panel: #ffffff; --panel-border: #e7e9f0; --ink: #14161f; --ink-soft: #6b7080; --rail: #eef0f5;
+    --accent: #4f6df5; --accent-soft: #eef1ff;
+    --good: #1ea672; --good-soft: #e8f8f1;
+    --warn: #c2780a; --warn-soft: #fdf1e0;
+    --bad: #d23c4f; --bad-soft: #fde9ec;
+    --trace-scan: #4f6df5; --trace-hit: #1ea672;
+    --sun: #f5a623; --moon: #94a3ff;
+  }
+  html.dark {
+    --bg: #07080d; --panel: #0e1018; --panel-border: #1d2030; --ink: #eef0f7; --ink-soft: #8e93a8; --rail: #11131d;
+    --accent: #7c93ff; --accent-soft: #161a30;
+    --good: #34d399; --good-soft: #0e2420;
+    --warn: #f5b35a; --warn-soft: #271d0d;
+    --bad: #fb7185; --bad-soft: #2a1419;
+    --trace-scan: #7c93ff; --trace-hit: #34d399;
+    --sun: #f5a623; --moon: #b9c3ff;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; transition: background .25s, color .25s; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .panel { background: var(--panel); border: 1px solid var(--panel-border); }
+  .rail-bg { background: var(--rail); }
+  .text-soft { color: var(--ink-soft); }
+  .accent-text { color: var(--accent); }
+  .border-soft { border-color: var(--panel-border); }
 
-        .problem-container { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05); overflow: hidden; }
-        html.dark .problem-container { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
-        
-        .tab-nav { display: flex; background: #f8f9fa; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
-        html.dark .tab-nav { background: #1e293b; border-color: #334155; }
-        
-        .tab-nav button { flex: 1; padding: 1rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: #718096; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
-        html.dark .tab-nav button { color: #94a3b8; }
-        .tab-nav button:hover { background: #f1f5f9; color: #334155; }
-        html.dark .tab-nav button:hover { background: #334155; color: #f8fafc; }
-        .tab-nav button.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+  .cell {
+    width: 52px; height: 52px;
+    border: 1.5px solid var(--panel-border);
+    background: var(--panel);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 17px;
+    position: relative;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+  }
+  .cell .idx { position: absolute; bottom: -20px; font-size: 10px; color: var(--ink-soft); font-weight: 500; }
+  .cell.scan { border-color: var(--trace-scan); background: color-mix(in srgb, var(--trace-scan) 14%, var(--panel)); transform: translateY(-4px); box-shadow: 0 6px 16px -6px var(--trace-scan); }
+  .cell.hit { border-color: var(--trace-hit); background: color-mix(in srgb, var(--trace-hit) 18%, var(--panel)); transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 20px -6px var(--trace-hit); }
+  .cell.done { opacity: .45; }
+  .cell.discarded { opacity: .2; }
 
-        .content-section { padding: 2rem; display: none; }
-        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .map-slot {
+    border: 1.5px dashed var(--panel-border); border-radius: 10px; padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-soft);
+    transition: all .3s; opacity: .35;
+  }
+  .map-slot.filled { border-style: solid; border-color: var(--accent); color: var(--ink); opacity: 1; background: var(--accent-soft); }
 
-        .info-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .info-box { background: #0f172a; border-left-color: #38bdf8; color: #cbd5e1;}
-        
-        .example-box { background: #f8fafc; border-left: 4px solid #6366f1; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .example-box { background: #0f172a; border-left-color: #818cf8; color: #cbd5e1;}
+  .tab-btn { color: var(--ink-soft); border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: var(--accent); border-color: var(--accent); }
 
-        .approach-box { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .approach-box { background: #0f2f1f; border-left-color: #4ade80; color: #cbd5e1;}
+  .code-block { background: var(--rail); border: 1px solid var(--panel-border); font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.65; }
+  .kw { color: #c678dd; } .fn { color: #61afef; } .num { color: #d19a66; } .str { color: #98c379; } .cm { color: var(--ink-soft); font-style: italic; }
+  html:not(.dark) .kw { color: #9333ea; } html:not(.dark) .fn { color: #2563eb; } html:not(.dark) .num { color: #c2410c; } html:not(.dark) .str { color: #15803d; }
 
-        .key-insight-box { background: #fefce8; border-left: 4px solid #eab308; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
-        html.dark .key-insight-box { background: #1f2e0f; border-left-color: #facc15; color: #cbd5e1;}
+  .step-btn { background: var(--panel); border: 1px solid var(--panel-border); color: var(--ink); }
+  .step-btn:hover:not(:disabled) { background: var(--rail); }
+  .step-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-        pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-family: 'Fira Code', monospace; font-size: 0.9rem; border: 1px solid #334155;}
-        code { font-family: 'Fira Code', monospace; color: #ec4899; }
+  .quiz-opt { border: 1.5px solid var(--panel-border); background: var(--panel); cursor: pointer; transition: all .15s; }
+  .quiz-opt:hover { border-color: var(--accent); }
+  .quiz-opt.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .quiz-opt.correct { border-color: var(--good) !important; background: var(--good-soft) !important; }
+  .quiz-opt.incorrect { border-color: var(--bad) !important; background: var(--bad-soft) !important; }
 
-        .node-visual { display: inline-flex; align-items: center; gap: 4px; margin: 0.5rem 0; }
-        .node { background: #dbeafe; color: #0c4a6e; padding: 0.4rem 0.8rem; border-radius: 4px; border: 2px solid #0284c7; font-family: 'Fira Code', monospace; font-weight: 500; }
-        html.dark .node { background: #1e3a8a; color: #bfdbfe; border-color: #1e40af; }
+  .theme-orb { width: 22px; height: 22px; border-radius: 50%; position: relative; transition: all .3s; }
+  .theme-orb.sun { background: radial-gradient(circle at 35% 30%, #ffe9b0, var(--sun) 70%); box-shadow: 0 0 14px 2px color-mix(in srgb, var(--sun) 60%, transparent); }
+  .theme-orb.moon { background: radial-gradient(circle at 65% 35%, #d8def8, var(--moon) 75%); box-shadow: 0 0 12px 1px color-mix(in srgb, var(--moon) 50%, transparent); }
+  .theme-orb.moon::before { content:''; position:absolute; top:3px; left:2px; width:8px; height:8px; border-radius:50%; background: var(--rail); opacity:.5; }
+  .theme-orb.moon::after { content:''; position:absolute; top:11px; left:11px; width:5px; height:5px; border-radius:50%; background: var(--rail); opacity:.4; }
 
-        .pointer { color: #f97316; font-weight: bold; margin: 0 0.25rem; }
-        .execution-log { background: #1e293b; color: #4ade80; padding: 1rem; border-radius: 6px; font-family: 'Fira Code', monospace; font-size: 0.85rem; max-height: 400px; overflow-y: auto; margin: 1rem 0; border: 1px solid #334155; }
-        html.dark .execution-log { background: #0f172a; color: #4ade80; }
+  /* Linked list trace styles */
+  .ll-node { display: flex; align-items: center; }
+  .ll-box { width: 40px; height: 40px; border: 2px solid var(--panel-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; position: relative; }
+  .ll-box.cur { border-color: var(--trace-scan); }
+  .ll-box.prev { border-color: var(--trace-hit); }
+  .ll-label { position: absolute; top: -20px; font-size: 10px; font-weight: 600; }
+  .ll-arrow { margin: 0 8px; color: var(--ink-soft); font-weight: 600; }
 
-        .nav-arrows { display: flex; justify-content: space-between; gap: 2rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; }
-        html.dark .nav-arrows { border-top-color: #334155; }
-
-        .nav-arrow-btn { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: all 0.3s; text-decoration: none; }
-        html.dark .nav-arrow-btn { background: #1e293b; border-color: #334155; }
-        .nav-arrow-btn:hover { background: #f1f5f9; border-color: #0284c7; }
-        html.dark .nav-arrow-btn:hover { background: #334155; border-color: #0284c7; }
-        .nav-arrow-btn.disabled { opacity: 0.5; cursor: not-allowed; }
-        .nav-arrow-btn.disabled:hover { background: white; border-color: #e2e8f0; }
-        html.dark .nav-arrow-btn.disabled:hover { background: #1e293b; border-color: #334155; }
-
-        .nav-arrow-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-        html.dark .nav-arrow-label { color: #94a3b8; }
-        .nav-arrow-title { font-size: 1.1rem; font-weight: 600; color: #1e293b; }
-        html.dark .nav-arrow-title { color: #f1f5f9; }
-    </style>
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 10px; }
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen pb-12 transition-colors duration-200">
+<body class="min-h-screen flex flex-col selection:bg-indigo-500/30">
 
-  <header class="sticky top-0 z-50 bg-white/60 dark:bg-slate-950/60 border-b border-slate-200/50 dark:border-slate-800/50 glass px-6 py-4 flex justify-between items-center w-full mb-8">
+  <header class="sticky top-0 z-50 panel border-b px-6 py-3 flex justify-between items-center w-full backdrop-blur-sm" style="background: color-mix(in srgb, var(--panel) 88%, transparent);">
     <a href="../dashboard" class="flex items-center gap-3 hover:opacity-80 transition">
-      <img src="../icon.png" alt="algoHub" class="w-9 h-9 shadow-md rounded-xl">
-      <span class="text-xl font-black tracking-tight font-sans text-slate-900 dark:text-white">algoHub</span>
+      <img src="../favicon.png" alt="algoHub" class="w-8 h-8 rounded-lg shadow-sm">
+      <span class="text-xl font-extrabold tracking-tight">algoHub</span>
     </a>
-
-    <div class="flex items-center gap-4">
-      <button id="theme-toggle" class="p-2 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[40px] min-h-[40px] flex items-center justify-center cursor-pointer">
-        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"></path></svg>
-        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+    <div class="flex items-center gap-3">
+      <button id="theme-toggle" class="p-2 rounded-lg hover:bg-[var(--rail)] transition cursor-pointer flex items-center justify-center" title="Toggle theme">
+        <span id="theme-orb" class="theme-orb sun"></span>
       </button>
-
-      <div class="flex items-center gap-3 border-l border-slate-300/50 dark:border-slate-700/50 pl-4">
-        <img id="user-avatar" class="w-9 h-9 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-200 dark:bg-slate-800 object-cover shadow-sm" src="" alt="Profile">
-        <button id="btn-logout" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/50 px-4 py-2 rounded-xl font-bold transition cursor-pointer shadow-sm">Sign Out</button>
+      <div class="flex items-center gap-3 pl-3 border-l border-soft">
+        <img id="user-avatar" class="w-8 h-8 rounded-full border border-soft object-cover rail-bg" src="" alt="Profile">
+        <button id="btn-logout" class="text-xs font-semibold text-soft hover:text-red-500 transition cursor-pointer">Sign Out</button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-6">
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-slate-200 dark:border-slate-800 pb-4 mb-6 gap-4">
-      <div>
-        <div class="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
-            <a href="../category?course=blind-75&type=linked-list" class="hover:text-blue-500 transition">Linked List</a> <span>&gt;</span> <span># Reverse Linked List</span>
+  <div class="w-full max-w-6xl mx-auto px-6 pb-16 flex-grow flex flex-col lg:flex-row gap-8 items-start">
+
+    <aside class="w-full lg:w-72 lg:sticky lg:top-24 flex-shrink-0 order-2 lg:order-1">
+      <div class="panel rounded-xl overflow-hidden">
+        <div class="px-4 py-3 border-b border-soft flex items-center justify-between">
+          <h3 class="text-sm font-bold">Linked List</h3>
+          <span id="sidebar-progress" class="text-xs mono text-soft">0/0</span>
         </div>
-        <div class="flex items-center gap-3 mt-2">
-          <h1 class="text-4xl font-bold text-slate-900 dark:text-white font-sans tracking-tight">206. Reverse Linked List</h1>
-          <span class="px-2.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 mt-1">Easy</span>
+        <ul id="sidebar-list" class="max-h-[70vh] overflow-y-auto divide-y" style="border-color: var(--panel-border);"></ul>
+      </div>
+    </aside>
+
+    <main class="w-full flex-grow flex flex-col order-1 lg:order-2 pt-8">
+
+      <div id="breadcrumb" class="text-sm text-soft mb-3 flex items-center gap-2 mono">
+        <a href="../category?course=blind-75&type=Linked List" class="hover:accent-text transition">Linked List</a>
+        <span>/</span><span>#1</span>
+      </div>
+
+      <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <div>
+          <h1 class="text-4xl font-extrabold tracking-tight mb-3">Reverse Linked List</h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-1 rounded-md text-xs font-bold" style="background:var(--good-soft); color:var(--good)">Easy</span>
+            <span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Linked List</span><span class="px-2.5 py-1 rounded-md text-xs font-semibold text-soft" style="background:var(--rail)">Pointers</span>
+          </div>
         </div>
-        <a href="https://leetcode.com/problems/reverse-linked-list/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-sm font-medium mt-3 w-max">
-            Solve on LeetCode <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-        </a>
+        <div class="flex items-center gap-2">
+          <a href="https://leetcode.com/problems/reverse-linked-list/" target="_blank" class="flex items-center gap-1.5 text-sm font-semibold accent-text hover:underline">
+            LeetCode ↗
+          </a>
+          <button id="btn-copy-page" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-3 py-1.5 rounded-lg text-sm transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <span>Copy link</span>
+          </button>
+        </div>
       </div>
-      
-      <div class="flex items-center gap-3">
-        <button id="btn-copy-page" class="flex items-center gap-2 bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-lg text-sm transition cursor-pointer shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            <span>Copy Link</span>
-        </button>
-        <button id="btn-toggle-review" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
-          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span id="text-review-status">Needs Review</span>
-        </button>
-        <button id="btn-toggle-solved" class="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer">
-          <svg id="icon-unsolved" class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
-          <svg id="icon-solved" class="w-4 h-4 text-emerald-500 dark:text-emerald-400 hidden" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-          <span id="text-solved-status">Mark Complete</span>
-        </button>
+
+      <div class="panel rounded-2xl p-6 mb-6">
+        <p class="leading-relaxed mb-4">Given the <code class="mono px-1.5 py-0.5 rounded" style="background:var(--rail)">head</code> of a singly linked list, reverse the list and return the new head.</p>
+        <div class="rounded-xl p-4 mono text-sm" style="background:var(--rail)">
+          <p class="mb-1"><span class="text-soft">Input:</span> head = [1,2,3,4,5]</p><p><span class="text-soft">Output:</span> [5,4,3,2,1]</p>
+        </div>
       </div>
-    </div>
 
-    <div class="problem-container glass">
-        <nav class="tab-nav">
-            <button class="nav-btn active" data-section="problem">Problem & Examples</button>
-            <button class="nav-btn" data-section="approach">Approach & Key Insights</button>
-            <button class="nav-btn" data-section="solution">Solution & Code</button>
-            <button class="nav-btn" data-section="logs">Execution Sandbox</button>
-        </nav>
+      <div class="panel rounded-2xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div>
+            <h3 class="text-base font-bold">Execution Trace</h3>
+            <p class="text-xs text-soft mt-0.5">Step through the algorithm at your own pace.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btn-prev" class="step-btn flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer" disabled>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Prev
+            </button>
+            <span id="step-counter" class="text-xs mono text-soft px-2">Step 0 / 0</span>
+            <button id="btn-next" class="step-btn flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer">
+              Next
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+            <button id="btn-reset" class="step-btn px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer" title="Reset">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+          </div>
+        </div>
 
-        <div class="p-6">
-            <section id="problem" class="content-section active">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Description</h2>
-                <p class="text-slate-700 dark:text-slate-300 mb-4">Given the <code>head</code> of a singly linked list, reverse the list <strong>in-place</strong> and return the new head.</p>
+        <div class="flex flex-col items-center gap-8 py-4">
+          <div id="array-track" class="flex gap-2 pb-7 pt-7 flex-wrap justify-center items-center"></div>
+          <p id="trace-caption" class="text-sm mono text-soft min-h-[20px] text-center">Click "Next" to begin.</p>
+        </div>
+      </div>
 
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Constraints</h3>
-                <div class="example-box">
-                    <ul class="space-y-2 text-sm">
-                        <li>• The number of nodes in the list is the range [0, 5000].</li>
-                        <li>• <code>-5000 <= Node.val <= 5000</code></li>
-                        <li>• Must be done <strong>in-place</strong></li>
-                    </ul>
-                </div>
+      <div class="panel rounded-2xl p-6 mb-6">
+        <h3 class="text-base font-bold mb-1">Guess the Complexity</h3>
+        <p class="text-xs text-soft mb-5">Before peeking at the answer — what's the time and space complexity?</p>
 
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Examples</h3>
-                
-                <div class="example-box">
-                    <p class="font-mono text-sm mb-2"><strong>Example 1:</strong></p>
-                    <pre>Input: head = [1,2,3,4,5]
-Output: [5,4,3,2,1]
+        <div class="grid sm:grid-cols-2 gap-6 mb-5">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">Time Complexity</p>
+            <div id="quiz-time" class="flex flex-col gap-2" data-correct="O(n)">
+              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(1)">O(1)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n)">O(n)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n log n)">O(n log n)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n²)">O(n²)</div>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-soft mb-2">Space Complexity</p>
+            <div id="quiz-space" class="flex flex-col gap-2" data-correct="O(1)">
+              <div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(1)">O(1)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(n)">O(n)</div><div class="quiz-opt rounded-lg px-3 py-2 text-sm mono" data-val="O(log n)">O(log n)</div>
+            </div>
+          </div>
+        </div>
 
-Visual:
-Before: 1 → 2 → 3 → 4 → 5 → NULL
-After:  5 → 4 → 3 → 2 → 1 → NULL</pre>
-                </div>
+        <button id="btn-check-quiz" class="px-4 py-2 rounded-lg text-sm font-bold text-white transition cursor-pointer" style="background:var(--accent)">Check my answer</button>
 
-                <div class="example-box">
-                    <p class="font-mono text-sm mb-2"><strong>Example 2:</strong></p>
-                    <pre>Input: head = [1,2]
-Output: [2,1]
+        <div id="quiz-feedback" class="hidden mt-5 rounded-xl p-4 text-sm leading-relaxed"></div>
 
-Visual:
-Before: 1 → 2 → NULL
-After:  2 → 1 → NULL</pre>
-                </div>
+        <div id="quiz-tricks" class="hidden mt-4 rounded-xl p-4 text-sm leading-relaxed" style="background:var(--rail)">
+          <p class="font-bold mb-2 flex items-center gap-1.5">💡 Secret tricks</p>
+          <ul class="list-disc list-inside space-y-1.5 text-soft">
+            <li><strong class="accent-text">Count the loops, not the lines.</strong> One pass over n elements with O(1) work per element gives O(n); nested loops over the same input usually multiply.</li><li><strong class="accent-text">Hash set/map operations are O(1) average.</strong> A loop doing one lookup or insert per iteration stays O(n) overall — the hash structure doesn't add a factor.</li><li><strong class="accent-text">Space tracks "extra" memory, not the input.</strong> Ask what new structure you're building and how big it can get.</li><li><strong class="accent-text">Save next before you overwrite it.</strong> The single most common bug in pointer-reversal problems is losing the rest of the list because you flipped <code class="mono">curr.next</code> before storing where it pointed.</li>
+          </ul>
+        </div>
+      </div>
 
-                <div class="example-box">
-                    <p class="font-mono text-sm mb-2"><strong>Example 3:</strong></p>
-                    <pre>Input: head = []
-Output: []
+      <div class="panel rounded-2xl overflow-hidden mb-6">
+        <div class="flex border-b border-soft px-2">
+          <button data-tab="approach" class="tab-btn active px-4 py-3 text-sm font-bold transition cursor-pointer">Approach</button>
+          <button data-tab="code" class="tab-btn px-4 py-3 text-sm font-bold transition cursor-pointer">Code</button>
+          <button data-tab="complexity" class="tab-btn px-4 py-3 text-sm font-bold transition cursor-pointer">Complexity</button>
+        </div>
 
-Visual: Empty list remains empty</pre>
-                </div>
-            </section>
+        <div id="tab-approach" class="p-6 text-sm leading-relaxed">
+          <p class="mb-3">Walk the list once, flipping each node's <code class="mono accent-text">next</code> pointer to point backward instead of forward. Three pointers do the work: <code class="mono accent-text">prev</code> (the reversed portion so far), <code class="mono accent-text">curr</code> (the node being flipped), and a temporary <code class="mono accent-text">next_node</code> to avoid losing the rest of the list.</p>
+        <ol class="list-decimal list-inside space-y-2 text-soft">
+          <li>Start with <code class="mono accent-text">prev = None</code>, <code class="mono accent-text">curr = head</code>.</li>
+          <li>Save <code class="mono accent-text">next_node = curr.next</code> before changing anything.</li>
+          <li>Flip the pointer: <code class="mono accent-text">curr.next = prev</code>.</li>
+          <li>Advance both: <code class="mono accent-text">prev = curr</code>, <code class="mono accent-text">curr = next_node</code>.</li>
+          <li>When <code class="mono accent-text">curr</code> is <code class="mono accent-text">None</code>, <code class="mono accent-text">prev</code> is the new head.</li>
+        </ol>
+        </div>
 
-            <section id="approach" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Approach & Key Insights</h2>
-                
-                <div class="key-insight-box">
-                    <h3 class="font-bold mb-2">🔴 The Key Insight</h3>
-                    <p>To reverse a linked list without extra data structures, we need <strong>three pointers</strong>:</p>
-                    <ul class="mt-3 space-y-2 text-sm">
-                        <li><code class="pointer">prev</code> — Points to the reversed part</li>
-                        <li><code class="pointer">curr</code> — Points to the current node being processed</li>
-                        <li><code class="pointer">next</code> — <strong>Saves the next node before we flip</strong></li>
-                    </ul>
-                </div>
+        <div id="tab-code" class="hidden p-6">
+          <div class="code-block rounded-xl p-5 overflow-x-auto relative">
+            <button id="btn-copy-code" class="absolute top-3 right-3 text-xs font-semibold text-soft hover:accent-text transition cursor-pointer">Copy</button>
+<pre><span class="kw">from</span> typing <span class="kw">import</span> Optional
 
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Why Do We Need Three Pointers?</h3>
-                <div class="approach-box">
-                    <p class="text-sm mb-3">When we execute <code>curr.next = prev</code>, we <strong>overwrite</strong> the reference to the next unprocessed node. Without saving it first, we lose access to the rest of the list!</p>
-                    <div class="mt-3 p-3 bg-white dark:bg-slate-900 rounded border-l-2 border-red-500">
-                        <p class="text-sm font-mono"><span style="color:#ef4444">❌ WRONG:</span></p>
-                        <pre style="background: none; padding: 0; margin: 0.5rem 0; border: none;">curr.next = prev
-curr = curr.next</pre>
-                    </div>
-                    <div class="mt-3 p-3 bg-white dark:bg-slate-900 rounded border-l-2 border-green-500">
-                        <p class="text-sm font-mono"><span style="color:#22c55e">✅ CORRECT:</span></p>
-                        <pre style="background: none; padding: 0; margin: 0.5rem 0; border: none;">next = curr.next
-curr.next = prev
-curr = next</pre>
-                    </div>
-                </div>
+<span class="kw">class</span> ListNode:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, val=<span class="num">0</span>, next=<span class="kw">None</span>):
+        <span class="kw">self</span>.val = val
+        <span class="kw">self</span>.next = next
 
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Step-by-Step Process</h3>
-                <div class="approach-box">
-                    <p class="text-sm mb-3"><strong>Input:</strong> 1 → 2 → 3 → NULL</p>
-                    <div class="space-y-4 text-sm">
-                        <div class="p-2 bg-white dark:bg-slate-900 rounded">
-                            <p><strong>Iteration 1:</strong> Process node 1</p>
-                            <pre style="background: none; padding: 0.5rem 0; margin: 0.5rem 0; border: none; font-size: 0.8rem;">prev = None,  curr = 1,  next = 2
-After flip:  prev = 1 → None,  curr = 2 → 3</pre>
-                        </div>
-                        <div class="p-2 bg-white dark:bg-slate-900 rounded">
-                            <p><strong>Iteration 2:</strong> Process node 2</p>
-                            <pre style="background: none; padding: 0.5rem 0; margin: 0.5rem 0; border: none; font-size: 0.8rem;">prev = 1,  curr = 2,  next = 3
-After flip:  prev = 2 → 1,  curr = 3</pre>
-                        </div>
-                        <div class="p-2 bg-white dark:bg-slate-900 rounded">
-                            <p><strong>Iteration 3:</strong> Process node 3</p>
-                            <pre style="background: none; padding: 0.5rem 0; margin: 0.5rem 0; border: none; font-size: 0.8rem;">prev = 2,  curr = 3,  next = None
-After flip:  prev = 3 → 2 → 1,  curr = None</pre>
-                        </div>
-                    </div>
-                    <p class="mt-3 text-sm"><strong>Return:</strong> prev</p>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Complexity Analysis</h3>
-                <div class="info-box">
-                    <ul class="space-y-2 text-sm">
-                        <li><strong>Time Complexity:</strong> <code>O(n)</code></li>
-                        <li><strong>Space Complexity:</strong> <code>O(1)</code></li>
-                        <li><strong>In-place:</strong> ✓ Yes</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section id="solution" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Solution & Code</h2>
-                
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">Python Solution (Iterative)</h3>
-                <pre><code class="text-sm">class Solution:
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        prev = None
+<span class="kw">class</span> Solution:
+    <span class="kw">def</span> <span class="fn">reverseList</span>(<span class="kw">self</span>, head: Optional[ListNode]) -&gt; Optional[ListNode]:
+        prev = <span class="kw">None</span>
         curr = head
-        
-        while curr:
+
+        <span class="kw">while</span> curr:
             next_node = curr.next
             curr.next = prev
             prev = curr
             curr = next_node
-        
-        return prev</code></pre>
 
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Key Lines Explained</h3>
-                <div class="info-box">
-                    <p class="font-mono text-sm mb-3"><strong>Line 1: <code>next_node = curr.next</code></strong></p>
-                    <p class="text-sm mb-4">We must save the reference to the next node <strong>before</strong> we flip the pointer. Once we do <code>curr.next = prev</code>, the original forward reference is lost forever.</p>
-
-                    <p class="font-mono text-sm mb-3 mt-4"><strong>Line 2: <code>curr.next = prev</code></strong></p>
-                    <p class="text-sm">This is the core reversal operation. We make the current node point backward instead of forward.</p>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 mt-6">Bonus: Recursive Solution</h3>
-                <pre><code class="text-sm">class Solution:
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if not head or not head.next:
-            return head
-        
-        new_head = self.reverseList(head.next)
-        
-        head.next.next = head
-        head.next = None
-        
-        return new_head</code></pre>
-
-                <div class="approach-box">
-                    <p class="text-sm"><strong>Note:</strong> The recursive solution is elegant but uses O(n) space for the recursion stack. The iterative solution is preferred because it's in-place with O(1) space.</p>
-                </div>
-            </section>
-
-            <section id="logs" class="content-section">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Execution Sandbox</h2>
-                
-                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg mb-4 border border-slate-200 dark:border-slate-800">
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Enter List Values (comma-separated):</label>
-                    <input type="text" id="input-list" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., 1,2,3,4,5" value="1,2,3,4,5">
-                    <button onclick="window.executeReversal()" class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">Execute Reversal</button>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">Execution Trace:</h3>
-                <div id="execution-log" class="execution-log">
-                    <span style="color: #888888">Run the algorithm to see step-by-step execution</span>
-                </div>
-            </section>
+        <span class="kw">return</span> prev</pre>
+          </div>
         </div>
 
-        <div class="nav-arrows">
-            <a href="./two-sum.html" class="nav-arrow-btn">
-                <span class="nav-arrow-label">← Previous</span>
-                <span class="nav-arrow-title">1. Palindromic Substrings</span>
-            </a>
-            <a href="./palindrome.html" class="nav-arrow-btn">
-                <span class="nav-arrow-label">Next →</span>
-                <span class="nav-arrow-title">125. Valid Palindrome</span>
-            </a>
+        <div id="tab-complexity" class="hidden p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-xl p-4" style="background:var(--good-soft)">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--good)">Time</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--good)">O(n)</p>
+              <p class="text-xs text-soft mt-1">Every node is visited exactly once to flip its pointer.</p>
+            </div>
+            <div class="rounded-xl p-4" style="background:var(--warn-soft)">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--warn)">Space</p>
+              <p class="text-2xl font-extrabold mono" style="color:var(--warn)">O(1)</p>
+              <p class="text-xs text-soft mt-1">Only two or three pointers are tracked — the list is reversed in place.</p>
+            </div>
+          </div>
         </div>
-    </div>
-  </main>
+      </div>
+
+      <div class="flex justify-end gap-3 mb-6">
+        <button id="btn-toggle-review" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer">
+          <svg class="w-4 h-4" style="color:var(--warn)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span id="text-review-status">Needs Review</span>
+        </button>
+        <button id="btn-toggle-solved" class="flex items-center gap-2 panel hover:bg-[var(--rail)] border border-soft px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer">
+          <svg id="icon-unsolved" class="w-4 h-4 text-soft" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>
+          <svg id="icon-solved" class="w-4 h-4 hidden" style="color:var(--good)" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+          <span id="text-solved-status">Mark as Complete</span>
+        </button>
+      </div>
+
+      <div class="border-t border-soft pt-6 flex justify-between items-center">
+        <span class="invisible"></span>
+        <span class="invisible"></span>
+      </div>
+
+    </main>
+  </div>
 
   <script type="module">
     import { SUPABASE_CONFIG } from '../config.js';
-    
-    const CURRENT_SLUG = 'reverse-linked-list';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-    
+
+    const targetSlug = 'reverse-linked-list';
+    const currentDifficulty = 'Easy';
+    const sidebar = [{"slug": "reverse-linked-list", "title": "Reverse Linked List", "implemented": true}];
     let currentUserId = null;
     let currentStatus = null;
+    let solvedSlugSet = new Set();
 
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        updateThemeIcons();
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const orb = document.getElementById('theme-orb');
+
+    function applyTheme(isDark) {
+      document.documentElement.classList.toggle('dark', isDark);
+      orb.classList.toggle('sun', !isDark);
+      orb.classList.toggle('moon', isDark);
+    }
+    const storedTheme = localStorage.getItem('color-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(storedTheme === 'dark' || (!storedTheme && prefersDark));
+
+    themeToggleBtn.addEventListener('click', () => {
+      const goingDark = !document.documentElement.classList.contains('dark');
+      applyTheme(goingDark);
+      localStorage.setItem('color-theme', goingDark ? 'dark' : 'light');
     });
 
-    function updateThemeIcons() {
-        const darkIcon = document.getElementById('theme-toggle-dark-icon');
-        const lightIcon = document.getElementById('theme-toggle-light-icon');
-        if (document.documentElement.classList.contains('dark')) {
-            darkIcon.classList.add('hidden');
-            lightIcon.classList.remove('hidden');
-        } else {
-            darkIcon.classList.remove('hidden');
-            lightIcon.classList.add('hidden');
-        }
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['approach', 'code', 'complexity'].forEach(t => {
+          document.getElementById('tab-' + t).classList.toggle('hidden', t !== btn.dataset.tab);
+        });
+      });
+    });
+
+    let timeSelected = null, spaceSelected = null;
+    document.querySelectorAll('#quiz-time .quiz-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#quiz-time .quiz-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        timeSelected = opt.dataset.val;
+      });
+    });
+    document.querySelectorAll('#quiz-space .quiz-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#quiz-space .quiz-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        spaceSelected = opt.dataset.val;
+      });
+    });
+
+    document.getElementById('btn-check-quiz').onclick = () => {
+      if (!timeSelected || !spaceSelected) {
+        alert('Pick both a time and space complexity first!');
+        return;
+      }
+      const correctTime = document.getElementById('quiz-time').dataset.correct;
+      const correctSpace = document.getElementById('quiz-space').dataset.correct;
+
+      document.querySelectorAll('#quiz-time .quiz-opt').forEach(o => {
+        if (o.dataset.val === correctTime) o.classList.add('correct');
+        else if (o.dataset.val === timeSelected) o.classList.add('incorrect');
+      });
+      document.querySelectorAll('#quiz-space .quiz-opt').forEach(o => {
+        if (o.dataset.val === correctSpace) o.classList.add('correct');
+        else if (o.dataset.val === spaceSelected) o.classList.add('incorrect');
+      });
+
+      const timeRight = timeSelected === correctTime;
+      const spaceRight = spaceSelected === correctSpace;
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+
+      if (timeRight && spaceRight) {
+        feedback.style.background = 'var(--good-soft)'; feedback.style.color = 'var(--good)';
+        feedback.innerHTML = `<strong>Nailed it 🎯</strong>`;
+      } else {
+        feedback.style.background = 'var(--bad-soft)'; feedback.style.color = 'var(--bad)';
+        feedback.innerHTML = `<strong>Not quite.</strong> Check the Complexity tab below.`;
+      }
+      document.getElementById('quiz-tricks').classList.remove('hidden');
+    };
+
+    function urlFor(p) { return p.implemented ? `./${p.slug}` : `../solution?slug=${p.slug}`; }
+
+    async function init() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = '../'; return; }
+      currentUserId = session.user.id;
+      const avatar = document.getElementById('user-avatar');
+      if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
+
+      await fetchSolvedSet();
+      renderSidebar();
+      await fetchCloudState();
+      buildTrace();
     }
 
-    if (localStorage.getItem('theme') === 'light') {
-        document.documentElement.classList.remove('dark');
+    async function fetchSolvedSet() {
+      const { data, error } = await supabaseClient
+        .from('user_progress').select('problem_slug').eq('user_id', currentUserId).eq('status', 'solved');
+      solvedSlugSet = (!error && data) ? new Set(data.map(d => d.problem_slug)) : new Set();
     }
-    updateThemeIcons();
 
-    async function checkRouteAccess() {
-        try {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUserId = session.user.id;
-                const avatar = document.getElementById('user-avatar');
-                if (avatar && session.user.user_metadata.avatar_url) {
-                    avatar.src = session.user.user_metadata.avatar_url;
-                }
-                fetchCloudState();
-            }
-        } catch (error) {
-            console.warn('Supabase authentication failed or keys are invalid. Running in local mode.');
-        }
+    function renderSidebar() {
+      const solvedCount = sidebar.filter(p => solvedSlugSet.has(p.slug)).length;
+      document.getElementById('sidebar-progress').textContent = `${solvedCount}/${sidebar.length}`;
+      const list = document.getElementById('sidebar-list');
+      list.innerHTML = sidebar.map(p => {
+        const isSolved = solvedSlugSet.has(p.slug);
+        const isActive = p.slug === targetSlug;
+        const icon = isSolved
+          ? `<svg class="w-4 h-4 flex-shrink-0" style="color:var(--good)" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`
+          : `<div class="w-3.5 h-3.5 rounded-full border-2 flex-shrink-0" style="border-color:var(--panel-border)"></div>`;
+        return `<li>
+          <a href="${urlFor(p)}" class="flex items-center gap-3 px-4 py-3 text-sm transition-colors" style="border-left:2px solid ${isActive ? 'var(--accent)' : 'transparent'}; ${isActive ? 'background:var(--accent-soft)' : ''}">
+            ${icon}
+            <span class="truncate ${isActive ? 'font-bold accent-text' : ''}">${p.title}</span>
+          </a>
+        </li>`;
+      }).join('');
     }
 
     async function fetchCloudState() {
-        if (!currentUserId) return;
-        try {
-            const { data } = await supabaseClient.from('user_progress').select('status').eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG).single();
-            currentStatus = data ? data.status : null;
-            updateStatusUI();
-        } catch (err) {
-            console.log('No status found, creating new entry');
-        }
+      const { data } = await supabaseClient.from('user_progress').select('status')
+        .eq('user_id', currentUserId).eq('problem_slug', targetSlug).single();
+      currentStatus = data ? data.status : null;
+      updateStatusUI();
     }
 
     async function setCloudState(newStatus) {
-        currentStatus = currentStatus === newStatus ? null : newStatus; 
-        updateStatusUI(); 
-        if (currentUserId && currentStatus) {
-            try {
-                await supabaseClient.from('user_progress').upsert({ user_id: currentUserId, problem_slug: CURRENT_SLUG, status: currentStatus, updated_at: new Date().toISOString() }, { onConflict: 'user_id, problem_slug' });
-            } catch (e) {}
-        } else if (currentUserId) {
-            try {
-                await supabaseClient.from('user_progress').delete().eq('user_id', currentUserId).eq('problem_slug', CURRENT_SLUG);
-            } catch (e) {}
+      const previousStatus = currentStatus;
+      currentStatus = currentStatus === newStatus ? null : newStatus;
+      updateStatusUI();
+
+      if (currentStatus) {
+        await supabaseClient.from('user_progress').upsert({
+          user_id: currentUserId, problem_slug: targetSlug, status: currentStatus, updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id, problem_slug' });
+
+        if (newStatus === 'solved' && previousStatus !== 'solved') {
+          solvedSlugSet.add(targetSlug);
+          awardXPAndStreak(currentDifficulty);
         }
+      } else {
+        solvedSlugSet.delete(targetSlug);
+        await supabaseClient.from('user_progress').delete()
+          .eq('user_id', currentUserId).eq('problem_slug', targetSlug);
+      }
+      renderSidebar();
     }
 
     function updateStatusUI() {
-        const btnSolved = document.getElementById('btn-toggle-solved');
-        const textSolved = document.getElementById('text-solved-status');
-        const iconUnsolved = document.getElementById('icon-unsolved');
-        const iconSolved = document.getElementById('icon-solved');
-        const btnReview = document.getElementById('btn-toggle-review');
-        const textReview = document.getElementById('text-review-status');
+      const btnSolved = document.getElementById('btn-toggle-solved');
+      const textSolved = document.getElementById('text-solved-status');
+      const iconUnsolved = document.getElementById('icon-unsolved');
+      const iconSolved = document.getElementById('icon-solved');
+      const btnReview = document.getElementById('btn-toggle-review');
+      const textReview = document.getElementById('text-review-status');
 
-        btnSolved.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
-        btnReview.className = "flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-full text-sm font-medium transition shadow-sm cursor-pointer";
-        iconUnsolved.classList.remove('hidden'); 
-        iconSolved.classList.add('hidden');
-        textSolved.textContent = 'Mark as Complete'; 
-        textReview.textContent = 'Needs Review';
+      iconUnsolved.classList.remove('hidden'); iconSolved.classList.add('hidden');
+      textSolved.textContent = 'Mark as Complete'; textReview.textContent = 'Needs Review';
+      btnSolved.style.background = ''; btnSolved.style.color = ''; btnSolved.style.borderColor = '';
+      btnReview.style.background = ''; btnReview.style.color = ''; btnReview.style.borderColor = '';
 
-        if (currentStatus === 'solved') {
-            btnSolved.className = "flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
-            iconUnsolved.classList.add('hidden'); 
-            iconSolved.classList.remove('hidden');
-            textSolved.textContent = 'Completed';
-        } else if (currentStatus === 'review') {
-            btnReview.className = "flex items-center gap-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer";
-            textReview.textContent = 'Reviewing';
-        }
+      if (currentStatus === 'solved') {
+        iconUnsolved.classList.add('hidden'); iconSolved.classList.remove('hidden');
+        textSolved.textContent = 'Completed';
+        btnSolved.style.background = 'var(--good-soft)'; btnSolved.style.color = 'var(--good)'; btnSolved.style.borderColor = 'var(--good)';
+      } else if (currentStatus === 'review') {
+        textReview.textContent = 'Reviewing';
+        btnReview.style.background = 'var(--warn-soft)'; btnReview.style.color = 'var(--warn)'; btnReview.style.borderColor = 'var(--warn)';
+      }
     }
+
+    async function awardXPAndStreak(difficulty) {
+      const XP_MAP = { Easy: 10, Medium: 20, Hard: 30 };
+      const xpGain = XP_MAP[difficulty] || 10;
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
+      const { data: stats } = await supabaseClient.from('user_stats').select('*').eq('user_id', currentUserId).single();
+
+      let xp = xpGain, newStreak = 1, longestStreak = 1, streakExtended = true;
+      if (stats) {
+        xp = (stats.xp || 0) + xpGain;
+        longestStreak = stats.longest_streak || 1;
+        if (stats.last_active_date === todayStr) {
+          newStreak = stats.current_streak || 1; streakExtended = false;
+        } else {
+          const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+          const yStr = yesterday.toISOString().split('T')[0];
+          newStreak = (stats.last_active_date === yStr) ? (stats.current_streak || 0) + 1 : 1;
+        }
+        longestStreak = Math.max(longestStreak, newStreak);
+      }
+
+      await supabaseClient.from('user_stats').upsert({
+        user_id: currentUserId, xp, current_streak: newStreak, longest_streak: longestStreak,
+        last_active_date: todayStr, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    }
+
+    
+    const VALS = [1, 2, 3, 4, 5];
+    let steps = [], stepIndex = -1;
+
+    function computeSteps() {
+      // node i's "next" pointer target index, -1 means null. Starts as i+1 (forward list).
+      steps = [];
+      let nextPtr = VALS.map((_, i) => i + 1 < VALS.length ? i + 1 : -1);
+      let prev = -1, curr = 0;
+      steps.push({ prev, curr, nextPtr: [...nextPtr], action: 'start' });
+      while (curr !== -1) {
+        const nextNode = nextPtr[curr];
+        nextPtr[curr] = prev;
+        prev = curr;
+        curr = nextNode;
+        steps.push({ prev, curr, nextPtr: [...nextPtr], action: 'flip' });
+      }
+    }
+
+    function buildTrace() {
+      computeSteps(); stepIndex = -1;
+      renderListStructure(steps[0].nextPtr, -1, 0);
+      document.getElementById('trace-caption').textContent = 'Click "Next" to begin.';
+      updateStepControls();
+    }
+
+    function renderListStructure(nextPtr, prevIdx, currIdx) {
+      const track = document.getElementById('array-track');
+      // order nodes left-to-right by original index for stable visual layout
+      let html = '';
+      VALS.forEach((v, i) => {
+        const isCur = i === currIdx, isPrev = i === prevIdx;
+        html += `<div class="ll-node">
+          <div class="ll-box ${isCur ? 'cur' : ''} ${isPrev ? 'prev' : ''}">${v}
+            ${isCur ? '<span class="ll-label" style="color:var(--trace-scan)">curr</span>' : ''}
+            ${isPrev ? '<span class="ll-label" style="color:var(--trace-hit)">prev</span>' : ''}
+          </div>
+          <span class="ll-arrow">${nextPtr[i] === -1 ? '→ ∅' : (nextPtr[i] > i ? '→' : '←')}</span>
+        </div>`;
+      });
+      track.innerHTML = html;
+    }
+
+    function renderStep() {
+      const caption = document.getElementById('trace-caption');
+      if (stepIndex < 0) {
+        renderListStructure(steps[0].nextPtr, -1, 0);
+        caption.textContent = 'Click "Next" to begin.'; updateStepControls(); return;
+      }
+      const s = steps[stepIndex];
+      renderListStructure(s.nextPtr, s.prev, s.curr);
+      if (s.action === 'start') {
+        caption.textContent = `prev=None, curr=head (node ${VALS[s.curr]})`;
+      } else if (s.curr === -1) {
+        caption.textContent = `curr is None → reversal complete. New head is node ${VALS[s.prev]}.`;
+      } else {
+        caption.textContent = `Flipped node ${VALS[s.prev]}'s pointer backward. Now prev=${VALS[s.prev]}, curr=${VALS[s.curr]}.`;
+      }
+      updateStepControls();
+    }
+
+    function updateStepControls() {
+      document.getElementById('step-counter').textContent = `Step ${stepIndex + 1} / ${steps.length}`;
+      document.getElementById('btn-prev').disabled = stepIndex < 0;
+      document.getElementById('btn-next').disabled = stepIndex >= steps.length - 1;
+    }
+
+
+    document.getElementById('btn-next').onclick = () => {
+      if (stepIndex < steps.length - 1) { stepIndex++; renderStep(); }
+    };
+    document.getElementById('btn-prev').onclick = () => {
+      if (stepIndex >= 0) { stepIndex--; renderStep(); }
+    };
+    document.getElementById('btn-reset').onclick = () => { buildTrace(); };
+
+    document.getElementById('btn-copy-page').onclick = async (e) => {
+      await navigator.clipboard.writeText(window.location.href);
+      const span = e.currentTarget.querySelector('span');
+      const orig = span.textContent; span.textContent = 'Copied!';
+      setTimeout(() => span.textContent = orig, 2000);
+    };
+
+    document.getElementById('btn-copy-code').onclick = async (e) => {
+      await navigator.clipboard.writeText("from typing import Optional\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\nclass Solution:\n    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        prev = None\n        curr = head\n\n        while curr:\n            next_node = curr.next\n            curr.next = prev\n            prev = curr\n            curr = next_node\n\n        return prev");
+      const btn = e.currentTarget; const orig = btn.textContent;
+      btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 2000);
+    };
 
     document.getElementById('btn-toggle-solved').onclick = () => setCloudState('solved');
     document.getElementById('btn-toggle-review').onclick = () => setCloudState('review');
-    document.getElementById('btn-logout').onclick = async () => { 
-        try { await supabaseClient.auth.signOut(); } catch (e) {}
-        window.location.href = '../'; 
-    };
+    document.getElementById('btn-logout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = '../'; };
 
-    document.getElementById('btn-copy-page').onclick = async (e) => {
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            const btn = e.currentTarget.querySelector('span');
-            const originalText = btn.textContent;
-            btn.textContent = 'Copied!';
-            e.currentTarget.classList.add('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400');
-            setTimeout(() => { 
-                btn.textContent = originalText; 
-                e.currentTarget.classList.remove('text-emerald-600', 'border-emerald-600', 'dark:text-emerald-400', 'dark:border-emerald-400');
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy', err);
-        }
-    };
-
-    checkRouteAccess();
-
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(e.target.dataset.section).classList.add('active');
-            e.target.classList.add('active');
-        });
-    });
-
-    class ListNode {
-        constructor(val = 0, next = null) {
-            this.val = val;
-            this.next = next;
-        }
-    }
-
-    function createLinkedList(values) {
-        if (!values || values.length === 0) return null;
-        let head = new ListNode(values[0]);
-        let curr = head;
-        for (let i = 1; i < values.length; i++) {
-            curr.next = new ListNode(values[i]);
-            curr = curr.next;
-        }
-        return head;
-    }
-
-    function listToArray(head) {
-        let result = [];
-        let curr = head;
-        while (curr) {
-            result.push(curr.val);
-            curr = curr.next;
-        }
-        return result;
-    }
-
-    // Attach function to window object so it can be called from inline HTML event listeners
-    window.executeReversal = function() {
-        const input = document.getElementById('input-list').value.trim();
-        const values = input ? input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)) : [];
-        const log = document.getElementById('execution-log');
-        
-        log.innerHTML = '';
-        
-        if (values.length === 0) {
-            log.innerHTML = `<span style="color:#60a5fa">[init]</span> Empty list<br><br><span style="color:#4ade80">[return]</span> null`;
-            return;
-        }
-
-        log.innerHTML = `<span style="color:#60a5fa">[init]</span> head = [${values.join(', ')}]<br>`;
-        log.innerHTML += `         prev = null, curr = Node(${values[0]})<br><br>`;
-
-        let head = createLinkedList(values);
-        let prev = null;
-        let curr = head;
-        let step = 1;
-
-        while (curr) {
-            log.innerHTML += `<span style="color:#fbbf24">━ Iteration ${step} ━</span><br>`;
-            log.innerHTML += `next = curr.next = ${curr.next ? 'Node(' + curr.next.val + ')' : 'null'}<br>`;
-            log.innerHTML += `curr.next = prev  <span style="color:#4ade80">(flip: ${curr.val} now points to ${prev ? prev.val : 'null'})</span><br>`;
-            
-            let next = curr.next;
-            curr.next = prev;
-            
-            log.innerHTML += `prev = curr = Node(${curr.val})<br>`;
-            log.innerHTML += `curr = next<br><br>`;
-            
-            prev = curr;
-            curr = next;
-            step++;
-        }
-
-        log.innerHTML += `<span style="color:#60a5fa">[exit loop]</span> curr is null<br><br>`;
-        log.innerHTML += `<span style="color:#4ade80">[return]</span> prev = [${listToArray(prev).join(', ')}]`;
-    };
+    init();
   </script>
 </body>
 </html>
