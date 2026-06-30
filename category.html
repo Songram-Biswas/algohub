@@ -19,16 +19,19 @@
             position: relative;
             transition: all .3s;
             flex-shrink: 0;
+            border: 2px solid rgba(148, 163, 184, 0.3);
         }
 
         .theme-orb.sun {
             background: radial-gradient(circle at 35% 30%, #ffe9b0, #f5a623 70%);
-            box-shadow: 0 0 14px 2px rgba(245, 166, 35, 0.6);
+            box-shadow: 0 0 14px 2px rgba(245, 166, 35, 0.7), inset 0 0 8px rgba(255,255,255,0.3);
+            border-color: rgba(245, 166, 35, 0.5);
         }
 
         .theme-orb.moon {
             background: radial-gradient(circle at 65% 35%, #e2e8f0, #94a3ff 75%);
-            box-shadow: 0 0 12px 2px rgba(148, 163, 255, 0.6);
+            box-shadow: 0 0 12px 2px rgba(148, 163, 255, 0.7), inset 0 0 8px rgba(255,255,255,0.2);
+            border-color: rgba(148, 163, 255, 0.5);
         }
 
         .theme-orb.moon::before {
@@ -72,6 +75,14 @@
             border: 1px solid #262626;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         }
+        
+        .problem-row {
+            transition: all 0.2s ease;
+        }
+        
+        .problem-row:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
     </style>
 </head>
 
@@ -86,7 +97,7 @@
 
         <div class="flex items-center gap-4">
             <button id="theme-toggle"
-                class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1a1a1a] transition cursor-pointer"><span
+                class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1a1a1a] transition cursor-pointer" title="Toggle theme"><span
                     id="theme-orb" class="theme-orb sun"></span></button>
 
             <div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-[#262626]">
@@ -101,52 +112,46 @@
     </header>
 
     <main class="max-w-5xl mx-auto px-6 py-10">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+        <div class="mb-8 flex items-center justify-between">
             <div>
-                <a id="back-link" href="./dashboard"
-                    class="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition flex items-center gap-1.5 mb-2 w-max">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                        </path>
-                    </svg>
-                    Dashboard
+                <a id="back-link" href="./tracks?course=blind-75" class="text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition flex items-center gap-1.5 mb-3 w-max">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Back to Tracks
                 </a>
-                <h1 id="category-title" class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white"></h1>
+                <h1 id="category-title" class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Array</h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Master fundamental array manipulation techniques</p>
             </div>
-
-            <div class="w-full sm:w-72 relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <input id="search-box" type="text" placeholder="Search problems..."
-                    class="w-full bg-white dark:bg-[#111111] border border-slate-300 dark:border-[#262626] rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 text-slate-900 dark:text-slate-100 placeholder-slate-500 transition-colors" />
+            
+            <div class="text-right">
+                <div class="text-2xl font-bold text-slate-900 dark:text-white" id="category-progress">0%</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Complete</p>
             </div>
         </div>
 
-        <div class="util-panel rounded-xl overflow-hidden" id="problem-container">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[#262626]">
-                    <tr>
-                        <th
-                            class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16 text-center">
-                            Status</th>
-                        <th
-                            class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                            Problem</th>
-                        <th
-                            class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-32">
-                            Difficulty</th>
-                        <th
-                            class="px-6 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-32 text-right">
-                            Action</th>
-                    </tr>
-                </thead>
-                <tbody id="problem-list" class="divide-y divide-slate-100 dark:divide-[#262626]/60">
-                </tbody>
-            </table>
+        <div class="util-panel rounded-xl overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-[#262626]">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-box" placeholder="Search by name or LeetCode ID..." 
+                        class="flex-1 bg-transparent text-sm font-medium text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 outline-none">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-[#262626] bg-slate-50 dark:bg-[#0f0f0f]">
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 w-12">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400">Problem</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 w-24">Difficulty</th>
+                            <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="problem-list">
+                        <tr><td colspan="4" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400 text-sm">Loading problems...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -158,11 +163,13 @@
 
         const themeToggleBtn = document.getElementById('theme-toggle');
         const orb = document.getElementById('theme-orb');
+        
         function applyTheme(isDark) {
             document.documentElement.classList.toggle('dark', isDark);
-            orb.classList.toggle('sun', isDark);
-            orb.classList.toggle('moon', !isDark);
+            orb.classList.toggle('sun', !isDark);
+            orb.classList.toggle('moon', isDark);
         }
+        
         const storedTheme = localStorage.getItem('color-theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         applyTheme(storedTheme === 'dark' || (!storedTheme && prefersDark));
@@ -174,6 +181,7 @@
         });
 
         const PROBLEM_REGISTRY = [
+            // ARRAY PROBLEMS
             { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", course: "blind-75", category: "Array", implemented: true },
             { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
             { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
@@ -183,6 +191,9 @@
             { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
             { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", course: "blind-75", category: "Array", implemented: true },
             { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+            { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+            
+            // STRING PROBLEMS
             { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
             { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
             { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", course: "blind-75", category: "String", implemented: true },
@@ -192,6 +203,8 @@
             { slug: "encode-and-decode-strings", id: 271, title: "Encode and Decode Strings", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
             { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", course: "blind-75", category: "String", implemented: true },
             { slug: "palindromic-substrings", id: 647, title: "Palindromic Substrings", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+            
+            // LINKED LIST PROBLEMS
             { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
             { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
             { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
@@ -199,19 +212,27 @@
             { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: false },
             { slug: "reorder-list", id: 143, title: "Reorder List", difficulty: "Medium", course: "blind-75", category: "Linked List", implemented: false },
             { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: true },
+            
+            // BINARY PROBLEMS
             { slug: "reverse-bits", id: 190, title: "Reverse Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
             { slug: "number-of-1-bits", id: 191, title: "Number of 1 Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
             { slug: "missing-number", id: 268, title: "Missing Number", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
             { slug: "counting-bits", id: 338, title: "Counting Bits", difficulty: "Easy", course: "blind-75", category: "Binary", implemented: false },
             { slug: "sum-of-two-integers", id: 371, title: "Sum of Two Integers", difficulty: "Medium", course: "blind-75", category: "Binary", implemented: false },
+            
+            // MATRIX PROBLEMS
             { slug: "rotate-image", id: 48, title: "Rotate Image", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
             { slug: "spiral-matrix", id: 54, title: "Spiral Matrix", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
             { slug: "set-matrix-zeroes", id: 73, title: "Set Matrix Zeroes", difficulty: "Medium", course: "blind-75", category: "Matrix", implemented: false },
+            
+            // INTERVAL PROBLEMS
             { slug: "merge-intervals", id: 56, title: "Merge Intervals", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
             { slug: "insert-interval", id: 57, title: "Insert Interval", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
             { slug: "meeting-rooms", id: 252, title: "Meeting Rooms", difficulty: "Easy", course: "blind-75", category: "Interval", implemented: false },
             { slug: "meeting-rooms-ii", id: 253, title: "Meeting Rooms II", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
             { slug: "non-overlapping-intervals", id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", course: "blind-75", category: "Interval", implemented: false },
+            
+            // TREE PROBLEMS
             { slug: "validate-binary-search-tree", id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
             { slug: "same-tree", id: 100, title: "Same Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
             { slug: "binary-tree-level-order-traversal", id: 102, title: "Binary Tree Level Order Traversal", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
@@ -223,8 +244,12 @@
             { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", course: "blind-75", category: "Tree", implemented: false },
             { slug: "serialize-and-deserialize-binary-tree", id: 297, title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", course: "blind-75", category: "Tree", implemented: false },
             { slug: "subtree-of-another-tree", id: 572, title: "Subtree of Another Tree", difficulty: "Easy", course: "blind-75", category: "Tree", implemented: false },
+            
+            // HEAP PROBLEMS
             { slug: "find-median-from-data-stream", id: 295, title: "Find Median from Data Stream", difficulty: "Hard", course: "blind-75", category: "Heap", implemented: false },
             { slug: "top-k-frequent-elements", id: 347, title: "Top K Frequent Elements", difficulty: "Medium", course: "blind-75", category: "Heap", implemented: false },
+            
+            // GRAPH PROBLEMS
             { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
             { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
             { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
@@ -235,7 +260,8 @@
             { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", course: "blind-75", category: "Graph", implemented: false },
             { slug: "number-of-connected-components-in-an-undirected-graph", id: 323, title: "Number of Connected Components in an Undirected Graph", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
             { slug: "pacific-atlantic-water-flow", id: 417, title: "Pacific Atlantic Water Flow", difficulty: "Medium", course: "blind-75", category: "Graph", implemented: false },
-            { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+            
+            // DYNAMIC PROGRAMMING PROBLEMS
             { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
             { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
             { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", course: "blind-75", category: "Dynamic Programming", implemented: false },
@@ -293,6 +319,10 @@
             container.innerHTML = '';
 
             const solvedArray = Array.from(solvedSet);
+            const categoryProbs = PROBLEM_REGISTRY.filter(p => p.category === cat);
+            const solvedInCat = categoryProbs.filter(p => solvedArray.includes(p.slug)).length;
+            const percent = Math.round((solvedInCat / categoryProbs.length) * 100);
+            document.getElementById('category-progress').textContent = `${percent}%`;
 
             PROBLEM_REGISTRY.forEach(prob => {
                 if (prob.category === cat) {
@@ -308,7 +338,7 @@
                     }
 
                     const tr = document.createElement('tr');
-                    tr.className = "group hover:bg-slate-50 dark:hover:bg-[#1a1a1a] transition-colors";
+                    tr.className = "problem-row hover:bg-slate-50 dark:hover:bg-[#1a1a1a] transition-colors";
 
                     let diffClass = 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10';
                     if (prob.difficulty === 'Medium') diffClass = 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-500/10';
@@ -325,7 +355,7 @@
                         <td class="px-6 py-4 align-middle">
                             <div class="flex items-center gap-3">
                                 <span class="text-sm font-mono text-slate-400 dark:text-slate-500 w-6 text-right">${prob.id}.</span>
-                                <a href="${targetUrl}" class="text-base font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">${prob.title}</a>
+                                <a href="${targetUrl}" class="text-base font-semibold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">${prob.title}</a>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap align-middle">

@@ -10,16 +10,39 @@
     tailwind.config = { darkMode: 'class' }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- IMPORTANT: html2canvas for card generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
   <style>
 
-  .theme-orb { width: 20px; height: 20px; border-radius: 50%; position: relative; transition: all .3s; flex-shrink: 0; }
-  .theme-orb.sun { background: radial-gradient(circle at 35% 30%, #ffe9b0, #f5a623 70%); box-shadow: 0 0 12px 2px rgba(245,166,35,0.55); }
-  .theme-orb.moon { background: radial-gradient(circle at 65% 35%, #d8def8, #94a3ff 75%); box-shadow: 0 0 10px 1px rgba(148,163,255,0.5); }
+ .theme-orb { 
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    position: relative; 
+    transition: all .3s ease-in-out; 
+    flex-shrink: 0;
+    border: 2px solid rgba(148, 163, 184, 0.3);
+  }
+  
+  .theme-orb.sun { 
+      background: radial-gradient(circle at 35% 30%, #fff4d4, #f5a623 70%); 
+      box-shadow: 0 0 10px 2px rgba(245, 166, 35, 0.8), 0 0 20px 5px rgba(255, 200, 0, 0.3); 
+      border-color: rgba(245, 166, 35, 0.5);
+  }
+  
+  .theme-orb.moon { 
+      background: radial-gradient(circle at 65% 35%, #e6ebff, #94a3ff 75%); 
+      box-shadow: 0 0 10px 2px rgba(148, 163, 255, 0.8), 0 0 20px 5px rgba(148, 163, 255, 0.3); 
+      border-color: rgba(148, 163, 255, 0.5);
+  }
+  
   .theme-orb.moon::before { content:''; position:absolute; top:3px; left:2px; width:7px; height:7px; border-radius:50%; background:#0a0a14; opacity:.35; }
   .theme-orb.moon::after { content:''; position:absolute; top:10px; left:10px; width:4px; height:4px; border-radius:50%; background:#0a0a14; opacity:.3; }
-
+    
     body { background-color: #fafafa; }
     html.dark body { background-color: #0a0a0a; }
+    
     .util-panel {
         background-color: #ffffff;
         border: 1px solid #e5e7eb;
@@ -30,9 +53,115 @@
         border: 1px solid #262626;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
     }
+    
     .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 10px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; }
+    
+    .stat-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .badge-slot {
+      transition: all 0.2s;
+    }
+    
+    .badge-slot:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .badge-locked {
+      opacity: 0.4;
+      filter:  grayscale(100%);
+    }
+    
+    .pod-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .pod-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      animation: float 20s linear infinite;
+    }
+    
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
+    .pod-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Heatmap Card Styling */
+    .heatmap-card-preview {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    html.dark .heatmap-card-preview {
+      background: #111111;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .share-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .share-modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    html.dark .share-modal-content {
+      background: #111111;
+      color: white;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(99, 102, 241, 0.3);
+      border-radius: 50%;
+      border-top-color: #6366f1;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="text-slate-900 dark:text-slate-200 min-h-screen font-sans antialiased selection:bg-blue-500/30 flex flex-col">
@@ -56,7 +185,7 @@
         </div>
       </div>
 
-      <button id="theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1a1a1a] transition cursor-pointer"><span id="theme-orb" class="theme-orb sun"></span></button>
+      <button id="theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1a1a1a] transition cursor-pointer" title="Toggle theme"><span id="theme-orb" class="theme-orb sun"></span></button>
 
       <div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-[#262626]">
         <img id="user-avatar" class="w-8 h-8 rounded-full border border-slate-200 dark:border-[#262626] bg-slate-100 dark:bg-[#111111] object-cover" src="" alt="Profile">
@@ -65,15 +194,42 @@
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-grow">
+  <main class="max-w-7xl mx-auto px-6 py-10 w-full flex-grow">
     <div class="mb-10">
       <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard</h2>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Track your execution consistency and map your conceptual weaknesses.</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Track your execution consistency, level up, and earn badges.</p>
+    </div>
+    
+    <!-- Gamification Section: Problem of the Day -->
+    <div class="mb-8">
+      <div class="pod-card rounded-2xl p-8 text-white relative">
+        <div class="pod-content">
+          <div class="flex items-start justify-between mb-6">
+            <div>
+              <div class="text-sm font-semibold uppercase tracking-wider opacity-90 mb-2">Daily Challenge</div>
+              <h3 class="text-2xl font-black">Problem of the Day</h3>
+            </div>
+            <div id="pod-xp-badge" class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+              <span class="text-sm font-bold">🎯 +250 XP</span>
+            </div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-4">
+            <p id="pod-title" class="text-lg font-bold mb-2">Loading today's challenge...</p>
+            <p id="pod-desc" class="text-sm opacity-90">Solve this within 24 hours for a 2x XP multiplier!</p>
+            <p id="pod-timer" class="text-xs opacity-75 mt-2">⏰ Resets in <span id="hours-until">—</span>h</p>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="solvePOD()" class="bg-white text-indigo-600 hover:bg-slate-100 text-sm font-bold px-6 py-2 rounded-lg transition">Start Challenge</button>
+            <button onclick="checkPODStatus()" class="bg-white/20 hover:bg-white/30 text-sm font-bold px-6 py-2 rounded-lg transition backdrop-blur-sm">Check Status</button>
+          </div>
+        </div>
+      </div>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <div class="lg:col-span-2 flex flex-col gap-6">
+          <!-- Active Curriculum -->
           <div class="util-panel rounded-xl p-6">
             <div class="flex justify-between items-center mb-6">
               <h3 class="text-lg font-bold text-slate-900 dark:text-white">Active Curriculum</h3>
@@ -94,8 +250,8 @@
                     <span>Progress</span>
                     <span id="progress-text">0%</span>
                   </div>
-                  <div class="w-full bg-slate-200 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                  <div class="w-full bg-slate-200 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden cursor-help" title="Click to see category breakdown">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-cyan-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                   </div>
                 </div>
                 <a href="./tracks?course=blind-75" class="bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 text-sm font-medium px-4 py-2 rounded-lg transition shadow-sm whitespace-nowrap">Resume</a>
@@ -103,10 +259,14 @@
             </div>
           </div>
     
+          <!-- Execution Heatmap -->
           <div class="util-panel rounded-xl p-6">
             <div class="flex justify-between items-center mb-6">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Execution Heatmap</h3>
-              <span class="text-sm font-mono text-slate-500 dark:text-slate-400" id="total-solves-lbl">0 Solves</span>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">18-Week Heatmap</h3>
+              <div class="flex gap-3">
+                <span class="text-sm font-mono text-slate-500 dark:text-slate-400" id="total-solves-lbl">0 Solves</span>
+                <button onclick="prepareShareModal()" class="text-xs px-3 py-1 bg-slate-100 dark:bg-[#1a1a1a] hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded transition font-medium">Share</button>
+              </div>
             </div>
             
             <div class="flex gap-3 w-full overflow-x-auto pb-2 custom-scrollbar">
@@ -125,10 +285,39 @@
               </div>
             </div>
           </div>
+          
+          <!-- Weekly Sprint -->
+          <div class="util-panel rounded-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">This Week's Sprint</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Complete challenges for bonus rewards</p>
+              </div>
+              <span id="sprint-reward" class="text-sm font-bold text-amber-600 dark:text-amber-400">+500 XP Potential</span>
+            </div>
+            
+            <div id="sprint-list" class="space-y-3">
+              <!-- Sprint tasks will be dynamically rendered -->
+            </div>
+          </div>
       </div>
 
+      <!-- Right Sidebar -->
       <div class="flex flex-col gap-6">
-          <div class="util-panel rounded-xl flex flex-col h-[300px]">
+          <!-- Achievement Badges -->
+          <div class="util-panel rounded-xl p-6">
+            <div class="mb-4">
+              <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">Achievements</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Unlock badges through challenges</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3" id="badges-container">
+              <!-- Badges will be rendered here -->
+            </div>
+          </div>
+    
+          <!-- Needs Review -->
+          <div class="util-panel rounded-xl flex flex-col h-[280px]">
             <div class="p-5 border-b border-slate-200 dark:border-[#262626]">
               <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -140,32 +329,96 @@
             </ul>
           </div>
     
-          <div class="util-panel rounded-xl flex flex-col h-[350px]">
-            <div class="p-5 border-b border-slate-200 dark:border-[#262626]">
-              <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white">Weakness Mapper</h3>
+          <!-- Weakness Mapper -->
+          <div class="util-panel rounded-xl p-6">
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-1">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Strength Map</h3>
+                <span class="text-xs text-slate-500 dark:text-slate-400" id="overall-score">—</span>
               </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Category mastery levels</p>
             </div>
-            <div id="weakness-list" class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-grow">
-            </div>
+            <div id="weakness-list" class="space-y-4"></div>
           </div>
       </div>
-
     </div>
   </main>
+
+  <!-- SHARE MODAL -->
+  <div id="shareModal" style="display: none;" class="share-modal">
+    <div class="share-modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold">Share Your Heatmap</h3>
+        <button onclick="closeShareModal()" class="text-2xl cursor-pointer opacity-60 hover:opacity-100">&times;</button>
+      </div>
+
+      <!-- Preview -->
+      <div id="cardPreview" class="mb-6" style="max-height: 300px; overflow-y: auto;">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Generating preview...</p>
+      </div>
+
+      <!-- Share Options -->
+      <div class="flex gap-3 flex-wrap mb-6">
+        <button id="twitterShareBtn" onclick="shareToTwitter()" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition">
+          <span id="twitterBtnText">Share to Twitter</span>
+        </button>
+        <button id="linkedinShareBtn" onclick="shareToLinkedIn()" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition">
+          <span id="linkedinBtnText">Share to LinkedIn</span>
+        </button>
+        <button id="copyLinkBtn" onclick="copyCardLink()" class="flex-1 bg-slate-600 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition">
+          <span id="copyBtnText">Copy Link</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-gray-500 dark:text-gray-400 text-center">Your card will be shared publicly for 30 days</p>
+    </div>
+  </div>
 
   <script type="module">
     import { SUPABASE_CONFIG } from './config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
-        const themeToggleBtn = document.getElementById('theme-toggle');
+    let currentUserId = null;
+    let currentPOD = null;
+    let currentHeatmapData = null;
+
+    const PROBLEM_REGISTRY = [
+        { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", course: "blind-75", category: "Array", implemented: true },
+        { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "best-time-to-buy-and-sell-stock", id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", course: "blind-75", category: "Array", implemented: false },
+        { slug: "longest-consecutive-sequence", id: 128, title: "Longest Consecutive Sequence", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "maximum-product-subarray", id: 152, title: "Maximum Product Subarray", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", course: "blind-75", category: "Array", implemented: true },
+        { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", course: "blind-75", category: "Array", implemented: true },
+        { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", course: "blind-75", category: "String", implemented: false },
+        { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", course: "blind-75", category: "String", implemented: true },
+        { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", course: "blind-75", category: "String", implemented: false },
+        { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", course: "blind-75", category: "String", implemented: true },
+        { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", course: "blind-75", category: "Linked List", implemented: true },
+    ];
+
+    const BADGES = {
+        "node-runner": { name: "Node Runner", desc: "Solve 10 Graph problems", icon: "🌐", category: "Graph", threshold: 10 },
+        "speed-demon": { name: "Speed Demon", desc: "Solve Hard in <20min", icon: "⚡", category: "Hard", threshold: 1 },
+        "string-master": { name: "String Master", desc: "100% String problems", icon: "📝", category: "String", threshold: 100 },
+        "array-ace": { name: "Array Ace", desc: "50+ Array problems", icon: "🎯", category: "Array", threshold: 50 },
+        "streak-champion": { name: "Streak Champion", desc: "10-day streak", icon: "🔥", category: "Streak", threshold: 10 },
+        "problem-solver": { name: "Problem Solver", desc: "First problem solved", icon: "🎓", category: "First", threshold: 1 },
+        "pod-devotee": { name: "PoD Devotee", desc: "7-day PoD streak", icon: "📅", category: "POD", threshold: 7 },
+    };
+
+    const themeToggleBtn = document.getElementById('theme-toggle');
     const orb = document.getElementById('theme-orb');
+    
     function applyTheme(isDark) {
         document.documentElement.classList.toggle('dark', isDark);
         orb.classList.toggle('sun', !isDark);
         orb.classList.toggle('moon', isDark);
     }
+    
     const storedTheme = localStorage.getItem('color-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(storedTheme === 'dark' || (!storedTheme && prefersDark));
@@ -174,110 +427,321 @@
         const goingDark = !document.documentElement.classList.contains('dark');
         applyTheme(goingDark);
         localStorage.setItem('color-theme', goingDark ? 'dark' : 'light');
-        });
+    });
 
-    const PROBLEM_REGISTRY = [
-        { slug: "two-sum", id: 1, title: "Two Sum", difficulty: "Easy", category: "Array" },
-        { slug: "search-in-rotated-sorted-array", id: 33, title: "Search in Rotated Sorted Array", difficulty: "Medium", category: "Array" },
-        { slug: "maximum-subarray", id: 53, title: "Maximum Subarray", difficulty: "Medium", category: "Array" },
-        { slug: "best-time-to-buy-and-sell-stock", id: 121, title: "Best Time to Buy and Sell Stock", difficulty: "Easy", category: "Array" },
-        { slug: "longest-consecutive-sequence", id: 128, title: "Longest Consecutive Sequence", difficulty: "Medium", category: "Array" },
-        { slug: "maximum-product-subarray", id: 152, title: "Maximum Product Subarray", difficulty: "Medium", category: "Array" },
-        { slug: "find-minimum-in-rotated-sorted-array", id: 153, title: "Find Minimum in Rotated Sorted Array", difficulty: "Medium", category: "Array" },
-        { slug: "contains-duplicate", id: 217, title: "Contains Duplicate", difficulty: "Easy", category: "Array" },
-        { slug: "product-of-array-except-self", id: 238, title: "Product of Array Except Self", difficulty: "Medium", category: "Array" },
-        { slug: "longest-substring-without-repeating-characters", id: 3, title: "Longest Substring Without Repeating Characters", difficulty: "Medium", category: "String" },
-        { slug: "longest-palindromic-substring", id: 5, title: "Longest Palindromic Substring", difficulty: "Medium", category: "String" },
-        { slug: "group-anagrams", id: 49, title: "Group Anagrams", difficulty: "Medium", category: "String" },
-        { slug: "minimum-window-substring", id: 76, title: "Minimum Window Substring", difficulty: "Hard", category: "String" },
-        { slug: "valid-palindrome", id: 125, title: "Valid Palindrome", difficulty: "Easy", category: "String" },
-        { slug: "valid-anagram", id: 242, title: "Valid Anagram", difficulty: "Easy", category: "String" },
-        { slug: "encode-and-decode-strings", id: 271, title: "Encode and Decode Strings", difficulty: "Medium", category: "String" },
-        { slug: "longest-repeating-character-replacement", id: 424, title: "Longest Repeating Character Replacement", difficulty: "Medium", category: "String" },
-        { slug: "palindromic-substrings", id: 647, title: "Palindromic Substrings", difficulty: "Medium", category: "String" },
-        { slug: "remove-nth-node-from-end-of-list", id: 19, title: "Remove Nth Node From End of List", difficulty: "Medium", category: "Linked List" },
-        { slug: "valid-parentheses", id: 20, title: "Valid Parentheses", difficulty: "Easy", category: "Linked List" },
-        { slug: "merge-two-sorted-lists", id: 21, title: "Merge Two Sorted Lists", difficulty: "Easy", category: "Linked List" },
-        { slug: "merge-k-sorted-lists", id: 23, title: "Merge k Sorted Lists", difficulty: "Hard", category: "Linked List" },
-        { slug: "linked-list-cycle", id: 141, title: "Linked List Cycle", difficulty: "Easy", category: "Linked List" },
-        { slug: "reorder-list", id: 143, title: "Reorder List", difficulty: "Medium", category: "Linked List" },
-        { slug: "reverse-linked-list", id: 206, title: "Reverse Linked List", difficulty: "Easy", category: "Linked List" },
-        { slug: "reverse-bits", id: 190, title: "Reverse Bits", difficulty: "Easy", category: "Binary" },
-        { slug: "number-of-1-bits", id: 191, title: "Number of 1 Bits", difficulty: "Easy", category: "Binary" },
-        { slug: "missing-number", id: 268, title: "Missing Number", difficulty: "Easy", category: "Binary" },
-        { slug: "counting-bits", id: 338, title: "Counting Bits", difficulty: "Easy", category: "Binary" },
-        { slug: "sum-of-two-integers", id: 371, title: "Sum of Two Integers", difficulty: "Medium", category: "Binary" },
-        { slug: "rotate-image", id: 48, title: "Rotate Image", difficulty: "Medium", category: "Matrix" },
-        { slug: "spiral-matrix", id: 54, title: "Spiral Matrix", difficulty: "Medium", category: "Matrix" },
-        { slug: "set-matrix-zeroes", id: 73, title: "Set Matrix Zeroes", difficulty: "Medium", category: "Matrix" },
-        { slug: "merge-intervals", id: 56, title: "Merge Intervals", difficulty: "Medium", category: "Interval" },
-        { slug: "insert-interval", id: 57, title: "Insert Interval", difficulty: "Medium", category: "Interval" },
-        { slug: "meeting-rooms", id: 252, title: "Meeting Rooms", difficulty: "Easy", category: "Interval" },
-        { slug: "meeting-rooms-ii", id: 253, title: "Meeting Rooms II", difficulty: "Medium", category: "Interval" },
-        { slug: "non-overlapping-intervals", id: 435, title: "Non-overlapping Intervals", difficulty: "Medium", category: "Interval" },
-        { slug: "validate-binary-search-tree", id: 98, title: "Validate Binary Search Tree", difficulty: "Medium", category: "Tree" },
-        { slug: "same-tree", id: 100, title: "Same Tree", difficulty: "Easy", category: "Tree" },
-        { slug: "binary-tree-level-order-traversal", id: 102, title: "Binary Tree Level Order Traversal", difficulty: "Medium", category: "Tree" },
-        { slug: "maximum-depth-of-binary-tree", id: 104, title: "Maximum Depth of Binary Tree", difficulty: "Easy", category: "Tree" },
-        { slug: "construct-binary-tree-from-preorder-and-inorder-traversal", id: 105, title: "Construct Binary Tree from Preorder and Inorder Traversal", difficulty: "Medium", category: "Tree" },
-        { slug: "binary-tree-maximum-path-sum", id: 124, title: "Binary Tree Maximum Path Sum", difficulty: "Hard", category: "Tree" },
-        { slug: "invert-binary-tree", id: 226, title: "Invert Binary Tree", difficulty: "Easy", category: "Tree" },
-        { slug: "kth-smallest-element-in-a-bst", id: 230, title: "Kth Smallest Element in a BST", difficulty: "Medium", category: "Tree" },
-        { slug: "lowest-common-ancestor-of-a-binary-search-tree", id: 235, title: "Lowest Common Ancestor of a Binary Search Tree", difficulty: "Medium", category: "Tree" },
-        { slug: "serialize-and-deserialize-binary-tree", id: 297, title: "Serialize and Deserialize Binary Tree", difficulty: "Hard", category: "Tree" },
-        { slug: "subtree-of-another-tree", id: 572, title: "Subtree of Another Tree", difficulty: "Easy", category: "Tree" },
-        { slug: "find-median-from-data-stream", id: 295, title: "Find Median from Data Stream", difficulty: "Hard", category: "Heap" },
-        { slug: "top-k-frequent-elements", id: 347, title: "Top K Frequent Elements", difficulty: "Medium", category: "Heap" },
-        { slug: "clone-graph", id: 133, title: "Clone Graph", difficulty: "Medium", category: "Graph" },
-        { slug: "number-of-islands", id: 200, title: "Number of Islands", difficulty: "Medium", category: "Graph" },
-        { slug: "course-schedule", id: 207, title: "Course Schedule", difficulty: "Medium", category: "Graph" },
-        { slug: "implement-trie-prefix-tree", id: 208, title: "Implement Trie (Prefix Tree)", difficulty: "Medium", category: "Graph" },
-        { slug: "design-add-and-search-words-data-structure", id: 211, title: "Design Add and Search Words Data Structure", difficulty: "Medium", category: "Graph" },
-        { slug: "word-search-ii", id: 212, title: "Word Search II", difficulty: "Hard", category: "Graph" },
-        { slug: "graph-valid-tree", id: 261, title: "Graph Valid Tree", difficulty: "Medium", category: "Graph" },
-        { slug: "alien-dictionary", id: 269, title: "Alien Dictionary", difficulty: "Hard", category: "Graph" },
-        { slug: "number-of-connected-components-in-an-undirected-graph", id: 323, title: "Number of Connected Components in an Undirected Graph", difficulty: "Medium", category: "Graph" },
-        { slug: "pacific-atlantic-water-flow", id: 417, title: "Pacific Atlantic Water Flow", difficulty: "Medium", category: "Graph" },
-        { slug: "container-with-most-water", id: 11, title: "Container With Most Water", difficulty: "Medium", category: "Array" },
-        { slug: "3sum", id: 15, title: "3Sum", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "combination-sum", id: 39, title: "Combination Sum", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "jump-game", id: 55, title: "Jump Game", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "unique-paths", id: 62, title: "Unique Paths", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "climbing-stairs", id: 70, title: "Climbing Stairs", difficulty: "Easy", category: "Dynamic Programming" },
-        { slug: "word-search", id: 79, title: "Word Search", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "decode-ways", id: 91, title: "Decode Ways", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "word-break", id: 139, title: "Word Break", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "house-robber", id: 198, title: "House Robber", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "house-robber-ii", id: 213, title: "House Robber II", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "longest-increasing-subsequence", id: 300, title: "Longest Increasing Subsequence", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "coin-change", id: 322, title: "Coin Change", difficulty: "Medium", category: "Dynamic Programming" },
-        { slug: "longest-common-subsequence", id: 1143, title: "Longest Common Subsequence", difficulty: "Medium", category: "Dynamic Programming" }
-    ];
+    // ==========================================
+    // PROBLEM OF THE DAY FUNCTIONS
+    // ==========================================
+
+    async function initializePOD() {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        
+        const podProblems = PROBLEM_REGISTRY.filter(p => p.implemented && p.category === "Array");
+        const dayIndex = today.getDate();
+        const selectedPOD = podProblems[dayIndex % podProblems.length];
+        
+        currentPOD = { ...selectedPOD, date: todayStr };
+        
+        document.getElementById('pod-title').textContent = `#${selectedPOD.id} ${selectedPOD.title}`;
+        document.getElementById('pod-desc').textContent = `${selectedPOD.difficulty} • ${selectedPOD.category} • Solve within 24h for 2x XP!`;
+        
+        // Calculate hours until reset
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        const hoursUntil = Math.ceil((tomorrow - today) / (1000 * 60 * 60));
+        document.getElementById('hours-until').textContent = hoursUntil;
+        
+        // Check if user has already solved today's PoD
+        await checkPODStatus();
+    }
+
+    async function checkPODStatus() {
+        if (!currentUserId || !currentPOD) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        
+        const { data, error } = await supabaseClient
+            .from('daily_pod_attempts')
+            .select('*')
+            .eq('user_id', currentUserId)
+            .eq('pod_date', today)
+            .single();
+
+        if (data) {
+            if (data.solved_at) {
+                showPODStatus('✅ You solved today\'s PoD! ' + (data.bonus_applied ? '(2x XP Bonus Applied!)' : ''), 'success');
+            } else {
+                showPODStatus('⏳ Challenge started but not yet solved...', 'info');
+            }
+        }
+    }
+
+    function showPODStatus(message, type) {
+        const badge = document.getElementById('pod-xp-badge');
+        let color = 'bg-white/20';
+        if (type === 'success') color = 'bg-green-400/30';
+        if (type === 'info') color = 'bg-blue-400/30';
+        
+        badge.className = `${color} backdrop-blur-sm px-4 py-2 rounded-lg`;
+        badge.innerHTML = `<span class="text-sm font-bold">${message}</span>`;
+    }
+
+    function solvePOD() {
+        if (!currentPOD) return;
+        window.location.href = `./solutions/${currentPOD.slug}`;
+    }
+
+    // ==========================================
+    // SHAREABLE HEATMAP CARD FUNCTIONS
+    // ==========================================
+
+    async function prepareShareModal() {
+        const modal = document.getElementById('shareModal');
+        modal.style.display = 'flex';
+
+        // Generate card preview
+        const preview = document.getElementById('cardPreview');
+        preview.innerHTML = '<div class="text-center"><div class="loading-spinner" style="margin: 20px auto;"></div><p class="text-sm text-gray-500 dark:text-gray-400">Generating your card...</p></div>';
+
+        setTimeout(async () => {
+            await generateCardPreview();
+        }, 500);
+    }
+
+    async function generateCardPreview() {
+        const preview = document.getElementById('cardPreview');
+        
+        // Get heatmap data
+        const grid = document.getElementById('contribution-grid');
+        const solveCount = document.getElementById('total-solves-lbl').textContent;
+        const progressPercent = document.getElementById('progress-text').textContent;
+
+        // Create card HTML
+        const cardHTML = `
+            <div style="background: white; color: black; border-radius: 12px; padding: 24px; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px; font-weight: bold; color: #1f2937;">🎯 algoHub Progress Card</h2>
+                    <p style="margin: 8px 0 0; font-size: 14px; color: #6b7280;">18-Week Consistency Tracker</p>
+                </div>
+                
+                <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 20px; border-left: 4px solid #6366f1;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <p style="margin: 0; font-size: 12px; color: #6b7280; text-transform: uppercase;">Problems Solved</p>
+                            <p style="margin: 8px 0 0; font-size: 28px; font-weight: bold; color: #1f2937;">${solveCount}</p>
+                        </div>
+                        <div>
+                            <p style="margin: 0; font-size: 12px; color: #6b7280; text-transform: uppercase;">Progress</p>
+                            <p style="margin: 8px 0 0; font-size: 28px; font-weight: bold; color: #10b981;">${progressPercent}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f3f4f6; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                    <p style="margin: 0 0 12px; font-size: 13px; font-weight: 600; color: #1f2937;">Building consistency, one day at a time 🔥</p>
+                    <p style="margin: 0; font-size: 12px; color: #6b7280;">Heatmap and streak data from algoHub Dashboard</p>
+                </div>
+
+                <div style="text-align: center; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                    <p style="margin: 0; font-size: 11px; color: #9ca3af;">Generated on ${new Date().toLocaleDateString()} • algoHub.io</p>
+                </div>
+            </div>
+        `;
+
+        preview.innerHTML = cardHTML;
+
+        // Store for sharing
+        currentHeatmapData = {
+            solveCount: solveCount,
+            progressPercent: progressPercent,
+            generatedAt: new Date().toISOString()
+        };
+    }
+
+    function closeShareModal() {
+        document.getElementById('shareModal').style.display = 'none';
+    }
+
+    async function shareToTwitter() {
+        const btn = document.getElementById('twitterShareBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<div class="loading-spinner" style="margin: 0 auto; width: 16px; height: 16px;"></div>';
+        btn.disabled = true;
+
+        try {
+            const cardImage = await captureCardAsImage();
+            const text = `🎯 I've solved ${currentHeatmapData.solveCount} algorithm problems on @algoHub! ${currentHeatmapData.progressPercent} of the Blind 75 complete. 🔥\n\nBuilding consistency one day at a time! #LeetCode #AlgoHub`;
+            
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+            window.open(twitterUrl, '_blank');
+
+            btn.innerHTML = '✓ Shared!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 2000);
+        } catch (err) {
+            console.error('Twitter share error:', err);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async function shareToLinkedIn() {
+        const btn = document.getElementById('linkedinShareBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<div class="loading-spinner" style="margin: 0 auto; width: 16px; height: 16px;"></div>';
+        btn.disabled = true;
+
+        try {
+            const text = `Just hit ${currentHeatmapData.progressPercent} completion on my algorithm training journey with @algoHub! 💻\n\n🎯 Problems solved: ${currentHeatmapData.solveCount}\n🔥 Streak active & building consistency\n\nGrinding through technical interview prep. #Algorithms #SoftwareEngineering #CodingInterview`;
+            
+            const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://algohub.io')}`;
+            window.open(linkedInUrl, '_blank');
+
+            btn.innerHTML = '✓ Shared!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 2000);
+        } catch (err) {
+            console.error('LinkedIn share error:', err);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async function copyCardLink() {
+        if (!currentUserId) return;
+
+        const btn = document.getElementById('copyLinkBtn');
+        const originalText = btn.innerHTML;
+
+        try {
+            // Generate unique share token
+            const shareToken = generateShareToken();
+            
+            // Save to database
+            const { error } = await supabaseClient
+                .from('shared_heatmap_cards')
+                .insert({
+                    user_id: currentUserId,
+                    card_data: currentHeatmapData,
+                    share_token: shareToken
+                });
+
+            if (error) throw error;
+
+            // Create shareable link
+            const shareLink = `${window.location.origin}/shared-card/${shareToken}`;
+            
+            // Copy to clipboard
+            await navigator.clipboard.writeText(shareLink);
+
+            btn.innerHTML = '✓ Copied!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        } catch (err) {
+            console.error('Copy link error:', err);
+            btn.innerHTML = '✗ Error';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+    }
+
+    function generateShareToken() {
+        return 'share_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    }
+
+    async function captureCardAsImage() {
+        const cardElement = document.getElementById('cardPreview');
+        const canvas = await html2canvas(cardElement, { scale: 2 });
+        return canvas.toDataURL('image/png');
+    }
+
+    // ==========================================
+    // BADGES RENDERING
+    // ==========================================
+
+    function renderBadges() {
+        const container = document.getElementById('badges-container');
+        container.innerHTML = Object.entries(BADGES).map(([key, badge]) => {
+            return `
+                <div class="badge-slot ${Math.random() > 0.6 ? '' : 'badge-locked'} aspect-square rounded-lg flex flex-col items-center justify-center bg-slate-100 dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#262626] p-2 text-center hover:border-blue-400 dark:hover:border-blue-600 transition" title="${badge.name}">
+                    <span class="text-2xl mb-1">${badge.icon}</span>
+                    <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300 line-clamp-2">${badge.name}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==========================================
+    // SPRINT RENDERING
+    // ==========================================
+
+    function renderSprintTasks() {
+        const tasks = [
+            { name: "3 Array Problems", icon: "📊", xp: 150, category: "Array", current: 1, target: 3 },
+            { name: "1 String Problem", icon: "📝", xp: 150, category: "String", current: 0, target: 1 },
+            { name: "2 Linked List", icon: "🔗", xp: 200, category: "Linked List", current: 0, target: 2 },
+        ];
+        
+        const container = document.getElementById('sprint-list');
+        container.innerHTML = tasks.map(task => {
+            const progress = Math.round((task.current / task.target) * 100);
+            return `
+                <div class="group p-3 bg-slate-50 dark:bg-[#0f0f0f] rounded-lg border border-slate-100 dark:border-[#262626] hover:border-blue-300 dark:hover:border-blue-700 transition cursor-pointer">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">${task.icon}</span>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">${task.name}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">${task.current}/${task.target} • +${task.xp} XP</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-[#1a1a1a] h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-1.5 rounded-full transition-all" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==========================================
+    // USER STATS & DATA LOADING
+    // ==========================================
 
     async function checkAuth() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) {
-            window.location.href = './';
-            return;
-        }
+        if (!session) { window.location.href = './'; return; }
+        
+        currentUserId = session.user.id;
+        
         const avatar = document.getElementById('user-avatar');
-        if (avatar && session.user.user_metadata.avatar_url) {
-            avatar.src = session.user.user_metadata.avatar_url;
-        }
-        fetchCloudData(session.user.id);
-        fetchUserStats(session.user.id);
+        if (avatar && session.user.user_metadata.avatar_url) avatar.src = session.user.user_metadata.avatar_url;
+        
+        // Initialize features
+        await initializePOD();
+        renderBadges();
+        renderSprintTasks();
+        await fetchUserStats(session.user.id);
+        await fetchCloudData(session.user.id);
     }
 
     async function fetchUserStats(userId) {
-        const { data: stats } = await supabaseClient
+        const { data: stats, error } = await supabaseClient
             .from('user_stats')
-            .select('*')
+            .select('current_streak, xp')
             .eq('user_id', userId)
             .single();
 
         if (!stats) return;
 
-        // Streak badge
         const streakBadge = document.getElementById('streak-badge');
         const streakCount = document.getElementById('streak-count');
         if (stats.current_streak > 0) {
@@ -286,7 +750,6 @@
             streakBadge.classList.add('flex');
         }
 
-        // XP / Level badge
         const xpBadge = document.getElementById('xp-badge');
         const levelLabel = document.getElementById('level-label');
         const xpBar = document.getElementById('xp-bar');
@@ -299,7 +762,6 @@
         xpBar.style.width = `${xpIntoLevel}%`;
         xpBadge.classList.remove('hidden');
         xpBadge.classList.add('flex');
-        xpBadge.title = `${xp} XP total — ${100 - xpIntoLevel} XP to next level`;
     }
 
     async function fetchCloudData(userId) {
@@ -361,7 +823,7 @@
             if (count === 1) bgClass = 'bg-emerald-300 dark:bg-emerald-800';
             else if (count >= 2) bgClass = 'bg-emerald-500 dark:bg-emerald-500';
 
-            grid.innerHTML += `<div class="w-3.5 h-3.5 rounded-sm ${bgClass} transition-colors cursor-help" title="${count} solves on ${dateStr}"></div>`;
+            grid.innerHTML += `<div class="w-3.5 h-3.5 rounded-sm ${bgClass} transition-colors cursor-help hover:ring-2 hover:ring-offset-1 dark:hover:ring-offset-[#0a0a0a]" title="${count} solves on ${dateStr}"></div>`;
         }
     }
 
@@ -396,26 +858,32 @@
 
         const list = document.getElementById('weakness-list');
         
-        list.innerHTML = Object.entries(categoryStats)
-            .sort((a, b) => (a[1].solved / a[1].total) - (b[1].solved / b[1].total))
-            .map(([category, stats]) => {
-                const percent = Math.round((stats.solved / stats.total) * 100);
-                let colorClass = 'bg-red-500';
-                if (percent >= 80) colorClass = 'bg-emerald-500';
-                else if (percent >= 40) colorClass = 'bg-amber-500';
-                
-                return `
-                    <div>
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${category}</span>
-                            <span class="text-xs font-mono text-slate-500">${percent}%</span>
-                        </div>
-                        <div class="w-full bg-slate-100 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
-                            <div class="${colorClass} h-1.5 rounded-full transition-all duration-1000" style="width: ${percent}%"></div>
-                        </div>
+        const sorted = Object.entries(categoryStats)
+            .sort((a, b) => (a[1].solved / a[1].total) - (b[1].solved / b[1].total));
+        
+        const overallPercent = Math.round(
+            (sorted.reduce((sum, [_, s]) => sum + s.solved, 0) / sorted.reduce((sum, [_, s]) => sum + s.total, 0)) * 100
+        );
+        document.getElementById('overall-score').textContent = `${overallPercent}%`;
+        
+        list.innerHTML = sorted.map(([category, stats]) => {
+            const percent = Math.round((stats.solved / stats.total) * 100);
+            let colorClass = 'bg-red-500';
+            if (percent >= 80) colorClass = 'bg-emerald-500';
+            else if (percent >= 40) colorClass = 'bg-amber-500';
+            
+            return `
+                <div class="stat-card p-3 rounded-lg bg-slate-50 dark:bg-[#0f0f0f] border border-slate-100 dark:border-[#262626]">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${category}</span>
+                        <span class="text-xs font-mono text-slate-500 dark:text-slate-400">${stats.solved}/${stats.total} • ${percent}%</span>
                     </div>
-                `;
-            }).join('');
+                    <div class="w-full bg-slate-200 dark:bg-[#1a1a1a] h-2 rounded-full overflow-hidden">
+                        <div class="${colorClass} h-2 rounded-full transition-all duration-1000" style="width: ${percent}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     document.getElementById('btn-logout').onclick = async () => {
@@ -423,6 +891,7 @@
         window.location.href = './';
     };
     
+    // Initialize on load
     checkAuth();
   </script>
 </body>

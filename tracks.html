@@ -10,11 +10,51 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
 
-  .theme-orb { width: 20px; height: 20px; border-radius: 50%; position: relative; transition: all .3s; flex-shrink: 0; }
-  .theme-orb.sun { background: radial-gradient(circle at 35% 30%, #ffe9b0, #f5a623 70%); box-shadow: 0 0 12px 2px rgba(245,166,35,0.55); }
-  .theme-orb.moon { background: radial-gradient(circle at 65% 35%, #d8def8, #94a3ff 75%); box-shadow: 0 0 10px 1px rgba(148,163,255,0.5); }
-  .theme-orb.moon::before { content:''; position:absolute; top:3px; left:2px; width:7px; height:7px; border-radius:50%; background:#0a0a14; opacity:.35; }
-  .theme-orb.moon::after { content:''; position:absolute; top:10px; left:10px; width:4px; height:4px; border-radius:50%; background:#0a0a14; opacity:.3; }
+  .theme-orb { 
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    position: relative; 
+    transition: all .3s; 
+    flex-shrink: 0;
+    border: 2px solid rgba(148, 163, 184, 0.3);
+  }
+  
+  .theme-orb.sun { 
+    background: radial-gradient(circle at 35% 30%, #ffe9b0, #f5a623 70%); 
+    box-shadow: 0 0 12px 2px rgba(245,166,35,0.7), inset 0 0 8px rgba(255,255,255,0.3); 
+    border-color: rgba(245, 166, 35, 0.5);
+  }
+  
+  .theme-orb.moon { 
+    background: radial-gradient(circle at 65% 35%, #d8def8, #94a3ff 75%); 
+    box-shadow: 0 0 10px 1px rgba(148,163,255,0.7), inset 0 0 8px rgba(255,255,255,0.2); 
+    border-color: rgba(148, 163, 255, 0.5);
+  }
+  
+  .theme-orb.moon::before { 
+    content:''; 
+    position:absolute; 
+    top:3px; 
+    left:2px; 
+    width:7px; 
+    height:7px; 
+    border-radius:50%; 
+    background:#0a0a14; 
+    opacity:.35; 
+  }
+  
+  .theme-orb.moon::after { 
+    content:''; 
+    position:absolute; 
+    top:10px; 
+    left:10px; 
+    width:4px; 
+    height:4px; 
+    border-radius:50%; 
+    background:#0a0a14; 
+    opacity:.3; 
+  }
 
     body { background-color: #fafafa; }
     html.dark body { background-color: #0a0a0a; }
@@ -29,7 +69,7 @@
     </a>
 
     <div class="flex items-center gap-4">
-      <button id="theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1a1a1a] transition cursor-pointer"><span id="theme-orb" class="theme-orb sun"></span></button>
+      <button id="theme-toggle" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1a1a1a] transition cursor-pointer" title="Toggle theme"><span id="theme-orb" class="theme-orb sun"></span></button>
 
       <div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-[#262626]">
         <img id="user-avatar" class="w-8 h-8 rounded-full border border-slate-200 dark:border-[#262626] bg-slate-100 dark:bg-[#111111] object-cover" src="" alt="Profile">
@@ -55,7 +95,7 @@
     import { SUPABASE_CONFIG } from './config.js';
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
 
-        const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeToggleBtn = document.getElementById('theme-toggle');
     const orb = document.getElementById('theme-orb');
     function applyTheme(isDark) {
         document.documentElement.classList.toggle('dark', isDark);
